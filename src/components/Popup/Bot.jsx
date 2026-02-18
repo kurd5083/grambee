@@ -4,8 +4,8 @@ import styled from "styled-components";
 import Button from "@/shared/Button";
 
 import TabsNav from "@/components/TabsNav";
-import GeneralTab from "@/components/popup/Bot/GeneralTab";
-import ContentTab from "@/components/popup/Bot/ContentTab";
+import GeneralTab from "@/components/Popup/Bot/GeneralTab";
+import ContentTab from "@/components/Popup/Bot/ContentTab";
 
 const tabs = [
   { label: "Общая", value: "general" },
