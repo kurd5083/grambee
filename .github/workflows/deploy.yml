@@ -29,7 +29,8 @@ jobs:
                     username: ${{ secrets.SERVER_USER }}
                     key: ${{ secrets.SERVER_SSH_KEY }}
                     port: 22
-                    source: dist/*
+                    source: dist/
                     target: /var/www/grambee
+                    strip_components: 1
                     fingerprint: ""
                     script: sudo systemctl restart apache2
