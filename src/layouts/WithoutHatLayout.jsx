@@ -24,10 +24,9 @@ const WithoutHatLayout = () => {
 };
 const Container = styled.div`
   position: relative;
-  max-width: 480px;
+  max-width: 767px;
   margin: 0 auto;
   min-height: 100vh;
-  border: 2px solid #FF6B6B; 
   box-sizing: border-box;
   padding-bottom: 126px;
   overflow: hidden;

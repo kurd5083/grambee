@@ -12,7 +12,7 @@ import useMaxResize from '@/hooks/useMaxResize';
 const Footer = () => {
 	const [ locationState, setLocationState ] = useState();
 	const { widthScreen } = useMaxResize();
-
+	console.log(widthScreen)
 	const navigate = useNavigate();
 	const location = useLocation();
 
@@ -75,7 +75,7 @@ const MenuItem = styled.button`
 	box-sizing: border-box;
 	position: relative;
 	flex: 1;
- 	 display: flex;
+ 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	gap: 12px;

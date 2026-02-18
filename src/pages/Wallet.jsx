@@ -10,12 +10,13 @@ import WalletIcon from '@/icons/WalletIcon';
 import EyeIcon from '@/icons/EyeIcon';
 import EyeCloseIcon from '@/icons/EyeCloseIcon';
 
+import CustomSelect from "@/shared/CustomSelect";
+
 import TitleHead from "@/components/TitleHead";
 import Chart from '@/components/Chart';
 import TabMenu from "@/components/TabMenu";
 
 import { usePopupStore } from "@/store/popupStore";
-
 
 const Wallet = () => {
 	const [eyeState, setEyeState] = useState(false)
@@ -70,6 +71,18 @@ const Wallet = () => {
 					</BalanceAction>
 				</BalanceContainer>
 			</MyBalance>
+			<SelectContainer>
+				<CustomSelect
+					placeholder="Период"
+					options={[
+						{ value: "all", label: "Все время" },
+						{ value: "24h", label: "За 24 часа" },
+						{ value: "week", label: "За неделю" },
+						{ value: "month", label: "За месяц" },
+					]}
+					width="150px"
+				/>
+			</SelectContainer>
 			<Chart/>
 			<TabMenu tabs={tabs} />
 		</>
@@ -147,6 +160,11 @@ const BalanceHold = styled.p`
 	font-size: 10px;
 	text-transform: uppercase;
 	color: #6A7080CC;
+`
+const SelectContainer = styled.div`
+	display: flex;
+	justify-content: center;
+	margin-top: 18px;
 `
 
 export default Wallet
