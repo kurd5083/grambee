@@ -92,7 +92,7 @@ const LevelSystem = () => {
       </CardsLevel>
     </ContainerPadding>
   )
-}
+} 
 
 const LevelProgress = styled.div`
   position: relative;
