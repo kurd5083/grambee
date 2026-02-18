@@ -32,6 +32,4 @@ jobs:
                     source: dist/
                     target: /var/www/grambee
                     fingerprint: ""
-
-            -   name: Restart Apatch
-                run: ssh -i ~/.ssh/id_ed25519 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} "sudo systemctl restart apache2"
+                    script: sudo systemctl restart apache2
