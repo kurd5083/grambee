@@ -14,7 +14,7 @@ const InfoRow = ({
         {label}
       </Label>
 
-      <Value>{value}</Value>
+      {value && <Value>{value}</Value>}
 
       {actionIcon && <IconWrapper>{actionIcon}</IconWrapper>}
       {actionText && <TextWrapper>{actionText}</TextWrapper>}
@@ -25,6 +25,7 @@ const InfoRow = ({
 const Container = styled.div`
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 24px;
   border: 1px solid #272A33;
   border-radius: 14px;

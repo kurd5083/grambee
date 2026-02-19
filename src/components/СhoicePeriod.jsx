@@ -27,6 +27,9 @@ const СhoicePeriod = () => {
 }
 const PeriodContainer = styled.div`
     display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+
 `
 const PeriodChannel = styled.div`
     display: flex;

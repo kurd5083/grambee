@@ -18,13 +18,15 @@ const Header = () => {
         <UserLevel>уровень: <mark>новичек</mark></UserLevel>
       </InfoUser>
       <HeaderBalance>
-        1,876 <mark>₽</mark>
+        <p>1,876 <mark>₽</mark></p>
         <ButtonBalance onClick={() => navigate('/replenish')}>
           <PlusIcon width={10} height={10} colorFirst = "#FFD26D" colorSecond = "#FFB81A" />
         </ButtonBalance>
       </HeaderBalance>
       <BellContainer onClick={() => openPopup('notifications')}>
         <BellIcon 
+          width ={18} 
+          height={20}
           colorFirst={popup.content == 'notifications' ? '#FFD26D' : '#EFF5FF'}  
           colorSecond={popup.content == 'notifications' ? '#FFB81A' : '#EFF5FF'}
         />
@@ -59,19 +61,28 @@ const UserLevel = styled.span`
   font-weight: 700;
   font-size: 10px;
 `;
-const HeaderBalance = styled.p`
-  padding: 4px 4px 4px 16px;
+const HeaderBalance = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px;
   border: 1px solid #272A33;
   border-radius: 14px;
   font-size: 14px;
   font-weight: 700;
+  p {
+    margin-left: 12px;
+    @media(max-width: 400px) {
+      display: none;
+    }
+  }
 `;
 const ButtonBalance = styled.button`
   width: 32px;
   height: 32px;
   background-color: #272A33;
   border-radius: 12px;
-  margin-left: 10px;
+
   &:hover {
 		background-color: #33363f;
 	}

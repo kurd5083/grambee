@@ -1,4 +1,4 @@
-const DelIcon = ({ width = 12, height = 16, color = "#D6DCEC" }) => {
+const DelIcon = ({ width, height, color }) => {
     return (
         <svg
             width={width}

@@ -1,4 +1,4 @@
-const BellIcon = ({ width = 18, height = 20, colorFirst = "#FFD26D", colorSecond = "#FFB81A" }) => {
+const BellIcon = ({ width, height, colorFirst, colorSecond }) => {
     return (
         <svg
             width={width}

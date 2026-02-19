@@ -45,7 +45,7 @@ const BotContainer = styled.div`
   overflow-y: auto;
   scrollbar-width: none;
 `
-const ButtonSaveContainer = styled.button`
+const ButtonSaveContainer = styled.div`
   margin-top: 32px;
   width: 100%;
 `

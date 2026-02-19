@@ -31,7 +31,7 @@ const Popup = () => {
 						<LineHead />
 						<PopupTitle>{popup.name}</PopupTitle>
 						<PopupClose onClick={closePopup}>
-							<CrossIcon />
+							<CrossIcon width={8} height={8} color="#D6DCEC"/>
 						</PopupClose>
 					</>
 				)}

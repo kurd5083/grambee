@@ -1,4 +1,4 @@
-const ArrowIcon = ({ color, width = 8, height = 14 }) => {
+const ArrowIcon = ({ width, height, color }) => {
 	return (
 		<svg
 			width={width}

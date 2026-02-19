@@ -13,7 +13,7 @@ const UploadStatistics = () => {
 						<img src={pdf} alt="pdf icon" />
 					</ImgContainer>
 					<ArrowContainer>
-						<ArrowIcon color="#D6DCEC" width={6} height={10} />
+						<ArrowIcon width={6} height={10} color="#D6DCEC" />
 					</ArrowContainer>
 				</CardHead>
 				<CardText $colorMark="#EF5350">Выгрузить<br /> форматом <mark>PDF</mark></CardText>
@@ -24,7 +24,7 @@ const UploadStatistics = () => {
 						<img src={excel} alt="excel icon" />
 					</ImgContainer>
 					<ArrowContainer>
-						<ArrowIcon color="#D6DCEC" width={6} height={10} />
+						<ArrowIcon width={6} height={10} color="#D6DCEC"/>
 					</ArrowContainer>
 				</CardHead>
 				<CardText $colorMark="#33C481">Выгрузить<br /> форматом <mark>EXCEL</mark></CardText>

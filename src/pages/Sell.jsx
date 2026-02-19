@@ -63,6 +63,9 @@ const SellContainer = styled.div`
   padding-bottom: 24px;
   border-bottom: 1px dashed #6A7080;
   margin: 16px 24px 0;
+  @media(max-width: 400px) {
+    flex-direction: column;
+  }
 `
 
 export default Sell

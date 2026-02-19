@@ -25,6 +25,8 @@ const TabMenu = ({ tabs }) => {
 
 const NavigationMenu = styled.div`
   display: flex;
+  flex-wrap: wrap;
+
   gap: 8px;
   padding: 24px 24px 30px;
 
@@ -40,6 +42,7 @@ const MenuItem = styled.button`
   align-items: center;
   gap: 10px;
   height: 48px;
+  padding: 0 20px;
   background-color: #272A33;
   font-size: 14px;
   font-weight: ${({ $active }) => ($active ? 800 : 700)};

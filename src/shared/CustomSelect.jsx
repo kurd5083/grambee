@@ -34,7 +34,7 @@ const CustomSelect = ({ options = [], value, onChange, placeholder = "Выбер
         {icon && (<SpeakerIcon color="#D6DCEC"/>)}
         <SelectText>{selectedOption?.label || placeholder}</SelectText>
         <HeaderArrow className={open ? "open" : ""}>
-          <ArrowIcon color="#FFB81A" />
+          <ArrowIcon width = "8" height = "14" color="#FFB81A" />
         </HeaderArrow>
       </SelectHeader>
       {open && (

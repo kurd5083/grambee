@@ -16,7 +16,7 @@ const NotificationsMessage = () => {
       <NotificationsHeader>
         <ImgContainer><img src={test1} alt="" /></ImgContainer>
         <PopupClose onClick={closePopup}>
-          <CrossIcon />
+          <CrossIcon width={8} height={8} color="#D6DCEC"/>
         </PopupClose>
       </NotificationsHeader>
       <NotificationsItem>

@@ -57,7 +57,9 @@ const Wallet = () => {
 				<GridImage src={grid} alt="grid img" />
 				<BalanceContainer>
 					<BalanceAction>
-						<ActionButton onClick={() => navigate('/replenish')}><ArrowOblique /></ActionButton>
+						<ActionButton onClick={() => navigate('/replenish')}>
+							<ArrowOblique width={18} height={18} colorFirst="#FFD26D" colorSecond="#FFB81A"/>
+						</ActionButton>
 						ПОПОЛНИТЬ
 					</BalanceAction>
 					<Balance>
@@ -66,7 +68,9 @@ const Wallet = () => {
 						<BalanceHold>На удержании: 15,500 ₽</BalanceHold>
 					</Balance>
 					<BalanceAction>
-						<ActionButton onClick={() => navigate('/bring')} $rotate={true}><ArrowOblique /></ActionButton>
+						<ActionButton onClick={() => navigate('/bring')} $rotate={true}>
+							<ArrowOblique width={18} height={18} colorFirst="#FFD26D" colorSecond="#FFB81A"/>
+						</ActionButton>
 						ВЫВЕСТИ
 					</BalanceAction>
 				</BalanceContainer>

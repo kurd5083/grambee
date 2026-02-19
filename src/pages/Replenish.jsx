@@ -73,131 +73,136 @@ const Replenish = () => {
 }
 
 const ReplenishContainer = styled.div`
-  position: relative;
-  padding: 0 24px 40px;
+    position: relative;
+    padding: 0 24px 40px;
 
-  &::before {
-    content: '';
-    position: absolute;
-    top: -250px;
-    left: -400px;
-    width: 100%;
-    height: 100%;
-    background: url('src/assets/grid.png') no-repeat;
-    transform: rotate(135deg);
-    z-index: -1;
-  }
-  &::after {
-    content: '';
-    position: absolute;
-    top: 300px;
-    right: -275px;
-    width: 100%;
-    height: 100%;
-    background: url('src/assets/grid.png') no-repeat;
-    z-index: -1;
-  }
+    &::before {
+        content: '';
+        position: absolute;
+        top: -250px;
+        left: -400px;
+        width: 100%;
+        height: 100%;
+        background: url('src/assets/grid.png') no-repeat;
+        transform: rotate(135deg);
+        z-index: -1;
+    }
+    &::after {
+        content: '';
+        position: absolute;
+        top: 300px;
+        right: -275px;
+        width: 100%;
+        height: 100%;
+        background: url('src/assets/grid.png') no-repeat;
+        z-index: -1;
+    }
 `;
 const Balance = styled.div`
-  width: 100%;
+    width: 100%;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	gap: 16px;
-  margin-top: 12px;
+    margin-top: 12px;
 `
 const BalanceSubtext = styled.span`
 	font-size: 10px;
 	text-transform: uppercase;
 `
 const AmountRow = styled.div`
-  position: relative;
-  display: flex;
-  align-items: flex-end;
-  gap: 16px;
-  mark {
-    position: absolute;
-    right: -40px;
-    bottom: 28px;
-    font-size: 48px;
-  }
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    gap: 16px;
+    mark {
+        position: absolute;
+        right: -40px;
+        bottom: 28px;
+        font-size: 48px;
+    }
 `
 const BalanceCount = styled.input`
-  box-sizing: border-box;
-  font-size: 64px;
-  line-height: 64px;
-  height: auto;
-  border: none;
-  background: transparent;
-  text-align: right;
-  color: #D6DCEC;
-  border-bottom: 1px dashed #6A7080;
-  padding-bottom: 24px;
-  min-width: 100px;
-  text-align: center;
+    box-sizing: border-box;
+    font-size: 64px;
+    line-height: 64px;
+    height: auto;
+    border: none;
+    background: transparent;
+    text-align: right;
+    color: #D6DCEC;
+    border-bottom: 1px dashed #6A7080;
+    padding-bottom: 24px;
+    min-width: 100px;
+    text-align: center;
 `
 
 const BalanceDesc = styled.p`
-  text-align: center;
-  text-transform: uppercase;
-  font-size: 10px;
-  color: #6A7080CC;
-  max-width: 210px;
-  line-height: 14px;
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 10px;
+    color: #6A7080CC;
+    max-width: 210px;
+    line-height: 14px;
 `
 const BalanceMenu = styled.div`
-  position: relative;
-  box-sizing: border-box;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  padding-bottom: 40px;
+    position: relative;
+    box-sizing: border-box;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-bottom: 40px;
 `
 const MenuItem = styled.button`
-  height: 48px;
-  padding: 0 24px;
-  background-color: ${({ $active }) => ($active ? '#272A33' : 'transporent')};
-  font-size: 14px;
-  font-weight: ${({ $active }) => $active ? 800 : 600};
-  border-radius: 16px;
-  border: 1px solid ${({ $active }) => ($active ? '#FFB81A' : '#272A33')};
-  ${({ $active }) => ($active && `
-    &::before {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      height: 2px;
-      width: 48px;
-      border-radius: 24px;
-      background-color: #FFB81A;
-      z-index: 1;
-    }
-  `)}
+    height: 48px;
+    padding: 0 24px;
+    background-color: ${({ $active }) => ($active ? '#272A33' : 'transporent')};
+    font-size: 14px;
+    font-weight: ${({ $active }) => $active ? 800 : 600};
+    border-radius: 16px;
+    border: 1px solid ${({ $active }) => ($active ? '#FFB81A' : '#272A33')};
+    ${({ $active }) => ($active && `
+        &::before {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        height: 2px;
+        width: 48px;
+        border-radius: 24px;
+        background-color: #FFB81A;
+        z-index: 1;
+        }
+    `)}
  
-  mark {
-    ${({ $active }) => $active && `
-      background: radial-gradient(circle at center, #FFD26D, #FFB81A);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    `}
-    color: ${({ $active }) => ($active ? 'transparent' : '#D6DCEC')};
-  }
+    mark {
+        ${({ $active }) => $active && `
+        background: radial-gradient(circle at center, #FFD26D, #FFB81A);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        `}
+        color: ${({ $active }) => ($active ? 'transparent' : '#D6DCEC')};
+    }
 `
 const BalanceWay = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  width: 100%;
-  box-sizing: border-box;
-  margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 24px;
 `
 const WayContainer = styled.div`
-  display: flex;
-  gap: 8px;
-  padding-bottom: 24px;
-  border-bottom: 1px dashed #6A7080;
+    display: flex;
+    gap: 8px;
+    padding-bottom: 24px;
+    border-bottom: 1px dashed #6A7080;
+    
+    @media(max-width: 400px) {
+        flex-direction: column;
+    }
 `
 
 export default Replenish

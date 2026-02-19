@@ -49,6 +49,10 @@ const Header = styled.div`
 const IndicatorsList = styled.div`
     display: flex;
     gap: 8px;
+
+	@media(max-width: 400px) {
+        flex-direction: column;
+    }
 `;
 const IndicatorCard = styled.div`
     flex: 1;
@@ -63,9 +67,10 @@ const Value = styled.h3`
     text-align: left;
 `;
 const IndicatorInfo = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 16px;
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	
 `;
 const IconWrapper = styled.div`
     display: flex;

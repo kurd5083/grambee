@@ -12,7 +12,7 @@ import TitleHead from "@/components/TitleHead";
 const Bring = () => {
 	return (
 		<BringContainer>
-			<TitleHead icon={<ArrowOblique width={24} height={24} colorFirst="#FFD26D " colorSecond="#FFB81A" />} title="Вывод" />
+			<TitleHead icon={<ArrowOblique width={24} height={24} colorFirst="#FFD26D" colorSecond="#FFB81A" />} title="Вывод" />
 			<BringContent>
 				<BringSubtext><mark>Сумма вывода</mark></BringSubtext>
 				<AmountRow>
@@ -29,7 +29,7 @@ const Bring = () => {
 							<BodyText>BEP20 Address</BodyText>
 						</ItemBody>
 						<ArrowContainer onClick={() => navigate('/payment')}>
-							<ArrowIcon color="#D6DCEC" width={6} height={10} />
+							<ArrowIcon width={6} height={10} color="#D6DCEC"/>
 						</ArrowContainer>
 					</ItemHead>
 				</WayItem>
@@ -177,6 +177,10 @@ const PaymentInputs = styled.div`
     gap: 16px;
     width: 100%;
     margin-top: 16px;
+
+    @media(max-width: 430px) {
+        flex-direction: column;
+    }
 `
 const InputLabel = styled.label`
     position: relative;

@@ -47,7 +47,7 @@ const MotivatedTraffic = () => {
 								<InfoId># T221</InfoId>
 								<InfoName>Digital Design</InfoName>
 							</ChannelInfo>
-							<ButtonMore onClick={() => openPopup('resource', 'Ресурс # T221')}>Детали <ArrowIcon color="#FFB81A"/></ButtonMore>
+							<ButtonMore onClick={() => openPopup('resource', 'Ресурс # T221')}>Детали <ArrowIcon width = "8" height = "14" color="#FFB81A"/></ButtonMore>
 						</ItemTop>
 						<ItemBottom>
 							<TextContainer>
@@ -72,7 +72,7 @@ const MotivatedTraffic = () => {
 								<InfoId># T221</InfoId>
 								<InfoName>Digital Design</InfoName>
 							</ChannelInfo>
-							<ButtonMore onClick={() => openPopup('resource', 'Ресурс # T221')}>Детали <ArrowIcon color="#FFB81A"/></ButtonMore>
+							<ButtonMore onClick={() => openPopup('resource', 'Ресурс # T221')}>Детали <ArrowIcon width = "8" height = "14" color="#FFB81A"/></ButtonMore>
 						</ItemTop>
 						<ItemBottom>
 							<TextContainer>
@@ -98,7 +98,7 @@ const MotivatedTraffic = () => {
 								<InfoName>Digital Design</InfoName>
 							</ChannelInfo>
 
-							<ButtonMore onClick={() => openPopup('resource', 'Ресурс # T221')}>Детали <ArrowIcon color="#FFB81A"/></ButtonMore>
+							<ButtonMore onClick={() => openPopup('resource', 'Ресурс # T221')}>Детали <ArrowIcon width = "8" height = "14" color="#FFB81A"/></ButtonMore>
 						</ItemTop>
 						<ItemBottom>
 							<TextContainer>
@@ -151,7 +151,7 @@ const ChannelsList = styled.ul`
   	display: flex;
 	flex-direction: column;
 	gap: 16px;
-	max-height: calc(100dvh - 650px);
+	max-height: calc(100dvh - 550px);
 	min-height: 200px;
 	overflow-y: auto;
 	scrollbar-width: none;
@@ -161,6 +161,7 @@ const ChannelItem = styled.li``
 const ItemTop = styled.div`
 	display: flex;
 	align-items: center;
+	flex-wrap: wrap;
 	gap: 16px;
 	padding: 22px 17px 15px;
 	border-radius: 16px 16px 0 0;
@@ -199,6 +200,7 @@ const ItemIcon = styled.img`
 `
 const ItemBottom = styled.div`
 	display: flex;
+	flex-wrap: wrap;
 	gap: 16px;
 	padding: 16px;
 	border-radius: 0 0 16px 16px;

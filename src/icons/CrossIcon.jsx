@@ -1,4 +1,4 @@
-const CrossIcon = ({ width = 8, height = 8, color = "#D6DCEC" }) => {
+const CrossIcon = ({ width, height, color }) => {
     return (
         <svg
             width={width}

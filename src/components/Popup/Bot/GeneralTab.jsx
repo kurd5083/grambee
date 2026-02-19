@@ -71,7 +71,7 @@ const GeneralTab = () => {
                 onChange={(e) => setWebhook(e.target.value)}
             />
             <Buttons>
-                <Button variant="default" width="60%">Выпустить новый ключ</Button>
+                <Button variant="default" width="100%">Выпустить новый ключ</Button>
                 <Button variant="danger" width="40%">Удалить</Button>
             </Buttons>
         </>

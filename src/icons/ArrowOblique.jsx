@@ -1,4 +1,4 @@
-const ArrowOblique = ({ width = 18, height = 18, colorFirst = "#FFD26D", colorSecond = "#FFB81A" }) => {
+const ArrowOblique = ({ width, height, colorFirst, colorSecond }) => {
     return (
         <svg
             width={width}

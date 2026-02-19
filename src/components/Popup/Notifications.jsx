@@ -10,13 +10,13 @@ import Button from "@/shared/Button";
 import { usePopupStore } from "@/store/popupStore";
 
 const Notifications = () => {
-  const { popup, openPopup } = usePopupStore()
+  const { openPopup } = usePopupStore()
 
   return (
     <NotificationsContainer>
       <NotificationsHeader>
         <h3>
-          <BellIcon width={21} height={24}/>
+          <BellIcon width={21} height={24} colorFirst="#FFD26D" colorSecond="#FFB81A"/>
           Уведомления
         </h3>
         <Button variant="primaryNoBorder" width="170px"><mark>Удалить все</mark></Button>
@@ -29,7 +29,7 @@ const Notifications = () => {
             <p>13.11.2025</p>
           </ItemContent>
           <IconBorder>
-            <DelIcon color="#6A7080"/>
+            <DelIcon width="12" height="16" color="#6A7080"/>
           </IconBorder>
         </NotificationsItem>
         <NotificationsItem>
@@ -39,7 +39,7 @@ const Notifications = () => {
             <p>06.11.2025</p>
           </ItemContent>
           <IconBorder>
-            <DelIcon color="#6A7080"/>
+            <DelIcon width="12" height="16" color="#6A7080"/>
           </IconBorder>
         </NotificationsItem>
         <NotificationsItem>
@@ -49,7 +49,7 @@ const Notifications = () => {
             <p>03.11.2025</p>
           </ItemContent>
           <IconBorder>
-            <DelIcon color="#6A7080"/>
+            <DelIcon width="12" height="16" color="#6A7080"/>
           </IconBorder>
         </NotificationsItem>
       </NotificationsList>
@@ -69,12 +69,19 @@ const NotificationsHeader = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  
+  gap: 10px;
 
   h3 {
     display: flex;
     align-items: center;
     gap: 16px;
+  }
+
+  @media(max-width: 400px) {
+    button {
+      font-size: 12px;
+      height: 40px;
+    }
   }
 `
 const NotificationsList = styled.ul`
@@ -109,6 +116,10 @@ const ItemContent = styled.div`
   flex-grow: 1;
   h4 {
     cursor: pointer;
+    
+    @media(max-width: 400px) {
+      font-size: 14px;
+    }
   }
   p {
     font-size: 10px;

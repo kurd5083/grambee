@@ -1,4 +1,4 @@
-const CopyIcon = ({ width = "16", height = "18", colorFirst, colorSecond, uniqueId = "1" }) => {
+const CopyIcon = ({ width, height, colorFirst, colorSecond, uniqueId }) => {
     return (
         <svg
             width={width}

@@ -12,7 +12,7 @@ const Home = () => {
   const tabs = [
     {
       label: "Трафик",
-      onClick: () => openPopup('resource', 'Ресурс #T356')
+      onClick: () => openPopup('bot', 'Бот #T356')
     },
     {
       label: "Рассылки",
