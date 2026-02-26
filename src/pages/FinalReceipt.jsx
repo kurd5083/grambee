@@ -10,8 +10,9 @@ import StarIcon from "@/icons/StarIcon";
 import HeadphonesIcon from "@/icons/HeadphonesIcon";
 import UserIcon from "@/icons/UserIcon";
 
+import { GapBlock } from "@/shared/GapBlock"; 
 import { ContainerPadding } from "@/shared/ContainerPadding";
-import { GapBlock } from "@/shared/GapBlock";
+
 
 import Radio from "@/shared/Radio";
 import Button from "@/shared/Button";
