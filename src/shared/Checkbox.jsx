@@ -29,7 +29,7 @@ const StyledCheckbox = styled.div`
   height: 40px;
   flex-shrink: 0;
   border: 1px solid #272A33;
-  background-color: ${({$checked}) => $checked ? "#272A33" : "transporent"};
+  background-color: ${({$checked}) => $checked ? "#272A33" : "transparent"};
   border-radius: 12px;
   transition: all 0.2s;
   display: flex;

@@ -1,4 +1,4 @@
-const EyeCloseIcon = ({ width="18", height="18", color="#6A7080" }) => {
+const EyeCloseIcon = ({ width, height, color }) => {
     return (
         <svg
             width={width}

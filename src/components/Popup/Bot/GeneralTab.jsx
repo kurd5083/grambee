@@ -1,13 +1,14 @@
 import { useState } from "react";
 import styled from "styled-components";
 
-import question from "@/assets/question.svg";
+import question from "@/assets/icons/question.svg";
 import CopyIcon from '@/icons/CopyIcon';
 
 import InfoRow from "@/shared/InfoRow";
 import Button from "@/shared/Button";
 import InputField from "@/shared/InputField";
 import ToggleSwitch from "@/shared/ToggleSwitch";
+import { GapBlock } from "@/shared/GapBLock";
 
 const GeneralTab = () => {
     const [token, setToken] = useState("");
@@ -46,7 +47,7 @@ const GeneralTab = () => {
                     </IconWrapper>
                 }/>
             </InfoContainer>
-
+                <GapBlock gap="24px">
             <ToggleContainer>
                 <ToggleSwitch checked={checked} onChange={setChecked}><p>Статус</p></ToggleSwitch>
                 <ToggleSwitch checked={checked} onChange={setChecked}>
@@ -70,6 +71,7 @@ const GeneralTab = () => {
                 value={webhook}
                 onChange={(e) => setWebhook(e.target.value)}
             />
+            </GapBlock>
             <Buttons>
                 <Button variant="default" width="100%">Выпустить новый ключ</Button>
                 <Button variant="danger" width="40%">Удалить</Button>

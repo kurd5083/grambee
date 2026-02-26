@@ -26,9 +26,8 @@ const TabMenu = ({ tabs }) => {
 const NavigationMenu = styled.div`
   display: flex;
   flex-wrap: wrap;
-
   gap: 8px;
-  padding: 24px 24px 30px;
+  padding: 24px 24px 0;
 
   button:nth-child(2) {
     padding: 0 16px;

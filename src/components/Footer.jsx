@@ -5,14 +5,14 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import ShopIcon from '@/icons/ShopIcon';
 import DollarIcon from '@/icons/DollarIcon';
 import WalletIcon from '@/icons/WalletIcon';
-import UserIcon from '@/icons/UserIcon';
+import ProfileIcon from '@/icons/ProfileIcon';
 
 import useMaxResize from '@/hooks/useMaxResize';
 
 const Footer = () => {
 	const [ locationState, setLocationState ] = useState();
 	const { widthScreen } = useMaxResize();
-	console.log(widthScreen)
+
 	const navigate = useNavigate();
 	const location = useLocation();
 
@@ -20,12 +20,14 @@ const Footer = () => {
 		setLocationState(location.pathname);
 	}, [location.pathname]);
 
-	const isActiveWallet = ['/wallet', '/replenish', '/bring', '/payment'].includes(locationState);
+	const isActiveWallet = ['/wallet', '/replenish', '/bring', '/payment', '/final-receipt'].includes(locationState);
 
 	return (
 		<FooterContainer $width={widthScreen}>
 			<MenuItem $active={locationState == '/'} onClick={() => navigate('/')}>
 				<ShopIcon 
+					width={26}
+					height={28}
 					colorFirst={locationState == '/' ? '#FFD26D' : '#6A7080'} 
 					colorSecond={locationState == '/' ? '#FFB81A' : '#6A7080'}
 				/>
@@ -33,6 +35,8 @@ const Footer = () => {
 			</MenuItem>
 			<MenuItem $active={locationState == '/sell'} onClick={() => navigate('/sell')}>
 				<DollarIcon 
+					width={27}
+					height={27}
 					colorFirst={locationState == '/sell' ? '#FFD26D' : '#6A7080'} 
 					colorSecond={locationState == '/sell' ? '#FFB81A' : '#6A7080'}
 				/>
@@ -43,13 +47,17 @@ const Footer = () => {
 				onClick={() => navigate('/wallet')}
 			>
 				<WalletIcon 
+					width={30}
+					height={29}
 					colorFirst={isActiveWallet ? '#FFD26D' : '#6A7080'} 
 					colorSecond={isActiveWallet ? '#FFB81A' : '#6A7080'}
 				/>
 				Кошелёк
 			</MenuItem>
 			<MenuItem $active={locationState == '/account'} onClick={() => navigate('/account')}>
-				<UserIcon 
+				<ProfileIcon 
+					width={29}
+					height={29}
 					colorFirst={locationState == '/account' ? '#FFD26D' : '#6A7080'} 
 					colorSecond={locationState == '/account' ? '#FFB81A' : '#6A7080'}
 				/>

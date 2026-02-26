@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
-import test1 from "@/assets/test1.svg";
-import checkmarks from "@/assets/checkmarks.svg";
+import test1 from "@/assets/icons/test1.svg";
+import checkmarks from "@/assets/icons/checkmarks.svg";
 import BellIcon from '@/icons/BellIcon';
 import DelIcon from '@/icons/DelIcon';
 

@@ -1,4 +1,4 @@
-const PlusIcon = ({ width="10", height="10", colorFirst, colorSecond }) => {
+const PlusIcon = ({ width, height, colorFirst, colorSecond }) => {
     return (
         <svg
             width={width}

@@ -1,4 +1,4 @@
-const SpeakerIcon = ({ color = "#D6DCEC", width = 16, height = 15 }) => {
+const SpeakerIcon = ({ width, height, color }) => {
     return (
         <svg
             width={width}

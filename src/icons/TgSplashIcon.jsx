@@ -1,4 +1,4 @@
-const TgSplashIcon = ({ width = "16", height = "13", colorFirst = "#252934", colorSecond = "#1F222B", uniqueId = "1" }) => {
+const TgSplashIcon = ({ width, height, colorFirst, colorSecond, uniqueId }) => {
     return (
         <svg
             width={width}

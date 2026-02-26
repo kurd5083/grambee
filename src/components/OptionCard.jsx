@@ -1,20 +1,17 @@
 import styled from "styled-components";
 import ArrowIcon from "@/icons/ArrowIcon";
-import { useNavigate } from "react-router-dom";
 
 const OptionCard = ({
 	icon,
 	title,
 	text,
 	bgIcon,
-	to = "/payment",
 	margin = 48,
 	direction,
 	bottom,
-	right
+	right,
+	onClick
 }) => {
-	const navigate = useNavigate();
-
 	return (
 		<Card>
 			<CardHeader $direction={direction}>
@@ -25,7 +22,7 @@ const OptionCard = ({
 						<Description>{text}</Description>
 					</CardContent>
 				)}
-				<ActionButton onClick={() => navigate(to)}>
+				<ActionButton onClick={onClick}>
 					<ArrowIcon color="#D6DCEC" width={6} height={10} />
 				</ActionButton>
 				

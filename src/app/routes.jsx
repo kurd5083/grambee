@@ -10,6 +10,7 @@ import Account from '@/pages/Account';
 import Replenish from '@/pages/Replenish';
 import Bring from '@/pages/Bring';
 import Payment from '@/pages/Payment';
+import FinalReceipt from '@/pages/FinalReceipt';
 
 const router = createBrowserRouter([
     {
@@ -59,6 +60,13 @@ const router = createBrowserRouter([
         element: <WithoutHatLayout />,
         children: [
             { index: true, element: <Payment /> } 
+        ],
+    },
+    {
+        path: '/final-receipt',
+        element: <WithoutHatLayout />,
+        children: [
+            { index: true, element: <FinalReceipt /> } 
         ],
     },
 ])

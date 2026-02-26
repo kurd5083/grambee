@@ -1,4 +1,4 @@
-const LoadingIcon = ({ width = "13", height = "13", color = "#FFB81A" }) => {
+const LoadingIcon = ({ width, height, color }) => {
     return (
         <svg
             width={width}

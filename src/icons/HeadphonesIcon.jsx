@@ -1,4 +1,4 @@
-const HeadphonesIcon = ({ width = "16", height = "16", colorFirst = "#252934", colorSecond = "#1F222B", uniqueId }) => {
+const HeadphonesIcon = ({ width, height, colorFirst, colorSecond, uniqueId }) => {
     return (
         <svg
             width={width}

@@ -1,4 +1,4 @@
-const PaymentIcon = ({ width = "24", height = "24", colorFirst, colorSecond }) => {
+const PaymentIcon = ({ width, height, colorFirst, colorSecond }) => {
     return (
         <svg
             width={width}

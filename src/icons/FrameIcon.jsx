@@ -1,4 +1,4 @@
-const FrameIcon = ({ width = "16", height = "16", colorFirst = "#252934", colorSecond = "#1F222B" }) => {
+const FrameIcon = ({ width, height, colorFirst, colorSecond }) => {
     return (
         <svg 
             width={width}

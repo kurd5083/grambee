@@ -1,4 +1,4 @@
-const EyeIcon = ({ color="#FFB81A", width = 16, height = 11 }) => {
+const EyeIcon = ({ width, height, color }) => {
   return (
     <svg
       width={width}

@@ -1,24 +1,24 @@
 import { useState } from "react"
 import styled from 'styled-components';
 
-import edit from "@/assets/edit.svg";
-import bot from "@/assets/bot.svg";
-import speaker from "@/assets/speaker.svg";
-import question from "@/assets/question.svg";
-import cheque from "@/assets/cheque.svg";
-import channel_ava from '@/assets/channel-ava.png';
+import bot from "@/assets/icons/bot.svg";
+import question from "@/assets/icons/question.svg";
+import cheque from "@/assets/icons/cheque.svg";
+import SpeakerIcon from "@/icons/SpeakerIcon";
+import EditIcon from "@/icons/EditIcon";
 
 import InputField from "@/shared/InputField";
 import Button from "@/shared/Button";
 import Note from "@/shared/Note";
 import Checkbox from "@/shared/Checkbox";
 import { ContainerPadding } from "@/shared/ContainerPadding";
+import { GapBlock } from "@/shared/GapBlock";
 
 import СhoicePeriod from "@/components/СhoicePeriod";
 import Chart from '@/components/Chart';
 import MainIndicators from "@/components/MainIndicators";
 import StatisticList from "@/components/StatisticList";
-
+import ChannelBlock from "@/components/ChannelBlock";
 import TabsNav from "@/components/TabsNav";
 
 const tabs = [
@@ -32,9 +32,8 @@ const Resource = () => {
   const [link, setLink] = useState("");
   const [checked, setChecked] = useState("");
 
-
   return (
-    <ResourceContainer>
+    <>
       <TabsNav
         tabs={tabs}
         activeTab={activeTab}
@@ -49,19 +48,12 @@ const Resource = () => {
             <Label>Параметры ресурса</Label>
             <Status><mark>Итоговый чек</mark> <img src={cheque} alt="cheque icon" /></Status>
           </TextBlock>
-          <ResourceParameters>
-            <ParametersAva src={channel_ava} alt="ava icon" />
-            <ParametersText>
-              <p>Antropia Digital</p>
-              <span>t.me/antropiadigital</span>
-            </ParametersText>
-            <ParametersButton>Выключить</ParametersButton>
-          </ResourceParameters>
+          <ChannelBlock type="button"/>
           <StatisticList />
           <ButtonEditContainer>
             <Button
               variant="outline"
-              iconLeft={<img src={edit} alt="edit" />}
+              iconLeft={<EditIcon width={16} height={16} color="#6A7080"/>}
             >
               Изменить лимиты
             </Button>
@@ -70,6 +62,7 @@ const Resource = () => {
           <TextBlock>
             <Label>Способ замены ссылки</Label>
           </TextBlock>
+          <GapBlock gap="24px">
           <CheckboxContainer>
             <Checkbox
               checked={checked == "grambee"}
@@ -91,9 +84,11 @@ const Resource = () => {
             placeholder="Ссылка на канал"
             value={link}
             onChange={(e) => setLink(e.target.value)}
-            icon={<img src={speaker} alt="speaker" />}
+            icon={<SpeakerIcon width={18} height={16} color="#FFB000" />}
             inputAction="Сохранить"
           />
+          </GapBlock>
+          <GapBlock gap="24px">
           <Note><p>По истечению <mark>длительности рекламной кампании</mark> произойдет расчётный час, и вас уведомят о результатах</p></Note>
           <InputField
             id="token"
@@ -104,10 +99,10 @@ const Resource = () => {
             onChange={(e) => setToken(e.target.value)}
             icon={<img src={bot} alt="bot" />}
           />
+          </GapBlock>
         </ContainerPadding>
       ) : (
         <>
-
           <ContainerPadding>
             <СhoicePeriod />
           </ContainerPadding>
@@ -123,14 +118,10 @@ const Resource = () => {
       <ButtonSaveContainer>
         <Button variant="primary"><mark>Сохранить</mark></Button>
       </ButtonSaveContainer>
-    </ResourceContainer>
+    </>
   )
 }
-const ResourceContainer = styled.div`
-  max-height: 600px;
-  overflow-y: auto;
-  scrollbar-width: none;
-`
+
 const ButtonEditContainer = styled.div`
   margin-top: 16px;
 `
@@ -154,44 +145,7 @@ const Status = styled.p`
   font-size: 12px;
   color: #6a7080;
 `;
-const ResourceParameters = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 12px 16px;
-  border-radius: 14px;
-  background: radial-gradient(circle at center, #579AFF, #236EDE);
-  margin-bottom: 16px;
-`;
 
-const ParametersAva = styled.img`
-  width: 37px;
-  height: 37px;
-  object-fit: cover;
-  border-radius: 10px;
-`;
-const ParametersText = styled.div`
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  p {
-    font-size: 14px;
-    line-height: 14px;
-  }
-  span {
-    font-size: 12px;
-    line-height: 12px;
-    color: #D6DCEC99;
-  }
-`;
-const ParametersButton = styled.button`
-  color: #3C83EE;
-  font-size: 14px;
-  background: #FFFFFF;
-  padding: 13px 16px;
-  border-radius: 10px;
-`;
 const CheckboxContainer = styled.div`
   display: flex;
   flex-direction: column;

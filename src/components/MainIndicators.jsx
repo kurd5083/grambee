@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import rating from "@/assets/rating.svg";
+import rating from "@/assets/icons/rating.svg";
 import PlusIcon from "@/icons/PlusIcon";
 import MinusIcon from "@/icons/MinusIcon";
 
@@ -16,7 +16,7 @@ const MainIndicators = () => {
           <Value>642</Value>
           <IndicatorInfo>
             <IconWrapper>
-              <PlusIcon  width={16} height={16} colorFirst = "#FFD26D" colorSecond = "#FFB81A"/>
+              <PlusIcon width={16} height={16} colorFirst = "#FFD26D" colorSecond = "#FFB81A"/>
             </IconWrapper>
             <Label><mark>Подписки</mark><br/>за период</Label>
           </IndicatorInfo>

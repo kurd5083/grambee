@@ -3,7 +3,7 @@ import styled from "styled-components";
 import PaymentIcon from '@/icons/PaymentIcon';
 import CopyIcon from '@/icons/CopyIcon';
 
-import qr from '@/assets/qr-cod.svg';
+import qr from '@/assets/icons/qr-cod.svg';
 
 import Button from "@/shared/Button";
 
@@ -13,7 +13,7 @@ const Payment = () => {
     return (
         <PaymentContainer>
             <TitleHead icon={<PaymentIcon width={24} height={24} colorFirst="#FFD26D " colorSecond="#FFB81A" />} title="Оплата" />
-            <PaymentConent>
+            <PaymentContent>
                 <QrContainer>
                     <img src={qr} alt='qr' />
                 </QrContainer>
@@ -46,7 +46,7 @@ const Payment = () => {
                         Оплатить
                     </Button>
                 </PayButton>
-            </PaymentConent>
+            </PaymentContent>
         </PaymentContainer>
     )
 }
@@ -77,7 +77,7 @@ const PaymentContainer = styled.div`
     z-index: -1;
   }
 `;
-const PaymentConent = styled.div`
+const PaymentContent = styled.div`
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -112,12 +112,9 @@ const PaymentCount = styled.p`
     color: #D6DCEC;
 `
 const PaymentDesc = styled.p`
-    text-align: center;
     text-transform: uppercase;
     font-size: 10px;
     color: #6A7080CC;
-    max-width: 210px;
-    line-height: 14px;
 `
 const PaymentInputs = styled.div`
     position: relative;

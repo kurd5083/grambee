@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
-import pdf from "@/assets/pdf.svg";
-import excel from "@/assets/excel.svg";
+import pdf from "@/assets/icons/pdf.svg";
+import excel from "@/assets/icons/excel.svg";
 import ArrowIcon from "@/icons/ArrowIcon";
 
 const UploadStatistics = () => {

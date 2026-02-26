@@ -1,15 +1,18 @@
 import { useState } from 'react';
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 
 import UsdtIcon from '@/icons/UsdtIcon';
 import PlusIcon from '@/icons/PlusIcon';
-import cryptoBot from '@/assets/cryptoBot.svg';
+import cryptoBot from '@/assets/icons/crypto-bot.svg';
 
 import OptionCard from "@/components/OptionCard";
 import TitleHead from "@/components/TitleHead";
 
+  
 const Replenish = () => {
   const [value, setValue] = useState("0");
+  const navigate = useNavigate();
 
   const changeInput = (text) => {
     const digits = text.replace(/\D/g, "").slice(0, 7)
@@ -49,6 +52,7 @@ const Replenish = () => {
                 <UsdtIcon width={98} height={98} colorFirst="#252934" colorSecond="#1F222B" uniqueId="bg1"/>
               }
               direction="vertical"
+              onClick={() => navigate("/payment")}
             />
             <OptionCard
               title="Tether USDT"
@@ -58,6 +62,7 @@ const Replenish = () => {
                 <UsdtIcon width={98} height={98} colorFirst="#252934" colorSecond="#1F222B" uniqueId="bg"/>
               }
               direction="vertical"
+              onClick={() => navigate("/payment")}
             />
           </WayContainer>
           <OptionCard
@@ -65,6 +70,7 @@ const Replenish = () => {
             text="Tether USDT TRC20"
             icon={<img src={cryptoBot} alt="cryptoBot icon"/>}
             direction="horizontal"
+            onClick={() => navigate("/payment")}
           />
         </BalanceWay>
       </Balance>
@@ -158,7 +164,7 @@ const BalanceMenu = styled.div`
 const MenuItem = styled.button`
     height: 48px;
     padding: 0 24px;
-    background-color: ${({ $active }) => ($active ? '#272A33' : 'transporent')};
+    background-color: ${({ $active }) => ($active ? '#272A33' : 'transparent')};
     font-size: 14px;
     font-weight: ${({ $active }) => $active ? 800 : 600};
     border-radius: 16px;

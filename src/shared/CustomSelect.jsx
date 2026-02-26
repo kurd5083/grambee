@@ -31,7 +31,7 @@ const CustomSelect = ({ options = [], value, onChange, placeholder = "Выбер
   return (
     <SelectWrapper ref={selectRef} $width={width}>
       <SelectHeader onClick={toggle}>
-        {icon && (<SpeakerIcon color="#D6DCEC"/>)}
+        {icon && (<SpeakerIcon width={16} height={15} color="#D6DCEC"/>)}
         <SelectText>{selectedOption?.label || placeholder}</SelectText>
         <HeaderArrow className={open ? "open" : ""}>
           <ArrowIcon width = "8" height = "14" color="#FFB81A" />

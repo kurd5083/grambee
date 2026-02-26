@@ -13,9 +13,9 @@ const Header = () => {
   return (
     <HeaderContainer>
       <HeaderAva src={head_ava} alt="ava user" onClick={() => navigate('/account')}/>
-      <InfoUser onClick={() => navigate('/account')}>
-        <UserName>Arseniy Popkov</UserName>
-        <UserLevel>уровень: <mark>новичек</mark></UserLevel>
+      <InfoUser>
+        <UserName onClick={() => navigate('/account')}>Arseniy Popkov</UserName>
+        <UserLevel onClick={() => openPopup('level-system', 'Система уровней')}>уровень: <mark>новичек</mark></UserLevel>
       </InfoUser>
       <HeaderBalance>
         <p>1,876 <mark>₽</mark></p>
@@ -50,16 +50,20 @@ const HeaderAva = styled.img`
 `;
 const InfoUser = styled.div`
   flex-grow: 1;
-  cursor: pointer;
 `;
 const UserName = styled.p`
   font-weight: 700;
+  cursor: pointer;
 `;
 const UserLevel = styled.span`
   text-transform: uppercase;
   color: #6A7080;
   font-weight: 700;
   font-size: 10px;
+  
+  mark {
+    cursor: pointer;
+  }
 `;
 const HeaderBalance = styled.div`
   display: flex;

@@ -1,4 +1,4 @@
-const TgIcon = ({ width = "16", height = "16", colorFirst = "#252934", colorSecond = "#1F222B", uniqueId = "1" }) => {
+const TgIcon = ({ width, height, colorFirst, colorSecond, uniqueId }) => {
     return (
         <svg
             width={width}

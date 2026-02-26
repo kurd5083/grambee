@@ -1,4 +1,4 @@
-const ImgIcon = ({ width, height, color}) => {
+const ImgIcon = ({ width, height, color }) => {
     return (
         <svg
             width={width}

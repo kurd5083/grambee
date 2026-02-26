@@ -1,12 +1,17 @@
 import styled from "styled-components";
 
-import letter from '@/assets/letter.svg';
+import letter from '@/assets/icons/letter.svg';
 import FileIcon from "@/icons/FileIcon";
 import TgIcon from "@/icons/TgIcon";
 
+import { ContainerPadding } from '@/shared/ContainerPadding';
+
 import OptionCard from "@/components/OptionCard";
 import BannerSlider from "@/components/BannerSlider";
-import MotivatedTraffic from "@/components/MotivatedTraffic";
+import TrafficHead from "@/components/MotivatedTraffic/TrafficHead";
+import TrafficFilter from "@/components/MotivatedTraffic/TrafficFilter";
+import Traffic from "@/components/MotivatedTraffic/Traffic";
+
 import TabMenu from "@/components/TabMenu";
 
 import { usePopupStore } from "@/store/popupStore";
@@ -17,7 +22,7 @@ const Sell = () => {
   const tabs = [
     {
       label: "Трафик",
-      onClick: () => openPopup('step', 'Шаг 1 / 2')
+      onClick: () => openPopup('additional-parameters', 'Указать доп. параметры', {text: 'Укажите нужные вам параметры аудитории'})
     },
     {
       label: "Рассылки",
@@ -41,6 +46,7 @@ const Sell = () => {
             <FileIcon width={95} height={117} colorFirst="#252934" colorSecond="#1F222B" uniqueId="bg" />
           }
           direction="vertical"
+          onClick={() => window.open("https://docs.grambee.net/", "_blank")}
         />
         <OptionCard
           title="Поделиться ресурсами"
@@ -50,10 +56,15 @@ const Sell = () => {
             <TgIcon width={122} height={122} colorFirst="#252934" colorSecond="#1F222B" uniqueId="bg" />
           }
           direction="vertical"
+          onClick={()=> openPopup('share-resources', 'Поделиться ресурсами', { text: 'Отправляйте список ваших ресурсов клиентам\n для привлечения дополнительного заработка\n\n Выберите тип трафика и поделитесь ссылкой' })}
         />
       </SellContainer>
-      <TabMenu tabs={tabs} />
-      <MotivatedTraffic />
+      {/* <TabMenu tabs={tabs} /> */}
+      <ContainerPadding>
+        <TrafficHead type="sell"/>
+        <TrafficFilter type="sell"/>
+        <Traffic type="sell"/>
+      </ContainerPadding>
     </div>
   )
 }

@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import exclamation from "@/assets/exclamation.svg";
+import exclamation from "@/assets/icons/exclamation.svg";
 
 const Note = ({children}) => {
     return (

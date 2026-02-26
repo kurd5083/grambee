@@ -1,8 +1,8 @@
+import { useState } from "react";
 import styled from "styled-components";
 
-import grambeeLogo from "@/assets/grambee-logo.svg";
-import bgGrambee from "@/assets/bg-grambee.png";
-import question from "@/assets/question.svg";
+import grambeeLogo from "@/assets/icons/grambee-logo.svg";
+import question from "@/assets/icons/question.svg";
 import PaperIcon from "@/icons/PaperIcon";
 import ImgIcon from "@/icons/ImgIcon";
 import MessageIcon from "@/icons/MessageIcon";
@@ -14,6 +14,9 @@ import InfoRow from "@/shared/InfoRow";
 import Button from "@/shared/Button";
 
 const ContentTab = () => {
+    const [value, setValue] = useState('')
+    const [isFocused, setIsFocused] = useState(false);
+
     return (
         <>
             <ButtonContainer>
@@ -43,24 +46,31 @@ const ContentTab = () => {
             </InfoContainer>
             <ContentTitle>Сообщение при подписке</ContentTitle>
             <ContentActions>
-                <ActionsIcon><PaperIcon width="16" height="18" color="currentColor" /></ActionsIcon>
-                <ActionsIcon><ImgIcon width="18" height="18" color="currentColor" /></ActionsIcon>
-                <ActionsIcon><MessageIcon width="18" height="18" color="currentColor" /></ActionsIcon>
-                <ActionsIcon><MapIcon width="16" height="18" color="currentColor" /></ActionsIcon>
-                <ActionsIcon><TextIcon width="18" height="20" color="currentColor" /></ActionsIcon>
-                <ActionsIcon><SettingIcon width="21" height="22" color="currentColor" /></ActionsIcon>
+                <ActionsIcon><PaperIcon width={16} height={18} color="currentColor" /></ActionsIcon>
+                <ActionsIcon><ImgIcon width={18} height={18} color="currentColor" /></ActionsIcon>
+                <ActionsIcon><MessageIcon width={18} height={18} color="currentColor" /></ActionsIcon>
+                <ActionsIcon><MapIcon width={16} height={18} color="currentColor" /></ActionsIcon>
+                <ActionsIcon><TextIcon width={18} height={20} color="currentColor" /></ActionsIcon>
+                <ActionsIcon><SettingIcon width={21} height={22} color="currentColor" /></ActionsIcon>
             </ContentActions>
-            <ChatBot>
-                <BgChat src={bgGrambee} alt="bgGrambee icon" />
-                 <Message>
-                                    <MessageLogo src={grambeeLogo} alt="logo" />
-                                    <MessageBlock>
-                                        <MessageFrom>GRAMBEE.BOT</MessageFrom>
-                                        <MessageText>Тесттестетстефшлцьвфшлцьвфц<br/>вмыаяпявап</MessageText>
-                                  
-                                    </MessageBlock>
-                                </Message>
-            </ChatBot>
+            <ChatBotContainer>
+                <ChatBot>
+                    <Message $isFocused={isFocused}>
+                        <MessageLogo src={grambeeLogo} alt="logo" />
+                        <MessageBlock>
+                            <MessageFrom>GRAMBEE.BOT</MessageFrom>
+                            <MessageText
+                                $isFocused={isFocused}
+                                placeholder="Введите текст"
+                                value={value}
+                                onChange={(e) => setValue(e.target.value)}
+                                onFocus={() => setIsFocused(true)}
+                                onBlur={() => setIsFocused(false)}
+                            />
+                        </MessageBlock>
+                    </Message>
+                </ChatBot>
+            </ChatBotContainer>
         </>
     )
 }
@@ -94,25 +104,42 @@ const ActionsIcon = styled.div`
         cursor: pointer;
     }
 `
-const ChatBot = styled.div`
+const ChatBotContainer = styled.div`
     position: relative;
     margin-top: 32px;
     border-radius: 24px;
     border: 1px solid #272A33;
     overflow: hidden;
+   
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        display: block;
+        background-image: url('/src/assets/bg-grambee.png');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        pointer-events: none;
+        z-index: 1;
+    }
 `
-const BgChat = styled.img`
-    width: 100%;
+const ChatBot = styled.div`
+    box-sizing: border-box;
+    position: relative;
+    overflow-y: auto;
+	scrollbar-width: none;
     height: 195px;
-    object-fit: cover;
-    pointer-events: none;
 `
 const Message = styled.div`
+    position: relative;
     display: flex;
     gap: 12px;
-    position: absolute;
+    position: ${({ $isFocused }) => $isFocused ? 'static' : 'absolute'};
     top: 24px;
     left: 24px;
+    height: 100%;
+    z-index: 2;
 `
 const MessageLogo = styled.img`
     width: 32px;
@@ -121,20 +148,49 @@ const MessageLogo = styled.img`
 const MessageBlock = styled.div`
    display: flex;
    flex-direction: column;
+   height: 100%;
 `
 const MessageFrom = styled.p`
     margin-top: 8px;
     font-size: 14px;
     font-weight: 700;
 `
-const MessageText = styled.p`
+const MessageText = styled.textarea`
+    box-sizing: border-box;
     margin-top: 8px;
     padding: 10px 14px;
     border-radius: 4px 24px 24px 24px;
+    border: none;
     background-color: #1F222B;
-    max-width: 264px;
-    width: 100%;
+    width: 264px;
     font-size: 12px;
+    color: #FFFFFF;
+    resize: none;
+    height: 100%;
+    min-height: 84px;
+    scrollbar-width: none;
+    z-index: 4;
+    
+    ${({ $isFocused }) => $isFocused && `
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+    `}
+
+    &::placeholder {
+        color: #6A7080CC;
+        transition: color 0.2s ease-in-out;
+    }
+
+    &:focus {
+        outline: none;
+
+        &::placeholder {
+            color: #6A7080;
+        }
+    }
 `
 
 export default ContentTab

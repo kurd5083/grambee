@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
-import transactions from '@/assets/transactions.svg';
+import transactions from '@/assets/icons/transactions.svg';
 import head_ava from '@/assets/head-ava.png';
 import grid from '@/assets/grid.png';
 import ArrowOblique from "@/icons/ArrowOblique";
@@ -15,8 +15,8 @@ import CustomSelect from "@/shared/CustomSelect";
 import TitleHead from "@/components/TitleHead";
 import Chart from '@/components/Chart';
 import TabMenu from "@/components/TabMenu";
-
 import { usePopupStore } from "@/store/popupStore";
+
 
 const Wallet = () => {
 	const [eyeState, setEyeState] = useState(false)
@@ -64,8 +64,10 @@ const Wallet = () => {
 					</BalanceAction>
 					<Balance>
 						<BalanceSubtext><mark>ОСНОВНОЙ БАЛАНС:</mark></BalanceSubtext>
-						<BalanceCount>21,876 <mark>₽</mark></BalanceCount>
-						<BalanceHold>На удержании: 15,500 ₽</BalanceHold>
+						<BalanceCount >
+							{!eyeState ? '.....' : <>21,876 <mark>₽</mark></>}
+						</BalanceCount>
+						<BalanceHold>На удержании: {!eyeState ? '.....' : '15,500 ₽'}</BalanceHold>
 					</Balance>
 					<BalanceAction>
 						<ActionButton onClick={() => navigate('/bring')} $rotate={true}>
@@ -88,7 +90,7 @@ const Wallet = () => {
 				/>
 			</SelectContainer>
 			<Chart/>
-			<TabMenu tabs={tabs} />
+			{/* <TabMenu tabs={tabs} /> */}
 		</>
 	)
 }

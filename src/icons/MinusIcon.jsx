@@ -1,4 +1,4 @@
-const MinusIcon = ({ width = "13", height = "13", colorFirst, colorSecond }) => {
+const MinusIcon = ({ width, height, colorFirst, colorSecond }) => {
     return (
         <svg 
             width={width}

@@ -36,7 +36,7 @@ const TabItem = styled.li`
   width: ${({ $width }) => $width};
   padding-bottom: 16px;
   text-align: ${({ $textAlign }) => $textAlign};
-  border-bottom: 1px solid ${({ $active }) => ($active ? "#FFB81A" : "#6A7080")};
+  border-bottom: 1px solid ${({ $active }) => ($active ? "#FFB81A" : "transporent")};
   color: ${({ $active }) => ($active ? "#D6DCEC" : "#6A7080")};
   font-weight: 700;
   cursor: pointer;

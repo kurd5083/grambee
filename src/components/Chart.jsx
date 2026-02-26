@@ -1,13 +1,13 @@
 import styled from "styled-components";
 
 import { useState, useRef, useMemo } from "react";
+import chartBack from "@/assets/chart-back.png";
 
 const pointsMock = [
   120, 450, 780, 320, 610, 900, 430, 670,
   150, 980, 540, 300, 760, 810, 220, 640,
   890, 370, 500, 720, 610, 430, 880, 970
 ];
-
 
 const dataXMock = ['1 час', '2 час', '3 час', '4 час', '5 час', '6 час', '7 час', '8 час', '9 час', '10 час', '11 час', '12 час', '13 час', '14 час', '15 час', '16 час', '17 час', '18 час', '19 час', '20 час', '21 час', '22 час', '23 час', '24 час']
 
@@ -66,7 +66,6 @@ const Chart = () => {
         return d;
     };
 
-
     const handleMouseMoveChart = (e) => {
         if (!chartPoints.length) return;
         const rect = e.currentTarget.getBoundingClientRect();
@@ -122,6 +121,7 @@ const Chart = () => {
             onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseUp}
         >
+            <ChartBG src={chartBack} alt="chartBack"/>
             <YAxis>
                 {dataY.map((value, index) => {
                     const y = chartTopPadding + ((maxY - value) / (maxY - minY)) * chartHeight;
@@ -150,10 +150,17 @@ const Chart = () => {
                             <stop offset="100%" stop-color="#21232800"/>
                         </linearGradient>
                     </defs>
-                    
+                    <defs>
+                        <linearGradient id="line">
+                            <stop offset="0%" stop-color="#181A20"/>
+                            <stop offset="5%" stop-color="#FFD26D"/>
+                            <stop offset="95%" stop-color="#FFB81A"/>
+                            <stop offset="100%" stop-color="#21232800"/>
+                        </linearGradient>
+                    </defs>
                     <path d={createBezierPath(chartPoints)} fill="none" stroke="url(#line)" strokeWidth={2} />
                     
-                    
+
                     {hoverChart && (() => {
                         const CIRCLE_RADIUS = 6;
                         const circleX = Math.max(CIRCLE_RADIUS, Math.min(hoverChart.x, width - CIRCLE_RADIUS));
@@ -215,14 +222,14 @@ const Chart = () => {
                                         rx={16}
                                         fill="#2A2F3E3D"
                                     />
-                                    <text x={tooltipX + 12} y={tooltipY + 22} fontSize={14} fill="#D6DCEC">
+                                    <text x={tooltipX + 12} y={tooltipY + 22} fontSize={14} fill="#D6DCEC" style={{ userSelect: 'none', pointerEvents: 'none' }}>
                                         {hoverChart.label}
                                     </text>
-                                    <text x={tooltipX + 12} y={tooltipY + 54} fontSize={24} fill="#D6DCEC">
+                                    <text x={tooltipX + 12} y={tooltipY + 54} fontSize={24} fill="#D6DCEC" style={{ userSelect: 'none', pointerEvents: 'none' }}>
                                         + {valueText}
                                         <tspan dx={4} fontSize={14} fill="#A3ABBC">₽</tspan>
                                     </text>
-                                    <text x={tooltipX + 12} y={tooltipY + 70} fontSize={10} fill="#6A7080CC">
+                                    <text x={tooltipX + 12} y={tooltipY + 70} fontSize={10} fill="#6A7080CC" style={{ userSelect: 'none', pointerEvents: 'none' }}>
                                         {hoverChart.date}
                                     </text>
                                 </g>
@@ -249,21 +256,26 @@ const Chart = () => {
         </ChartGrid>
     )
 }
-export const ChartGrid = styled.div`
+const ChartGrid = styled.div`
   position: relative;
   display: grid;
   grid-template-rows: 200px;
   margin-top: 36px;
-  padding: 0 24px;
+  padding-left: 24px;
 `;
-
-export const YAxis = styled.div`
+const ChartBG = styled.img`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  bottom: 30px;
+`;
+const YAxis = styled.div`
   position: relative;
   grid-column: 1;
   grid-row: 1;
 `;
 
-export const YLabel = styled.p`
+const YLabel = styled.p`
   position: absolute;
   left: 0;
   transform: translateY(-50%);
@@ -271,19 +283,20 @@ export const YLabel = styled.p`
   font-size: 10px;
 `;
 
-export const ScrollContainer = styled.div`
-  grid-column: 2;
-  grid-row: 1 / span 2;
-  overflow-x: auto;
-  cursor: grab;
-
-  scrollbar-width: none;
-  &::-webkit-scrollbar {
-    display: none;
-  }
+const ScrollContainer = styled.div`
+    position: relative;
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    overflow-x: auto;
+    cursor: grab;
+    scrollbar-width: none;
+    
+    &::-webkit-scrollbar {
+        display: none;
+    }
 `;
 
-export const Svg = styled.svg`
+const Svg = styled.svg`
   min-width: 600px;
   display: block;
 `;

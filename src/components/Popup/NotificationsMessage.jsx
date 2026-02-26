@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-import test1 from "@/assets/test1.svg";
+import test1 from "@/assets/icons/test1.svg";
 import HeadphonesIcon from "@/icons/HeadphonesIcon";
 import CrossIcon from '@/icons/CrossIcon';
 
@@ -26,7 +26,9 @@ const NotificationsMessage = () => {
           по источнику #T406. Информация применяется для
           финансового контроля, расчёта обязательств и оценки
           надёжности трафика.</ItemDesc>
-          <mark><HeadphonesIcon colorFirst="#FFD26D" colorSecond="#FFB81A" />Обратиться в поддержку</mark>
+          <mark onClick={()=> window.open('https://t.me/ASSISTGB', "_blank")}>
+            <HeadphonesIcon width={16} height={16} colorFirst="#FFD26D" colorSecond="#FFB81A" />Обратиться в поддержку
+          </mark>
       </NotificationsItem>
 
       <Buttons>

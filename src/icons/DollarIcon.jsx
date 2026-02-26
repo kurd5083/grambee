@@ -1,4 +1,4 @@
-const DollarIcon = ({ width = "27", height = "27", colorFirst = "#FFD26D", colorSecond = "#FFB81A" }) => {
+const DollarIcon = ({ width, height, colorFirst, colorSecond }) => {
     return (
         <svg
             width={width}

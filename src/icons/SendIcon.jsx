@@ -1,4 +1,4 @@
-const SendIcon = ({ width = "23", height = "21", colorFirst = "#FFD26D", colorSecond = "#FFB81A" }) => {
+const SendIcon = ({ width, height, colorFirst, colorSecond }) => {
     return (
         <svg 
             width={width}

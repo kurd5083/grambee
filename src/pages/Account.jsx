@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-import grambeeLogo from "@/assets/grambee-logo.svg";
+import grambeeLogo from "@/assets/icons/grambee-logo.svg";
 import bgGrambee from "@/assets/bg-grambee.png";
 import TgSplashIcon from "@/icons/TgSplashIcon";
 import HeadphonesIcon from "@/icons/HeadphonesIcon";
@@ -21,8 +21,8 @@ const Account = () => {
                         <p>Online</p>
                     </HeadContent>
                     <HeadActions>
-                        <button><HeadphonesIcon colorFirst="currentColor" colorSecond="currentColor" uniqueId="chat" /></button>
-                        <button><FrameIcon colorFirst="currentColor" colorSecond="currentColor" /></button>
+                        <button><HeadphonesIcon width={16} height={16} colorFirst="currentColor" colorSecond="currentColor" uniqueId="chat" /></button>
+                        <button><FrameIcon width={16} height={16} colorFirst="currentColor" colorSecond="currentColor" /></button>
                     </HeadActions>
                 </ChatHead>
                 <Message>
@@ -32,6 +32,8 @@ const Account = () => {
                         <MessageText>Привет! Я могу ответить на любой твой вопрос связанный с @GRAMBEEBOT<br/><br/><mark>Просто напиши мне!</mark></MessageText>
                         <Commands>
                             <Сommand>Как дела?</Сommand>
+                            <Сommand>Помоги с трафиком</Сommand>
+                            <Сommand>Помоги с трафиком</Сommand>
                             <Сommand>Помоги с трафиком</Сommand>
                         </Commands>
                     </MessageBlock>
@@ -43,7 +45,7 @@ const Account = () => {
                         type="text"
                         placeholder="Задайте вопрос боту..."
                     />
-                    <button><SendIcon width={23} height={21} colorFirst="#FFD26D" colorSecond="#FFB81A" /></button>
+                    <button><SendIcon width={23} height={21} colorFirst="#FFD26D" colorSecond="#FFB81A"/></button>
                 </ChatFooter>
             </ChatBot>
             <AccountContainer>
@@ -56,6 +58,7 @@ const Account = () => {
                     direction="vertical"
                     right="33px"
                     margin={8}
+                    onClick={()=> window.open('https://t.me/ASSISTGB', "_blank")}
                 />
                 <OptionCard
                     title="Подписаться на нас"
@@ -142,11 +145,14 @@ const HeadActions = styled.div`
 `
 
 const Message = styled.div`
+    box-sizing: border-box;
     display: flex;
     gap: 12px;
     position: absolute;
-    top: 100px;
-    left: 16px;
+    overflow-y: auto;
+    max-height: 240px;
+    padding: 16px;
+    top: 73px;
 `
 const MessageLogo = styled.img`
     width: 32px;
@@ -162,6 +168,7 @@ const MessageFrom = styled.p`
     font-weight: 700;
 `
 const MessageText = styled.p`
+    box-sizing: border-box;
     margin-top: 8px;
     padding: 10px 14px;
     border-radius: 4px 24px 24px 24px;
@@ -173,6 +180,7 @@ const MessageText = styled.p`
 const Commands = styled.div`
     margin-top: 4px;
     display: flex;
+    flex-wrap: wrap;
     gap: 4px;
 `
 const Сommand = styled.button`
