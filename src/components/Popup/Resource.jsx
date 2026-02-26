@@ -12,7 +12,7 @@ import Button from "@/shared/Button";
 import Note from "@/shared/Note";
 import Checkbox from "@/shared/Checkbox";
 import { ContainerPadding } from "@/shared/ContainerPadding";
-import { GapBlock } from "@/shared/GapBlock";
+import { GapContainer } from "@/shared/GapContainer";
 
 import СhoicePeriod from "@/components/СhoicePeriod";
 import Chart from '@/components/Chart';
@@ -62,7 +62,7 @@ const Resource = () => {
           <TextBlock>
             <Label>Способ замены ссылки</Label>
           </TextBlock>
-          <GapBlock gap="24px">
+          <GapContainer gap="24px">
           <CheckboxContainer>
             <Checkbox
               checked={checked == "grambee"}
@@ -87,8 +87,8 @@ const Resource = () => {
             icon={<SpeakerIcon width={18} height={16} color="#FFB000" />}
             inputAction="Сохранить"
           />
-          </GapBlock>
-          <GapBlock gap="24px">
+          </GapContainer>
+          <GapContainer gap="24px">
           <Note><p>По истечению <mark>длительности рекламной кампании</mark> произойдет расчётный час, и вас уведомят о результатах</p></Note>
           <InputField
             id="token"
@@ -99,7 +99,7 @@ const Resource = () => {
             onChange={(e) => setToken(e.target.value)}
             icon={<img src={bot} alt="bot" />}
           />
-          </GapBlock>
+          </GapContainer>
         </ContainerPadding>
       ) : (
         <>

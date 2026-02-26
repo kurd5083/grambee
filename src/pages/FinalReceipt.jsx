@@ -10,9 +10,8 @@ import StarIcon from "@/icons/StarIcon";
 import HeadphonesIcon from "@/icons/HeadphonesIcon";
 import UserIcon from "@/icons/UserIcon";
 
-import { GapBlock } from "@/shared/GapBlock"; 
+import { GapContainer } from "@/shared/GapContainer"; 
 import { ContainerPadding } from "@/shared/ContainerPadding";
-
 
 import Radio from "@/shared/Radio";
 import Button from "@/shared/Button";
@@ -42,7 +41,7 @@ const FinalReceipt = () => {
                         <mark>Обратиться в поддержку</mark>
                     </ReceiptDesc>
                 </FinalReceiptContent>
-                <GapBlock>
+                <GapContainer>
                     <BlockWithArrow
                         img={<img src={channel_ava} alt="channel_ava" />}
                         type="pass"
@@ -70,7 +69,7 @@ const FinalReceipt = () => {
                             <p><mark>1.200 р</mark></p>
                         </Col>
                     </SelectChannelBlock>
-                </GapBlock>
+                </GapContainer>
                 <FinalReceiptTitle>Выбранные страны</FinalReceiptTitle>
                 {receipt.countries && receipt.countries.length > 0 ? (
                     <FlagsBlocks>

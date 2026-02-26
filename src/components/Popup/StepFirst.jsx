@@ -15,7 +15,7 @@ import InputField from "@/shared/InputField";
 import Button from "@/shared/Button";
 import Radio from "@/shared/Radio";
 import { ContainerPadding } from "@/shared/ContainerPadding";
-import { GapBlock } from "@/shared/GapBlock";
+import { GapContainer } from "@/shared/GapContainer";
 
 import OptionCard from "@/components/OptionCard";
 import { usePopupStore } from "@/store/popupStore";
@@ -60,7 +60,7 @@ const StepFirst = () => {
         </PartnersList>
       </PartnersEarn>
       <StepTitle>Тип продавца</StepTitle>
-      <GapBlock gap="24px">
+      <GapContainer gap="24px">
         <RadioContainer
           spaceBetween={10}
           slidesPerView="auto"
@@ -94,7 +94,7 @@ const StepFirst = () => {
             icon={<img src={bot} alt="bot" />}
           />
         </ContainerPadding>
-      </GapBlock>
+      </GapContainer>
       <Buttons>
         <Button variant="default">Отмена</Button>
         <Button variant="primary" onClick={() => openPopup('step-second', 'Создание бота', { step: 2 })}>Далее</Button>

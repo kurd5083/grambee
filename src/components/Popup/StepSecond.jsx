@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import ArrowIcon from "@/icons/ArrowIcon";
 import EditIcon from "@/icons/EditIcon";
 
-import { GapBlock } from "@/shared/GapBlock";
+import { GapContainer } from "@/shared/GapContainer";
 import InputField from "@/shared/InputField";
 import Button from "@/shared/Button";
 
@@ -23,7 +23,7 @@ const StepSecond = () => {
   return (
     <>
       <ContainerPadding>
-        <GapBlock gap="16px">
+        <GaGapContainerpBlock gap="16px">
         <InputField
           id="numberChannels"
           label="Кол-во каналов"
@@ -67,7 +67,7 @@ const StepSecond = () => {
           onChange={(e) => setChatsButtonText(e.target.value)}
           iconRight={<EditIcon width={16} height={16} color="currentColor" />}
         />
-        </GapBlock>
+        </GaGapContainerpBlock>
       </ContainerPadding>
       <Buttons>
         <Button variant="default" onClick={() => goBack()}>Назад</Button>
