@@ -13,28 +13,24 @@ import { useReceiptStore } from "@/store/receiptStore";
 
 const ChoosingTypeTraffic = () => {
     const { openPopup, goBack } = usePopupStore()
-    const { setTypeTraffic } = useReceiptStore();
-    const [selectedRadio, setSelectedRadio] = useState('with-verification');
+    const { receipt, setTypeTraffic } = useReceiptStore();
     const [token, setToken] = useState("");
 
     const handleNext = () => {
         if(!token) {
-            alert('Введите токен бота')
-            return
-        }        
-        const typeTraffic = selectedRadio == 'with-verification' ? 'С проверкой' : 'Без проверки'
-         
-        setTypeTraffic(typeTraffic)
+            return alert('Введите токен бота')
+        }   
+
         openPopup('scale-audience', 'Масштабы закупки аудитории', { step: 5, text: 'Укажите нужные вам параметры аудитории' })
     }
 
     return (
         <ContainerPadding>
             <RadioContainer>
-                <Radio checked={selectedRadio === 'with-verification'} onChange={() => setSelectedRadio('with-verification')} text="2.3 ₽ за подписчика" view="circleText">
+                <Radio checked={receipt.typeTraffic === 'with-verification'} onChange={() => setTypeTraffic('with-verification')} text="2.3 ₽ за подписчика" view="circleText">
                     С проверкой
                 </Radio>
-                <Radio checked={selectedRadio === 'without-verification'} onChange={() => setSelectedRadio('without-verification')} text="1.8 ₽ за подписчика" view="circleText">
+                <Radio checked={receipt.typeTraffic  === 'without-verification'} onChange={() => setTypeTraffic('without-verification')} text="1.8 ₽ за подписчика" view="circleText">
                     Без проверки
                 </Radio>
             </RadioContainer>

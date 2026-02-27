@@ -10,6 +10,15 @@ const initialReceipt = {
   selectedFilters: [],
   premiumCoverage: null,
   price: 1540,
+  dailyTraffic: null,
+  compDuration: null,
+  speedMode: null,
+  erFrom: null,
+  erTo: null,
+  coveragePeriod: null,
+  coveragePeriodHours: null,
+  rangeReactionsFrom: null,
+  rangeReactionsTo: null,
 };
 
 export const useReceiptStore = create((set) => ({
@@ -17,11 +26,11 @@ export const useReceiptStore = create((set) => ({
 
     resetReceipt: () => set({ receipt: initialReceipt }),
 
-    setChannel: ((name, username) => {
+    setChannel: ((name, username, data) => {
         set((state) => ({
             receipt: {
                 ...state.receipt,
-                channel: { name, username }
+                channel: { name, username, data }
             }
         }))
     }),
@@ -79,6 +88,78 @@ export const useReceiptStore = create((set) => ({
             receipt: {
                 ...state.receipt,
                premiumCoverage: bool
+            }
+        }))
+    }),
+    setDailyTraffic: ((value) => {
+        set((state) => ({
+            receipt: {
+                ...state.receipt,
+               dailyTraffic: value
+            }
+        }))
+    }),
+    setCompDuration: ((value) => {
+        set((state) => ({
+            receipt: {
+                ...state.receipt,
+               compDuration: value
+            }
+        }))
+    }),
+    setSpeedMode: ((type) => {
+        set((state) => ({
+            receipt: {
+                ...state.receipt,
+               speedMode: type
+            }
+        }))
+    }),
+    setErFrom: ((value) => {
+        set((state) => ({
+            receipt: {
+                ...state.receipt,
+               erFrom: value
+            }
+        }))
+    }),
+    setErTo: ((value) => {
+        set((state) => ({
+            receipt: {
+                ...state.receipt,
+               erTo: value
+            }
+        }))
+    }),
+    setCoveragePeriod: ((value) => {
+        set((state) => ({
+            receipt: {
+                ...state.receipt,
+               coveragePeriod: value
+            }
+        }))
+    }),
+    setCoveragePeriodHours: ((value) => {
+        set((state) => ({
+            receipt: {
+                ...state.receipt,
+               coveragePeriodHours: value
+            }
+        }))
+    }),
+    setRangeReactionsFrom: ((value) => {
+        set((state) => ({
+            receipt: {
+                ...state.receipt,
+               rangeReactionsFrom: value
+            }
+        }))
+    }),
+    setRangeReactionsTo: ((value) => {
+        set((state) => ({
+            receipt: {
+                ...state.receipt,
+               rangeReactionsTo: value
             }
         }))
     })

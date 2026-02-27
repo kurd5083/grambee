@@ -12,16 +12,14 @@ import { usePopupStore } from "@/store/popupStore";
 import { useReceiptStore } from "@/store/receiptStore";
 
 const SelectChannel = () => {
-    const [link, setLink] = useState('')
     const { openPopup, closePopup } = usePopupStore()
-    const { setChannel } = useReceiptStore();
+    const { receipt, setChannel } = useReceiptStore();
     
     const handleNext = () => {
-        if(!link) {
+        if(!receipt.channel?.name) {
             alert('введите сслыку на канал')
             return
         }        
-        setChannel(link, link)
         openPopup('choosing-type-traffic', 'Выберите тип трафика', { step: 4, text: 'Определитесь с нужным типом трафика для вас' })
     }
 
@@ -31,8 +29,8 @@ const SelectChannel = () => {
                 <InputField
                     id="link"
                     placeholder="Ссылка на канал"
-                    value={link}
-                    onChange={(e) => setLink(e.target.value)}
+                    value={receipt.channel?.name}
+                    onChange={(e) => setChannel((e.target.value, e.target.value))}
                     icon={<SpeakerIcon width={18} height={16} color="#FFB000" />}
                     inputAction="Сохранить"
                 />

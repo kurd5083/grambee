@@ -2,7 +2,10 @@ import { useState } from 'react';
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 
+import tb from '@/assets/icons/tb.svg';
+import tbBg from '@/assets/icons/tbBg.svg';
 import UsdtIcon from '@/icons/UsdtIcon';
+
 import PlusIcon from '@/icons/PlusIcon';
 import cryptoBot from '@/assets/icons/crypto-bot.svg';
 
@@ -47,10 +50,8 @@ const Replenish = () => {
             <OptionCard
               title="T-Банк"
               text="Рубли (RUB)"
-              icon={<UsdtIcon width={16} height={16} colorFirst="#09FF98" colorSecond="#09FF98"  uniqueId="small1" />}
-              bgIcon={
-                <UsdtIcon width={98} height={98} colorFirst="#252934" colorSecond="#1F222B" uniqueId="bg1"/>
-              }
+              icon={<img src={tb} alt="tb"/>}
+              bgIcon={<img src={tbBg} alt="tb"/>}
               direction="vertical"
               onClick={() => navigate("/payment")}
             />

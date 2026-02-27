@@ -15,36 +15,34 @@ import { useReceiptStore } from "@/store/receiptStore";
 import { flagsList } from "@/data/flagsList";
 
 const PurchaseCoverageOnceDay = () => {
-    const [localCountries, setLocalCountries] = useState([]);
     const { goBack } = usePopupStore()
     const navigate = useNavigate();
     
-    const { setCountries } = useReceiptStore();
+   const { receipt, setCountries } = useReceiptStore();
     
     const selectCountries = (code) => {
         let newData = [];
-        if (code === "all" && localCountries.length === flagsList.length) {
+        if (code === "all" && receipt.countries.length === flagsList.length) {
             newData = [];
         } else {
-            if (localCountries.find((item) => item.code == code)) {
-                newData = localCountries.filter((item) => item.code !== code);
+            if (receipt.countries.find((item) => item.code == code)) {
+                newData = receipt.countries.filter((item) => item.code !== code);
             } else {
                 if (code === "all") {
                     newData = [...flagsList];
                 } else {
-                    newData = [...localCountries, { code, price: 1 }];
+                    newData = [...receipt.countries, { code, price: 1 }];
                 }
             }
         }
-        setLocalCountries(newData)
+        setCountries(newData)
     }
     
     const handleNext = () => {
-        if(localCountries.lenght == 0) {
+        if(receipt.countries.lenght == 0) {
             return alert('выбирете страну')  
         }        
-                 
-        setCountries(localCountries, 1)
+
         navigate('/final-receipt')
     }
 
@@ -55,7 +53,7 @@ const PurchaseCoverageOnceDay = () => {
                     <StarIcon width={16} height={16} colorFirst="#FFFFFF" colorSecond="#FFFFFF" />
                     Премиум охваты
                 </Button>
-                <Flags countries={localCountries} select={selectCountries}/>
+                <Flags countries={receipt.countries} select={selectCountries}/>
             </ContainerPadding>
             <Buttons>
                 <Button variant="default" onClick={() => goBack()}>Назад</Button>

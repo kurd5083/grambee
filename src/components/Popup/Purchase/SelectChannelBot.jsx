@@ -13,22 +13,16 @@ import { useReceiptStore } from "@/store/receiptStore";
 
 const SelectChannelBot = () => {
     const { openPopup, goBack } = usePopupStore()
-    const [selectedRadio, setSelectedRadio] = useState('with-verification');
     const [token, setToken] = useState("");
-    const [link, setLink] = useState('')
-    const { setTypeTraffic, setChannel } = useReceiptStore();
+    const { receipt, setTypeTraffic, setChannel } = useReceiptStore();
     
     const handleNext = () => {
-        if(!link) {
+        if(!receipt.channel?.name) {
             return alert('введите сслыку на канал')
         }  
         if(!token) {
             return alert('введите токен вашего бота')
         }       
-        const typeTraffic = selectedRadio == 'with-verification' ? 'С проверкой' : 'Без проверки'
-         
-        setTypeTraffic(typeTraffic)
-        setChannel(link, link)
         openPopup('scale-audience', 'Масштабы закупки аудитории', { step: 5, text: 'Укажите нужные вам параметры аудитории' })
     }
 
@@ -37,16 +31,16 @@ const SelectChannelBot = () => {
              <InputField
                     id="link"
                     placeholder="Ссылка на бота"
-                    value={link}
-                    onChange={(e) => setLink(e.target.value)}
+                    value={receipt.channel?.name}
+                    onChange={(e) => setChannel(e.target.value)}
                     icon={<SpeakerIcon width={18} height={16} color="#FFB000" />}
                     inputAction="Сохранить"
                 />
             <RadioContainer>
-                <Radio checked={selectedRadio === 'with-verification'} onChange={() => setSelectedRadio('with-verification')} text="2.3 ₽ за подписчика" view="circleText">
+                <Radio checked={receipt.typeTraffic === 'with-verification'} onChange={() => setTypeTraffic('with-verification')} text="2.3 ₽ за подписчика" view="circleText">
                     С проверкой
                 </Radio>
-                <Radio checked={selectedRadio === 'without-verification'} onChange={() => setSelectedRadio('without-verification')} text="1.8 ₽ за подписчика" view="circleText">
+                <Radio checked={receipt.typeTraffic === 'without-verification'} onChange={() => setTypeTraffic('without-verification')} text="1.8 ₽ за подписчика" view="circleText">
                     Без проверки
                 </Radio>
             </RadioContainer>

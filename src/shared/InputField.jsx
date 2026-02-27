@@ -110,6 +110,7 @@ const TextWrapper = styled.div`
   right: 24px;
   transform: translateY(-50%);
   font-size: 14px;
+  cursor: pointer;
 `;
 
 export default InputField;

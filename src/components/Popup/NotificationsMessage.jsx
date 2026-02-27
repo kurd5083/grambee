@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-import test1 from "@/assets/icons/test1.svg";
+import TimeIcon from '@/icons/TimeIcon';
 import HeadphonesIcon from "@/icons/HeadphonesIcon";
 import CrossIcon from '@/icons/CrossIcon';
 
@@ -14,7 +14,7 @@ const NotificationsMessage = () => {
   return (
     <NotificationsContainer>
       <NotificationsHeader>
-        <ImgContainer><img src={test1} alt="" /></ImgContainer>
+        <ImgContainer><TimeIcon width={16} height={16} color="#4DFFA6"/></ImgContainer>
         <PopupClose onClick={closePopup}>
           <CrossIcon width={8} height={8} color="#D6DCEC"/>
         </PopupClose>

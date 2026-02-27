@@ -9,10 +9,14 @@ const ParamsBlocks = ({ options }) => {
                     {option.title && <ItemTitle>{option.title}</ItemTitle>}
                     <Params>
                         {option.iconLeft}
+                        {option.lableLeft && <LableLeft>{option.lableLeft}</LableLeft>}
                         <p>{option.placeholder || option.value}</p>
-                        <IconRightContainer>
-                            {option.iconRight || <mark>{option.label}</mark>}
-                        </IconRightContainer>
+                        {option.lableRight && <LableRight>{option.lableRight}</LableRight>}
+                        {option.iconRight && (
+                            <IconRightContainer>
+                                {option.iconRight}
+                            </IconRightContainer>
+                        )}
                     </Params>
                 </ParamsItem>
             ))}
@@ -47,6 +51,17 @@ const Params = styled.div`
     p {
         font-size: 14px;
     }
+    span {
+        flex-grow: 1;
+    }
+`
+const LableLeft = styled.span`
+    display: flex;
+    justify-content: flex-start;
+`
+const LableRight = styled.span`
+    display: flex;
+    justify-content: flex-end;
 `
 const IconRightContainer = styled.div`
     flex: 1;

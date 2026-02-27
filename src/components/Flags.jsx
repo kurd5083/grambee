@@ -1,6 +1,5 @@
 import styled from "styled-components";
 
-
 import SearchIcon from "@/icons/SearchIcon";
 import ArrowIcon from "@/icons/ArrowIcon";
 
@@ -106,10 +105,12 @@ const Flag = styled.img`
     border-radius: 50%;
     cursor: pointer;
     border: 2px solid transparent;
+    opacity: 0.4;
 
-    ${({$active}) => (
-        $active && `border-color:#FFB81A`
-    )}
+    ${({$active}) => ($active && `
+        border-color:#FFB81A;
+        opacity: 1;
+    `)}
 `
 const ButtonArrow = styled.div`
     display: flex;

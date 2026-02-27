@@ -10,22 +10,18 @@ import { usePopupStore } from "@/store/popupStore";
 import { useReceiptStore } from "@/store/receiptStore";
 
 const SelectAreas = () => {
-    const [selectedRadio, setSelectedRadio] = useState('constantly');
     const { openPopup, goBack } = usePopupStore();
 
-    const { setTypeCoverage } = useReceiptStore();
+    const { receipt, setTypeCoverage } = useReceiptStore();
 
     const handleNext = () => {
-        if (!selectedRadio) {
+        if (!receipt.typeCoverage) {
             return alert('выбирете охваты')
         }
 
-        const type = selectedRadio == 'constantly' ? 'Постоянно' : 'Единоразово'
-        setTypeCoverage(type)
-        
-        selectedRadio === 'constantly' ? (
+        receipt.typeCoverage === 'constantly' ? (
             openPopup('select-channel-constantly', 'Выберите канал', { step: 3, text: 'Можете выбрать канал или же написать ссылку' })
-        ) : selectedRadio === 'once-day' && (
+        ) : receipt.typeCoverage === 'once-day' && (
             openPopup('select-channel-once-day', 'Выберите канал', { step: 3, text: 'Можете выбрать канал или же написать ссылку' })
         )
     }
@@ -34,14 +30,22 @@ const SelectAreas = () => {
         <Container>
             <SelectAreasContainer>
                 <RadioContainer>
-                    <Radio checked={selectedRadio === "constantly"} onChange={() => setSelectedRadio("constantly")} text="Грамби постоянно будет отслеживать и “накручивать” наних нужное кол-во просмотров" view="circleTextMore">
+                    <Radio 
+                        checked={receipt.typeCoverage === "constantly"} 
+                        onChange={() => setTypeCoverage("constantly")} 
+                        text="Грамби постоянно будет отслеживать и “накручивать” наних нужное кол-во просмотров" 
+                        view="circleTextMore">
                         Постоянно
                     </Radio>
-                    <Radio checked={selectedRadio === "once-day"} onChange={() => setSelectedRadio("once-day")} text="Грамби будет на конкретный пост давать просмотры и повышать охват(хоть 10 сразу)" view="circleTextMore">
+                    <Radio 
+                        checked={receipt.typeCoverage === "once-day"} 
+                        onChange={() => setTypeCoverage("once-day")} 
+                        text="Грамби будет на конкретный пост давать просмотры и повышать охват(хоть 10 сразу)" 
+                        view="circleTextMore">
                         Единоразово
                     </Radio>
                 </RadioContainer>
-                {selectedRadio === 'constantly' && (
+                {receipt.typeCoverage === 'constantly' && (
                     <Button variant="blurGradient">
                         <TgSplashIcon width={16} height={13} colorFirst="#F7F9FF" colorSecond="#F7F9FF" />
                         Привязать свой канал

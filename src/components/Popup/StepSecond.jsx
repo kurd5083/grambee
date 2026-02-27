@@ -23,7 +23,7 @@ const StepSecond = () => {
   return (
     <>
       <ContainerPadding>
-        <GaGapContainerpBlock gap="16px">
+        <GapContainer gap="16px">
         <InputField
           id="numberChannels"
           label="Кол-во каналов"
@@ -67,7 +67,7 @@ const StepSecond = () => {
           onChange={(e) => setChatsButtonText(e.target.value)}
           iconRight={<EditIcon width={16} height={16} color="currentColor" />}
         />
-        </GaGapContainerpBlock>
+        </GapContainer>
       </ContainerPadding>
       <Buttons>
         <Button variant="default" onClick={() => goBack()}>Назад</Button>

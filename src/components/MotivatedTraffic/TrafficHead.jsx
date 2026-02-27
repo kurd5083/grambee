@@ -5,16 +5,16 @@ import refresh from '@/assets/icons/refresh.svg';
 import ArchiveIcon from "@/icons/ArchiveIcon";
 
 const TrafficHead = ({ type }) => {
-    return (
-        <TrafficHeadContainer>
-            {type !== 'resources' && <Icon src={fire} alt="fire icon" />}
-            <HeadTitle>{type == 'resources' ? 'Собственные ресурсы' : 'Мотивированный трафик'}</HeadTitle>
-            <IconContainer>
-                <ArchiveIcon width={22} height={16} colorFirst="currentColor" colorSecond="currentColor" uniqueId={type}/>
-            </IconContainer>
-            {type !== 'resources' && <ResetImg src={refresh} alt="refresh icon" />}
-        </TrafficHeadContainer>
-    )
+  return (
+    <TrafficHeadContainer>
+      {type !== 'resources' && <Icon src={fire} alt="fire icon" />}
+      <HeadTitle>{type == 'resources' ? 'Собственные ресурсы' : 'Мотивированный трафик'}</HeadTitle>
+      <IconContainer>
+        <ArchiveIcon width={22} height={16} colorFirst="currentColor" colorSecond="currentColor" uniqueId={type} />
+      </IconContainer>
+      {type !== 'resources' && <ResetImg src={refresh} alt="refresh icon" />}
+    </TrafficHeadContainer>
+  )
 }
 
 const TrafficHeadContainer = styled.div`

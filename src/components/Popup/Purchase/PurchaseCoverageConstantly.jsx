@@ -21,36 +21,34 @@ import { flagsList } from "@/data/flagsList";
 
 const PurchaseCoverageConstantly = () => {
     const { goBack } = usePopupStore()
-    const [localCountries, setLocalCountries] = useState([]);
     const navigate = useNavigate();
 
-    const { setCountries } = useReceiptStore();
+    const { receipt, setCountries, setErFrom, setErTo, setCoveragePeriod, setCoveragePeriodHours, setRangeReactionsFrom, setRangeReactionsTo } = useReceiptStore();
 
     const selectCountries = (code) => {
         let newData = [];
-        if (code === "all" && localCountries.length === flagsList.length) {
+        if (code === "all" && receipt.countries.length === flagsList.length) {
             newData = [];
         } else {
-            if (localCountries.find((item) => item.code == code)) {
-                newData = localCountries.filter((item) => item.code !== code);
+            if (receipt.countries.find((item) => item.code == code)) {
+                newData = receipt.countries.filter((item) => item.code !== code);
             } else {
                 if (code === "all") {
                     newData = [...flagsList];
                 } else {
-                    newData = [...localCountries, { code, price: 1 }];
+                    newData = [...receipt.countries, { code, price: 1 }];
                 }
             }
         }
-        setLocalCountries(newData)
+        setCountries(newData)
     }
 
     const handleNext = () => {
-        if(localCountries.lenght == 0) {
-            alert('выбирете страну')
-            return
-        }        
+        if(receipt.countries.lenght == 0) {
+            return alert('выбирете страну')
+        }   
              
-        setCountries(localCountries, 1)
+            
         navigate('/final-receipt')
     }
     
@@ -63,14 +61,18 @@ const PurchaseCoverageConstantly = () => {
                 </ParamsHead>
                 <InputContainer>
                     <InputField
-                        id="link"
+                        id="erFrom"
                         placeholder="От"
                         inputAction="ER"
+                        value={receipt.erFrom}
+                        onChange={(e) => setErFrom(e.target.value)}
                     />
                     <InputField
-                        id="link"
+                        id="erTo"
                         placeholder="до"
                         inputAction="ER"
+                        value={receipt.erTo}
+                        onChange={(e) => setErTo(e.target.value)}
                     />
                 </InputContainer>
                 <ParamsHead>
@@ -79,17 +81,21 @@ const PurchaseCoverageConstantly = () => {
                 </ParamsHead>
                 <InputContainer>
                     <InputField
-                        id="link"
+                        id="coveragePeriod"
                         placeholder="test"
                         iconRight={<EditIcon width={16} height={16} color="#6A7080" />}
+                        value={receipt.coveragePeriod}
+                        onChange={(e) => setCoveragePeriod(e.target.value)}
                     />
                     <InputField
-                        id="link"
+                        id="coveragePeriodHours"
                         placeholder="часы"
                         iconRight={<ArrowContainer>
                             <ArrowIcon width={6} height={10} color="currentColor" />
                             <ArrowIcon width={6} height={10} color="currentColor" />
                         </ArrowContainer>}
+                        value={receipt.coveragePeriodHours}
+                        onChange={(e) => setCoveragePeriodHours(e.target.value)}
                     />
                 </InputContainer>
                 <ButtonContainer>
@@ -104,17 +110,21 @@ const PurchaseCoverageConstantly = () => {
                 </ParamsHead>
                 <InputContainer>
                     <InputField
-                        id="link"
+                        id="rangeReactionsFrom"
                         placeholder="От"
                         iconRight={<img src={fireFilling} alt="fireFilling" />}
+                        value={receipt.rangeReactionsFrom}
+                        onChange={(e) => setRangeReactionsFrom(e.target.value)}
                     />
                     <InputField
-                        id="link"
+                        id="rangeReactionsTo"
                         placeholder="До"
                         iconRight={<img src={fireFilling} alt="fireFilling" />}
+                        value={receipt.rangeReactionsTo}
+                        onChange={(e) => setRangeReactionsTo(e.target.value)}
                     />
                 </InputContainer>
-                <Flags countries={localCountries} select={selectCountries}/>
+                <Flags countries={receipt.countries} select={selectCountries}/>
             </ContainerPadding>
             <Buttons>
                 <Button variant="default" onClick={() => goBack()}>Назад</Button>

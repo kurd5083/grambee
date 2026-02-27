@@ -27,6 +27,8 @@ import SelectChannelOnceDay from '@/components/Popup/Purchase/SelectChannelOnceD
 import SelectChannelApplication from '@/components/Popup/Purchase/SelectChannelApplication';
 import PurchaseCoverageConstantly from '@/components/Popup/Purchase/PurchaseCoverageConstantly';
 import PurchaseCoverageOnceDay from '@/components/Popup/Purchase/PurchaseCoverageOnceDay';
+import FillFieldsBelow from '@/components/Popup/Purchase/FillFieldsBelow';
+import BasicInformation from '@/components/Popup/Purchase/BasicInformation';
 
 import useMaxResize from '@/hooks/useMaxResize';
 
@@ -100,8 +102,12 @@ const Popup = () => {
 					<SelectChannelApplication />
 				) : popup.content == 'purchase-coverage-constantly' ? (
 					<PurchaseCoverageConstantly />
-				) : popup.content == 'purchase-coverage-once-day' && (
+				) : popup.content == 'purchase-coverage-once-day' ? (
 					<PurchaseCoverageOnceDay />
+				) : popup.content == 'fill-fields-below' ? (
+					<FillFieldsBelow />
+				) : popup.content == 'basic-information' && (
+					<BasicInformation />
 				)}
 				</Container>
 			</PopupContent>

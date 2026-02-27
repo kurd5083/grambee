@@ -3,10 +3,10 @@ import { useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 
+import calendar from '@/assets/icons/calendar.svg';
 import ArrowIcon from "@/icons/ArrowIcon";
 import UserIcon from "@/icons/UserIcon";
 import EditIcon from "@/icons/EditIcon";
-import calendar from '@/assets/icons/calendar.svg';
 
 import Button from "@/shared/Button";
 import { ContainerPadding } from "@/shared/ContainerPadding";
@@ -21,47 +21,37 @@ import { flagsList } from "@/data/flagsList";
 
 const ScaleAudience = () => {
     const { openPopup, goBack } = usePopupStore()
-    const [localCountries, setLocalCountries] = useState([]);
     const navigate = useNavigate();
-    const [numberSubscribersLocal, setNumberSubscribersLocal] = useState("");
-    const [numberCampaign, setNumberCampaign] = useState('');
 
-    const { setNumberSubscribers, setNumberCampaignDays, setCountries } = useReceiptStore();
+    const { receipt, setNumberSubscribers, setNumberCampaignDays, setCountries } = useReceiptStore();
 
     const selectCountries = (code) => {
         let newData = [];
-        if (code === "all" && localCountries.length === flagsList.length) {
+        if (code === "all" && receipt.countries.length === flagsList.length) {
             newData = [];
         } else {
-            if (localCountries.find((item) => item.code == code)) {
-                newData = localCountries.filter((item) => item.code !== code);
+            if (receipt.countries.find((item) => item.code == code)) {
+                newData = receipt.countries.filter((item) => item.code !== code);
             } else {
                 if (code === "all") {
                     newData = [...flagsList];
                 } else {
-                    newData = [...localCountries, { code, price: 1 }];
+                    newData = [...receipt.countries, { code, price: 1 }];
                 }
             }
-            
         }
-        setLocalCountries(newData)
+        setCountries(newData)
     }
 
     const handleNext = () => {
-        if (localCountries.lenght == 0) {
-            alert('выбирете страну')
-            return
-        } else if(numberCampaign == '') {
-            alert('введите количество дней')
-            return
-        }else if(numberSubscribersLocal == '') {
-            alert('введите количество подписчиков')
-            return
+        if (receipt.countries.lenght == 0) {
+            return alert('выбирете страну')
+        } else if (receipt.numberCampaignDays == '') {
+            return alert('введите количество дней')
+        } else if (receipt.numberSubscribers == '') {
+            return alert('введите количество подписчиков')
         }
 
-        setCountries(localCountries, 1)
-        setNumberSubscribers(numberSubscribersLocal)
-        setNumberCampaignDays(numberCampaign)
         navigate('/final-receipt')
     }
 
@@ -73,22 +63,25 @@ const ScaleAudience = () => {
                         id="numberSubscribers"
                         label="Кол-во подписчиков"
                         placeholder="Кол-во подписчиков"
-                        value={numberSubscribersLocal}
-                        onChange={(e) => setNumberSubscribersLocal(e.target.value)}
+                        value={receipt.numberSubscribers}
+                        onChange={(e) => setNumberSubscribers(e.target.value)}
                         icon={<UserIcon width={16} height={16} colorFirst='#FFD26D' colorSecond='#FFB81A' />}
-                        iconRight={<EditIcon width={16} height={16} color='#6A7080' />}
+                        iconRight={<EditIcon width={16} height={16} color='currentColor' />}
                     />
                     <InputField
                         id="numberCampaign"
                         label="Кол-во дней кампании"
                         placeholder="Кол-во дней"
-                        value={numberCampaign}
-                        onChange={(e) => setNumberCampaign(e.target.value)}
+                        value={receipt.numberCampaignDays}
+                        onChange={(e) => setNumberCampaignDays(e.target.value)}
                         icon={<img src={calendar} alt="calendar" />}
-                        iconRight={<ArrowIcon width={6} height={10} color="#D6DCEC" />}
+                        iconRight={<ArrowContainer>
+                            <ArrowIcon width={6} height={10} color="currentColor" />
+                            <ArrowIcon width={6} height={10} color="currentColor" />
+                        </ArrowContainer>}
                     />
                 </InputContainer>
-                <Flags countries={localCountries} select={selectCountries} />
+                <Flags countries={receipt.countries} select={selectCountries} />
                 <Button
                     variant="black"
                     iconRight={<ArrowIcon width={6} height={10} color="#D6DCEC" />}
@@ -103,6 +96,29 @@ const ScaleAudience = () => {
     )
 }
 
+const ArrowContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+    color: #6A7080;
+    flex: 1;
+    
+    svg {
+        cursor: pointer;
+        &:hover {
+            color: #D6DCEC;
+        }
+    }
+
+    &>svg:first-child {
+        transform: rotate(-90deg);
+    }
+
+    &>svg:last-child {
+        transform: rotate(90deg);
+    }
+`
 const InputContainer = styled.div`
     display: flex;
     gap: 8px;

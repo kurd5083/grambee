@@ -1,9 +1,9 @@
 import styled from "styled-components";
 
-import test1 from "@/assets/icons/test1.svg";
 import checkmarks from "@/assets/icons/checkmarks.svg";
 import BellIcon from '@/icons/BellIcon';
 import DelIcon from '@/icons/DelIcon';
+import TimeIcon from '@/icons/TimeIcon';
 
 import Button from "@/shared/Button";
 
@@ -23,7 +23,7 @@ const Notifications = () => {
       </NotificationsHeader>
       <NotificationsList>
         <NotificationsItem>
-          <ImgContainer><img src={test1} alt="" /></ImgContainer>
+          <ImgContainer><TimeIcon width={16} height={16} color="#4DFFA6"/></ImgContainer>
           <ItemContent>
             <h4 onClick={() => openPopup('notifications-message')}>Удержание средств для ресурса трафика: #T406</h4>
             <p>13.11.2025</p>
@@ -33,7 +33,7 @@ const Notifications = () => {
           </IconBorder>
         </NotificationsItem>
         <NotificationsItem>
-          <ImgContainer><img src={test1} alt="" /></ImgContainer>
+          <ImgContainer><TimeIcon width={16} height={16} color="#4DFFA6"/></ImgContainer>
           <ItemContent>
             <h4 onClick={() => openPopup('notifications-message')}>Пополнение счета через T-Bank прошло успешно!</h4>
             <p>06.11.2025</p>
@@ -43,9 +43,9 @@ const Notifications = () => {
           </IconBorder>
         </NotificationsItem>
         <NotificationsItem>
-          <ImgContainer><img src={test1} alt="" /></ImgContainer>
+          <ImgContainer><TimeIcon width={16} height={16} color="#4DFFA6"/></ImgContainer>
           <ItemContent>
-            <h4 onClick={() => openPopup('notifications-message')}>Ваш счет #T304 заморожен</h4>
+            <h4 onClick={() => ('notifications-message')}>Ваш счет #T304 заморожен</h4>
             <p>03.11.2025</p>
           </ItemContent>
           <IconBorder>

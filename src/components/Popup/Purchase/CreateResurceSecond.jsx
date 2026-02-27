@@ -44,7 +44,7 @@ const CreateResurceSecond = () => {
                         selectedRadio === 'subscribers' ? (
                             openPopup('select-channel', 'Выберите канал', { step: 3, text: 'Можете выбрать канал или же написать ссылку' })
                         ) : selectedRadio === 'boosts' ? (
-                            openPopup('select-areas', 'Выберите охваты', { step: 3, text: 'Определитесь с нужным типом трафика для вас' })
+                            openPopup('fill-fields-below', 'Заполните поля ниже', { step: 3, text: 'Укажите основные данные для вашего ресурса' })
                         ) : selectedRadio === 'coverage' ? (
                             openPopup('select-areas', 'Выберите охваты', { step: 3, text: 'Определитесь с нужным типом трафика для вас' })
                         ) : (
@@ -72,7 +72,6 @@ const RadioContainer = styled.div`
         grid-template-columns: 1fr;
     }
 `
-
 const Buttons = styled.div`
     display: flex;
     align-items: center;

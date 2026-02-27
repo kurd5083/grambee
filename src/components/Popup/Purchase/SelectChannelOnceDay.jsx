@@ -12,16 +12,14 @@ import { useReceiptStore } from "@/store/receiptStore";
 
    
 const SelectChannelOnceDay = () => {
-    const [ selectChannel, setSelectChannel ] = useState();
     const { openPopup, goBack } = usePopupStore()
-    const { setChannel } = useReceiptStore();
+    const { receipt, setChannel } = useReceiptStore();
 
     const handleNext = () => {
-        if(!selectChannel) {
+        if(!receipt.channel?.name) {
             return alert('выбирите канал')
         }  
             
-        setChannel(selectChannel.link, selectChannel.link)
         openPopup('purchase-coverage-once-day', 'Покупка охватов', { step: 4, text: 'Укажите нужные вам параметры для канала' })
     }
 
@@ -46,12 +44,16 @@ const SelectChannelOnceDay = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        <Row $active={selectChannel?.id == 1} onClick={() => setSelectChannel({ id: 1, link: 't.me/antropia..', numberCoverage: 1600, price: 1200 })}>
+                        <Row $active={receipt.channel?.name == 't.me/antropia..'} onClick={() => {
+                            setChannel('t.me/antropia..', 't.me/antropia..', {numberCoverage: 1600, price: 1200})
+                        }}>
                             <td>t.me/antropia..</td>
                             <td>1,600</td>
                             <td><mark>1 200 ₽</mark></td>
                         </Row>
-                        <Row $active={selectChannel?.id == 2} onClick={() => setSelectChannel({ id: 2, link: 't.me/kurdnika..', numberCoverage: 3100, price: 2100 })}>
+                        <Row $active={receipt.channel?.name == 't.me/kurdnika..'} onClick={() => {
+                            setChannel('t.me/kurdnika..', 't.me/kurdnika..', {numberCoverage: 3100, price: 2100})
+                        }}>
                             <td>t.me/kurdnika..</td>
                             <td>3,100</td>
                             <td><mark>2 100 ₽</mark></td>

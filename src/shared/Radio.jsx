@@ -65,6 +65,18 @@ const StyledCheckbox = styled.div`
             flex-direction: column;
             justify-content: flex-start;
         `}
+        ${$view === "circleNoBG" && css`
+            padding: 16px;
+            flex-direction: column;
+            justify-content: flex-start;
+            background-color: transparent;
+        `}
+        ${$view === "circleTextMoreNoBG" && css`
+            flex-direction: column;
+            justify-content: flex-start;
+            background-color: transparent;
+            border: 0;
+        `}
 
         ${$view === "noCircleText" && css`
             height: 54px;
@@ -78,24 +90,30 @@ const StyledCheckbox = styled.div`
             flex-direction: column;
         `}
 
-        ${["circle", "circleText", "circleTextMore", "circleBG"].includes($view) && css`
+        ${["circle", "circleText", "circleTextMore", "circleTextMoreNoBG", "circleBG", "circleNoBG"].includes($view) && css`
             &:after {
-            content: "";
-            position: absolute;
-            right: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 16px;
-            height: 16px;
-            background: ${$checked
-                ? "radial-gradient(circle at center, #FFD26D, #FFB81A)"
-                : "transparent"};
-            border: 1px solid ${$checked ? "#FFB81A" : "#6A7080"};
-            border-radius: 50%;
-            ${$view === "circleTextMore" && css`
-                top: 16px;
-                transform: translateY(0);
-            `}
+                content: "";
+                position: absolute;
+                right: 16px;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 16px;
+                height: 16px;
+                background: ${$checked
+                    ? "radial-gradient(circle at center, #FFD26D, #FFB81A)"
+                    : "transparent"};
+                border: 1px solid ${$checked ? "#FFB81A" : "#6A7080"};
+                border-radius: 50%;
+
+                ${($view === "circleTextMore" || $view === "circleNoBG") && css`
+                    top: 16px;
+                    transform: translateY(0);
+                `}
+                ${$view === "circleTextMoreNoBG" && css`
+                    top: 0;
+                    right: 0;
+                    transform: translateY(0);
+                `}
             }
         `}
     `}
