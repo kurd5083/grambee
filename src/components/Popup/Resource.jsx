@@ -1,7 +1,7 @@
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import styled from 'styled-components';
 
-import bot from "@/assets/icons/bot.svg";
+import bot from "@/assets/icons/bot-icon.svg";
 import question from "@/assets/icons/question.svg";
 import cheque from "@/assets/icons/cheque.svg";
 import SpeakerIcon from "@/icons/SpeakerIcon";
@@ -21,6 +21,16 @@ import StatisticList from "@/components/StatisticList";
 import ChannelBlock from "@/components/ChannelBlock";
 import TabsNav from "@/components/TabsNav";
 
+import useUpdateResource from "@/hooks/api/Resource/useUpdateResource";
+import useResourceActivate from "@/hooks/api/Resource/useResourceActivate";
+import useStatsResource from "@/hooks/api/Resource/useStatsResource";
+
+import { getDatesByPeriod } from "@/lib/getDatesByPeriod";
+import { generateXAxisLabels } from "@/lib/generateXAxisLabels";
+
+import { useResourceStore } from "@/store/resourceStore";
+import { useToastStore } from "@/store/toastStore";
+
 const tabs = [
   { label: "Общая", value: "general" },
   { label: "Статистика", value: "statistics" },
@@ -28,10 +38,59 @@ const tabs = [
 
 const Resource = () => {
   const [activeTab, setActiveTav] = useState('general')
-  const [token, setToken] = useState("");
-  const [link, setLink] = useState("");
+  const [period, setPeriod] = useState("all");
   const [checked, setChecked] = useState("");
 
+  const { resource, setInviteLink, setCheckerBotToken } = useResourceStore();
+
+  const { activate, isEnabling } = useResourceActivate({ id: resource.id });
+  const { renewResource, isConservation } = useUpdateResource({ id: resource.id });
+  const { showToast } = useToastStore();
+
+  const { dateFrom, dateTo } = getDatesByPeriod(period)
+
+	const { statisticsResource, statisticsResourceLoading } = useStatsResource({
+		resourceId: resource.id,
+		dateFrom,
+		dateTo
+	});
+
+  const xAxisLabels = useMemo(() => {
+    if (!statisticsResource?.data.stats.dailyStats) return [];
+    return generateXAxisLabels(period, statisticsResource.data.stats.dailyStats);
+  }, [period, statisticsResource]);
+  console.log(xAxisLabels)
+  const handleSave = () => {
+      renewResource({
+        inviteLink: resource.inviteLink,
+        checkerBotToken: resource.checkerBotToken,
+      }, {
+        onSuccess: () => {
+          showToast("Ресурс успешно обнавлен!", "success");
+        },
+        onError: (error) => {
+          showToast(
+            error?.message || "Ошибка при обнавлении ресурса",
+            "error"
+          );
+        }
+    })
+  }
+
+  const handleActive = () => {
+    activate(null, {
+      onSuccess: () => {
+        showToast("Ресурс успешно активирован!", "success");
+      },
+      onError: (error) => {
+        showToast(
+          error?.message || "Ошибка при активировании ресурса",
+          "error"
+        );
+      }
+    })
+  }
+  
   return (
     <>
       <TabsNav
@@ -48,12 +107,12 @@ const Resource = () => {
             <Label>Параметры ресурса</Label>
             <Status><mark>Итоговый чек</mark> <img src={cheque} alt="cheque icon" /></Status>
           </TextBlock>
-          <ChannelBlock type="button"/>
-          <StatisticList />
+          <ChannelBlock type="button" name={resource.name} username={resource.username} disabled={isEnabling} onClick={() => handleActive()} />
+          <StatisticList price={resource.price} dayLimit={resource.dayLimit} verificationEnabled={resource.verificationEnabled} />
           <ButtonEditContainer>
             <Button
               variant="outline"
-              iconLeft={<EditIcon width={16} height={16} color="#6A7080"/>}
+              iconLeft={<EditIcon width={16} height={16} color="#6A7080" />}
             >
               Изменить лимиты
             </Button>
@@ -63,60 +122,63 @@ const Resource = () => {
             <Label>Способ замены ссылки</Label>
           </TextBlock>
           <GapContainer gap="24px">
-          <CheckboxContainer>
-            <Checkbox
-              checked={checked == "grambee"}
-              onChange={() => setChecked("grambee")}
-            >
-              Заменять через Grambee
-            </Checkbox>
-            <Checkbox
-              checked={checked == "manually"}
-              onChange={() => setChecked("manually")}
-            >
-              Вручную
-            </Checkbox>
-          </CheckboxContainer>
-          <InputField
-            id="link"
-            label="Инвайт ссылка"
-            labelIcon={question}
-            placeholder="Ссылка на канал"
-            value={link}
-            onChange={(e) => setLink(e.target.value)}
-            icon={<SpeakerIcon width={18} height={16} color="#FFB000" />}
-            inputAction="Сохранить"
-          />
+            <CheckboxContainer>
+              <Checkbox
+                checked={checked == "grambee"}
+                onChange={() => setChecked("grambee")}
+              >
+                Заменять через Grambee
+              </Checkbox>
+              <Checkbox
+                checked={checked == "manually"}
+                onChange={() => setChecked("manually")}
+              >
+                Вручную
+              </Checkbox>
+            </CheckboxContainer>
+            <InputField
+              id="link"
+              label="Инвайт ссылка"
+              labelIcon={question}
+              placeholder="Ссылка на канал"
+              value={resource.inviteLink}
+              onChange={(e) => setInviteLink(e.target.value)}
+              icon={<SpeakerIcon width={18} height={16} color="#FFB000" />}
+              inputAction="Сохранить"
+            />
           </GapContainer>
           <GapContainer gap="24px">
-          <Note><p>По истечению <mark>длительности рекламной кампании</mark> произойдет расчётный час, и вас уведомят о результатах</p></Note>
-          <InputField
-            id="token"
-            label="Введите бота-чекера"
-            status={!token ? "Токен не установлен" : "Токен установлен"}
-            placeholder="Введите токен"
-            value={token}
-            onChange={(e) => setToken(e.target.value)}
-            icon={<img src={bot} alt="bot" />}
-          />
+            <Note><p>По истечению <mark>длительности рекламной кампании</mark> произойдет расчётный час, и вас уведомят о результатах</p></Note>
+            <InputField
+              id="token"
+              label="Введите бота-чекера"
+              status={!resource.checkerBotToken ? "Токен не установлен" : "Токен установлен"}
+              placeholder="Введите токен"
+              value={resource.checkerBotToken}
+              onChange={(e) => setCheckerBotToken(e.target.value)}
+              icon={<img src={bot} alt="bot" />}
+            />
           </GapContainer>
         </ContainerPadding>
       ) : (
         <>
           <ContainerPadding>
-            <СhoicePeriod />
+            <СhoicePeriod name={resource.name} period={period} onChange={setPeriod} />
           </ContainerPadding>
-          <Chart />
+          <Chart points={statisticsResource?.data.stats.dailyStats.map((item) => item.joins)} xAxisLabels={xAxisLabels}/>
           <ContainerPadding>
             <IndicatorsContainer>
-              <MainIndicators />
+              <MainIndicators 
+                totalJoins={statisticsResource?.data.stats.summary.totalJoins}
+                totalLeaves={statisticsResource?.data.stats.summary.totalLeaves}
+              />
             </IndicatorsContainer>
-            <StatisticList />
+            <StatisticList price={resource.price} dayLimit={resource.dayLimit} verificationEnabled={resource.verificationEnabled}/>
           </ContainerPadding>
         </>
       )}
-      <ButtonSaveContainer>
-        <Button variant="primary"><mark>Сохранить</mark></Button>
+      <ButtonSaveContainer onClick={() => handleSave()}>
+        <Button variant="primary" disabled={isConservation}><mark>{isConservation ? 'Сохранение...' : 'Сохранить'}</mark></Button>
       </ButtonSaveContainer>
     </>
   )

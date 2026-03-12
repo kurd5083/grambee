@@ -17,26 +17,22 @@ import { GapContainer } from "@/shared/GapContainer";
 
 import { useReceiptStore } from "@/store/receiptStore";
 import { usePopupStore } from "@/store/popupStore";
+import { useToastStore } from "@/store/toastStore";
 
 const BasicInformation = () => {
     const [nameCompany, setNameCompany] = useState('')
     const [botStatAPI, setBotStatAPI] = useState(false)
     const { openPopup, goBack } = usePopupStore()
+    const { showToast } = useToastStore();
 
     const navigate = useNavigate();
 
     const { receipt, setDailyTraffic, setCompDuration, setSpeedMode } = useReceiptStore();
 
      const handleNext = () => {
-        if(!receipt.dailyTraffic) {
-            return alert('выбирете суточный трафик')
-        }        
-        if(!receipt.compDuration) {
-            return alert('выбирете длительность комп.')
-        }  
-        if(!receipt.speedMode) {
-            return alert('выбирите режим скорости')
-        } 
+        if(!receipt.dailyTraffic) return showToast("Выбирете суточный трафик", "error");
+        if(!receipt.compDuration) return showToast("Выбирете длительность комп.", "error");
+        if(!receipt.speedMode) return showToast("Выбирите режим скорости", "error");
         
         navigate('/final-receipt')
     }

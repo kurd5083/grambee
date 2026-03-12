@@ -13,7 +13,7 @@ const CustomSelect = ({ options = [], value, onChange, placeholder = "Выбер
   const toggle = () => setOpen(prev => !prev);
 
   const handleSelect = (option) => {
-    onChange(option);
+    onChange(option.value);
     setOpen(false);
   };
 

@@ -5,19 +5,29 @@ const InfoRow = ({
   labelIcon,
   value,
   actionIcon,
-  actionText
+  actionText,
+  input,
+  inputValue,
+  onClick,
+  onChange
 }) => {
   return (
     <Container>
       <Label>
-        {labelIcon && <img src={labelIcon} />}
+        {labelIcon && labelIcon}
         {label}
       </Label>
 
       {value && <Value>{value}</Value>}
 
-      {actionIcon && <IconWrapper>{actionIcon}</IconWrapper>}
+      {actionIcon && <IconWrapper onClick={onClick}>{actionIcon}</IconWrapper>}
       {actionText && <TextWrapper>{actionText}</TextWrapper>}
+      {input && <Input 
+        type="text" 
+        placeholder="текст" 
+        value={inputValue}
+        onChange={onChange}
+      />}
     </Container>
   );
 };
@@ -55,6 +65,18 @@ const TextWrapper = styled.div`
   font-size: 14px;
   color: #6A7080CC;
   cursor: pointer;
+`;
+const Input = styled.input`
+  background-color: transparent;
+  border: 0;
+  width: min-content;
+  flex: 1;
+  text-align: right;
+  color: #D6DCEC;
+  
+  &::placeholder {
+    color: #6A7080CC;
+  }
 `;
 
 export default InfoRow;

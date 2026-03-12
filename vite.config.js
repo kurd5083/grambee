@@ -20,4 +20,14 @@ export default defineConfig({
       '@/api': path.resolve(__dirname, 'src/api'),
     },
   },
-})
+  server: {
+    host: true,
+    port: 5173,
+    strictPort: false,
+    hmr: false,
+    allowedHosts: [
+      'hippest-andrew-tragicomically.ngrok-free.dev',
+      'localhost',
+    ],
+  },
+});

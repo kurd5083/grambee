@@ -2,46 +2,118 @@ import { useState } from "react";
 import styled from "styled-components";
 
 import grambeeLogo from "@/assets/icons/grambee-logo.svg";
-import question from "@/assets/icons/question.svg";
+import robot from "@/assets/icons/robot.svg";
+import chat from "@/assets/icons/chat.svg";
 import PaperIcon from "@/icons/PaperIcon";
 import ImgIcon from "@/icons/ImgIcon";
 import MessageIcon from "@/icons/MessageIcon";
 import MapIcon from "@/icons/MapIcon";
 import TextIcon from "@/icons/TextIcon";
 import SettingIcon from "@/icons/SettingIcon";
+import SpeakerIcon from "@/icons/SpeakerIcon";
+import StarIcon from "@/icons/StarIcon";
 
 import InfoRow from "@/shared/InfoRow";
 import Button from "@/shared/Button";
 
+import useUpdateBot from "@/hooks/api/Bots/useUpdateBot";
+import useSendMessage from "@/hooks/api/Bots/useSendMessage";
+
+import { useUserStore } from '@/store/userStore';
+import { useToastStore } from "@/store/toastStore";
+import { usePopupStore } from "@/store/popupStore";
+import { useBotStore } from "@/store/botStore";
+
+
 const ContentTab = () => {
-    const [value, setValue] = useState('')
     const [isFocused, setIsFocused] = useState(false);
+
+    const { bot, setBoostButtonText, setBotButtonText, setChannelButtonText, setChatButtonText, setSubscriptionMessage } = useBotStore();
+
+    const { popup } = usePopupStore()
+
+    const { renewBot } = useUpdateBot({ id: popup.data.botId });
+    const { postPreview } = useSendMessage();
+
+    const { userLocal } = useUserStore()
+    const { showToast } = useToastStore();
+
+    const handlePreview = () => {
+        postPreview({
+            userId: userLocal?.telegramId,
+            text: bot.subscriptionMessage,
+            buttons: JSON.stringify([
+                { "text": "Вступить12", "url": "https://t.me/grambee" },
+                { "text": "Вступить", "url": "https://t.me/grambee" },
+                { "text": "Забустить", "url": "https://t.me/grambee" },
+                { "text": "Вступить12", "url": "https://t.me/grambee" }
+            ])
+        },
+        {
+            onSuccess: () => {
+                showToast("Сообщение успешно отправленно!", "success");
+            },
+            onError: (error) => {
+                showToast(
+                    error?.message || "Ошибка отправки сообщения",
+                    "error"
+                );
+            }
+        })
+    }
+
+    const handleSave = () => {
+        renewBot({
+            channelButtonText: bot.channelButtonText,
+            chatButtonText: bot.chatButtonText,
+            botButtonText: bot.botButtonText,
+            boostButtonText: bot.boostButtonText
+        }, {
+            onSuccess: () => {
+                showToast("Бот успешно обновлён!", "success");
+            },
+            onError: (error) => {
+                showToast(
+                    error?.message || "Ошибка при обновлении бота",
+                    "error"
+                );
+            }
+        })
+    }
 
     return (
         <>
-            <ButtonContainer>
+            <ButtonContainer onClick={() => handlePreview()}>
                 <Button variant="primary"><mark>Предпросмотр поста</mark></Button>
             </ButtonContainer>
             <InfoContainer>
                 <InfoRow
-                    label="Текст для кнопки в канале"
-                    labelIcon={question}
-                    actionText="Вступить"
+                    label="Текст кнопки в канале"
+                    labelIcon={<SpeakerIcon width={16} height={16} color="#FFB000" />}
+                    input={true}
+                    inputValue={bot.channelButtonText}
+                    onChange={(e) => setChannelButtonText(e.target.value)}
                 />
                 <InfoRow
-                    label="Текст для кнопки в чате"
-                    labelIcon={question}
-                    actionText="Вступить"
+                    label="Текст кнопки в чате"
+                    labelIcon={<img src={chat} alt="chat" />}
+                    input={true}
+                    inputValue={bot.chatButtonText}
+                    onChange={(e) => setChatButtonText(e.target.value)}
                 />
                 <InfoRow
-                    label="Текст для кнопки для ботов"
-                    labelIcon={question}
-                    actionText="Запустить"
+                    label="Текст кнопки ботов"
+                    labelIcon={<img src={robot} alt="robot" />}
+                    input={true}
+                    inputValue={bot.botButtonText}
+                    onChange={(e) => setBotButtonText(e.target.value)}
                 />
                 <InfoRow
-                    label="Текст для кнопки для бустов"
-                    labelIcon={question}
-                    actionText="Запустить"
+                    label="Текст кнопки бустов"
+                    labelIcon={<StarIcon width={16} height={16} colorFirst="#FFD26D" colorSecond="#FFB81A" uniqueId="content" />}
+                    input={true}
+                    inputValue={bot.boostButtonText}
+                    onChange={(e) => setBoostButtonText(e.target.value)}
                 />
             </InfoContainer>
             <ContentTitle>Сообщение при подписке</ContentTitle>
@@ -62,15 +134,52 @@ const ContentTab = () => {
                             <MessageText
                                 $isFocused={isFocused}
                                 placeholder="Введите текст"
-                                value={value}
-                                onChange={(e) => setValue(e.target.value)}
+                                value={bot.subscriptionMessage}
+                                onChange={(e) => setSubscriptionMessage(e.target.value)}
                                 onFocus={() => setIsFocused(true)}
                                 onBlur={() => setIsFocused(false)}
                             />
+                            <Commands>
+                                {bot.channelButtonText &&
+                                    <Сommand>
+                                        {bot.channelButtonText}
+                                        <ImgContainer>
+                                            <SpeakerIcon width={12} height={12} color="#FFB000" />
+                                        </ImgContainer>
+                                    </Сommand>
+                                }
+                                {bot.chatButtonText &&
+                                    <Сommand>
+                                        {bot.chatButtonText}
+                                        <ImgContainer>
+                                            <img src={chat} alt="chat" />
+                                        </ImgContainer>
+                                    </Сommand>
+                                }
+                                {bot.botButtonText &&
+                                    <Сommand>
+                                        {bot.botButtonText}
+                                        <ImgContainer>
+                                            <img src={robot} alt="robot" />
+                                        </ImgContainer>
+                                    </Сommand>
+                                }
+                                {bot.boostButtonText &&
+                                    <Сommand>
+                                        {bot.boostButtonText}
+                                        <ImgContainer>
+                                            <StarIcon width={12} height={12} colorFirst="#FFD26D" colorSecond="#FFB81A" uniqueId="contentView" />
+                                        </ImgContainer>
+                                    </Сommand>
+                                }
+                            </Commands>
                         </MessageBlock>
                     </Message>
                 </ChatBot>
             </ChatBotContainer>
+            <ButtonSaveContainer onClick={() => handleSave()}>
+                <Button variant="primary"><mark>Сохранить</mark></Button>
+            </ButtonSaveContainer>
         </>
     )
 }
@@ -166,7 +275,6 @@ const MessageText = styled.textarea`
     font-size: 12px;
     color: #FFFFFF;
     resize: none;
-    height: 100%;
     min-height: 84px;
     scrollbar-width: none;
     z-index: 4;
@@ -191,6 +299,44 @@ const MessageText = styled.textarea`
             color: #6A7080;
         }
     }
+`
+const Commands = styled.div`
+    margin-top: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+`
+const Сommand = styled.button`
+    position: relative;
+    font-size: 12px;
+    background-color: #272A33;
+    border-radius: 8px;
+    padding: 8px 16px;
+
+    &:hover {
+        background-color: #1f222b;
+    }
+`
+const ImgContainer = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    background-color: #1E2128;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    position: absolute;
+    left: -8px;
+    top: -6px;
+    img {
+        width: 12px;
+        height: 12px;
+    }
+`
+const ButtonSaveContainer = styled.div`
+  margin-top: 32px;
+  width: 100%;
 `
 
 export default ContentTab

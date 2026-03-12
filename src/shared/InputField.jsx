@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-const InputField = ({ id, label, labelIcon, status, value, onChange, icon, iconRight, inputAction, ...inputProps }) => {
+const InputField = ({ id, label, labelIcon, status, value, onChange, icon, iconRight, inputAction, readOnly, ...inputProps }) => {
   return (
     <Container>
       {label && (
@@ -11,7 +11,7 @@ const InputField = ({ id, label, labelIcon, status, value, onChange, icon, iconR
       )}
       <InputContainer>
         {icon && <IconWrapper>{icon}</IconWrapper>}
-        <Input id={id} {...inputProps} hasIconLeft={!!icon} hasIconRight={!!iconRight} value={value} onChange={onChange}/>
+        <Input id={id} {...inputProps} hasIconLeft={!!icon} hasIconRight={!!iconRight} value={value} onChange={onChange} readOnly={readOnly}/>
         {iconRight && <IconWrapperRight>{iconRight}</IconWrapperRight>}
         {inputAction && <TextWrapper><mark>{inputAction}</mark></TextWrapper>}
       </InputContainer>

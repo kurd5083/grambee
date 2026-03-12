@@ -1,9 +1,9 @@
+import { useState, useMemo } from "react";
 import styled from "styled-components";
-import { useNavigate } from "react-router";
 
+import cryptoBot from '@/assets/icons/crypto-bot.svg';
 import fire from '@/assets/icons/fire.svg';
 import UsdtIcon from "@/icons/UsdtIcon";
-
 import ArrowOblique from "@/icons/ArrowOblique";
 
 import Button from "@/shared/Button";
@@ -11,46 +11,145 @@ import Button from "@/shared/Button";
 import BlockWithArrow from "@/components/BlockWithArrow";
 import TitleHead from "@/components/TitleHead";
 
-const Bring = () => {
-    const navigate = useNavigate('')
+import useWithdrawalFunds from "@/hooks/api/useWithdrawalFunds";
 
-	return (
-		<BringContainer>
-			<TitleHead icon={<ArrowOblique width={24} height={24} colorFirst="#FFD26D" colorSecond="#FFB81A" />} title="Вывод" />
-			<BringContent>
-				<BringSubtext><mark>Сумма вывода</mark></BringSubtext>
-				<AmountRow>
-					<BringCount>5,200</BringCount>
-					<mark>₽</mark>
-				</AmountRow>
-                <BlockWithArrow 
-                    img={<UsdtIcon width={16} height={16} colorFirst="#09FF98" colorSecond="#09FF98" uniqueId="small" />}
+import { useUserStore } from '@/store/userStore';
+import { useToastStore } from "@/store/toastStore";
+
+const paymentMetrics = [
+    {
+        currency: "USDT",
+        img: <UsdtIcon width={16} height={16} colorFirst="#09FF98" colorSecond="#09FF98" uniqueId="small" />,
+        bg: '#17322D',
+        title: 'Tether USDT',
+        text: "TRC 20"
+
+    },
+    {
+        currency: "USDTcryptobot",
+        img: <img src={cryptoBot} alt="cryptoBot" />,
+        bg: '#272A33',
+        title: 'Tether USDT (cryptobot)',
+        text: "TRC 20"
+    },
+]
+
+const Bring = () => {
+    const [selectState, setSelectState] = useState({
+        state: false,
+        currency: paymentMetrics[0]
+    });
+    const [amount, setAmount] = useState("0");
+    const [walletAddress, setWalletAddress] = useState('')
+    const { conclusionFunds, isCalculation } = useWithdrawalFunds()
+    const { userLocal } = useUserStore()
+    const { showToast } = useToastStore();
+
+    const changeInput = (text) => {
+        const digits = text.replace(/\D/g, "").slice(0, 7)
+        setAmount(digits)
+    }
+    const formatted = amount ? Number(amount).toLocaleString("en-US") : ""
+
+    const handleBring = () => {
+        if (!amount || Number(amount) <= 0) {
+            showToast("Введите сумму для вывода", "error");
+            return;
+        }
+        
+        if (!walletAddress) {
+            showToast("Введите адрес получателя", "error");
+            return;
+        }
+
+        conclusionFunds({
+            telegramId: String(userLocal.telegramId),
+            amount: Number(amount),
+            asset: "USDT",
+            walletAddress,
+            description: "Withdrawal to main wallet"
+        }, {
+            onSuccess: () => {
+                showToast("Средства успешно выведены!", "success");
+                setAmount("");
+                setWalletAddress("");
+            },
+            onError: (error) => {
+                showToast(
+                    error?.message || "Ошибка при выводе средств",
+                    "error"
+                );
+            }
+        })
+    }
+
+    const calculateCommission = (amount) => {
+        const numAmount = Number(amount);
+        if (isNaN(numAmount) || numAmount <= 0) return 0;
+        return Number((numAmount * 0.015).toFixed(2));
+    };
+
+    const calculateFinalAmount = (amount) => {
+        const numAmount = Number(amount);
+        if (isNaN(numAmount) || numAmount <= 0) return 0;
+        const commission = calculateCommission(amount);
+        return Number((numAmount - commission).toFixed(2));
+    };
+
+    const commission = useMemo(() => calculateCommission(amount), [amount]);
+    const finalAmount = useMemo(() => calculateFinalAmount(amount), [amount]);
+
+    return (
+        <BringContainer>
+            <TitleHead icon={<ArrowOblique width={24} height={24} colorFirst="#FFD26D" colorSecond="#FFB81A" />} title="Вывод" />
+            <BringContent>
+                <BringSubtext><mark>Сумма вывода</mark></BringSubtext>
+                <AmountRow>
+                    <BalanceCount
+                        value={formatted}
+                        placeholder="0"
+                        onChange={(e) => changeInput(e.target.value)}
+                        onBlur={() => {
+                            if (!amount) setValue("0")
+                        }}
+                        style={{ width: `${Math.max(formatted.length, 1)}ch` }}
+                    />
+                    <mark>₽</mark>
+                </AmountRow>
+                <BlockWithArrow
                     type="select"
-                    title="Отправить на"
-                    text="BEP20 Address"
-                    onClick={() => navigate('/payment')}
+                    options={paymentMetrics}
+                    state={selectState.state}
+                    value={selectState.currency}
+                    onChange={setSelectState}
+                    onClick={() => setSelectState({ ...selectState, state: !selectState.state })}
                 />
-				<HeadTitle><img src={fire} alt="fire icon" /> Детали вывода</HeadTitle>
-				<InputLabel>
-					Адрес получателя
-					<input type="text" placeholder="Введите сумму" />
-				</InputLabel>
-				<PaymentInputs>
-					<InputLabel>
-						Комиссия сети
-						<input type="text" placeholder="Введите комиссию" />
-					</InputLabel>
-					<InputLabel>
-						Конечная стоимость
-						<input type="text" placeholder="Введите номер счёта" />
-					</InputLabel>
-				</PaymentInputs>
+                <HeadTitle><img src={fire} alt="fire icon" /> Детали вывода</HeadTitle>
+                <InputLabel>
+                    Адрес получателя
+                    <input
+                        type="text"
+                        placeholder="Введите адрес"
+                        value={walletAddress}
+                        onChange={(e) => setWalletAddress(e.target.value)}
+                    />
+                </InputLabel>
+                <PaymentInputs>
+                    <InputLabel>
+                        Комиссия сети
+                        <input type="text" value={commission > 0 ? `${commission} ₽` : "0 ₽"} placeholder="Комиссия сети" readOnly />
+                    </InputLabel>
+                    <InputLabel>
+                        Конечная стоимость
+                        <input type="text" value={finalAmount > 0 ? `${finalAmount} ₽` : "0 ₽"} placeholder="Конечная стоимость" readOnly />
+                    </InputLabel>
+                </PaymentInputs>
                 <ButtonContainer>
-                    <Button variant="goldButton">Вывести</Button>
+                    <Button variant="goldButton" onClick={() => handleBring()} disabled={isCalculation}>{isCalculation ? 'Вывод...' : 'Вывести'}</Button>
                 </ButtonContainer>
-			</BringContent>
-		</BringContainer>
-	)
+            </BringContent>
+        </BringContainer>
+    )
 }
 
 const BringContainer = styled.div`
@@ -96,10 +195,26 @@ const AmountRow = styled.div`
     display: flex;
     align-items: flex-end;
     gap: 16px;
-
     mark {
+        position: absolute;
+        right: -40px;
+        bottom: 28px;
         font-size: 48px;
     }
+`
+const BalanceCount = styled.input`
+    box-sizing: border-box;
+    font-size: 64px;
+    line-height: 64px;
+    height: auto;
+    border: none;
+    background: transparent;
+    text-align: right;
+    color: #D6DCEC;
+    border-bottom: 1px dashed #6A7080;
+    padding-bottom: 24px;
+    min-width: 100px;
+    text-align: center;
 `
 const BringCount = styled.p`
     box-sizing: border-box;

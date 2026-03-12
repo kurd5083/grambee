@@ -1,15 +1,28 @@
+import { useEffect } from "react";
+import { useNavigate } from "react-router";
+
 import styled from "styled-components";
 
+import qr from '@/assets/icons/qr-cod.svg';
 import PaymentIcon from '@/icons/PaymentIcon';
 import CopyIcon from '@/icons/CopyIcon';
-
-import qr from '@/assets/icons/qr-cod.svg';
 
 import Button from "@/shared/Button";
 
 import TitleHead from "@/components/TitleHead";
 
+import { useReplenishStore } from '@/store/replenishStore';
+
 const Payment = () => {
+    const { state, replenish, setState } = useReplenishStore()
+  
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if(!state) navigate("/replenish")
+        return () => setState(false)
+    }, [state])
+
     return (
         <PaymentContainer>
             <TitleHead icon={<PaymentIcon width={24} height={24} colorFirst="#FFD26D " colorSecond="#FFB81A" />} title="Оплата" />
@@ -19,30 +32,39 @@ const Payment = () => {
                 </QrContainer>
                 <PaymentSubtext><mark>итого к оплате</mark></PaymentSubtext>
                 <AmountRow>
-                    <PaymentCount>1,160</PaymentCount>
-                    <mark>₽</mark>
+                    <PaymentCount>{Number(replenish.amountDeposit).toFixed(2)}</PaymentCount>
+                    <mark>{(replenish.method == "USDT" || replenish.method == "CryptoBot") ? 'USD' : '₽'}</mark>
                 </AmountRow>
                 <PaymentDesc>СЧËТ ДЕЙСТВУЕТ ДО 25.12.2025</PaymentDesc>
 
                 <PaymentInputs>
-                    <InputLabel>
-                        Сумма
-                        <input type="text" placeholder="Введите сумму" />
-                    </InputLabel>
-                    <InputLabel>
-                        Комиссия
-                        <input type="text" placeholder="Введите комиссию" />
-                    </InputLabel>
+                    {(replenish.method === "TBank" ||
+                        replenish.method === "USDT" ||
+                        replenish.method === "CryptoBot") && (
+                            <InputLabel>
+                                Сумма
+                                <input type="text" value={Number(replenish.amountDeposit).toFixed(2)} placeholder="" readOnly />
+                            </InputLabel>
+                        )}
+                    {(replenish.method == "USDT" ||
+                        replenish.method == "CryptoBot") && (
+                            <InputLabel>
+                                Комиссия
+                                <input type="text" value={replenish.commission} placeholder="" readOnly />
+                            </InputLabel>
+                        )}
                 </PaymentInputs>
-                <InputLabel>
-                    Счёт
-                    <input type="text" placeholder="Введите номер счёта" />
-                    <IconContainer>
-                        <CopyIcon width={16} height={18} colorFirst="#FFD26D " colorSecond="#FFB81A" />
-                    </IconContainer>
-                </InputLabel>
+                {replenish.method == "USDT" && (
+                    <InputLabel>
+                        Счёт
+                        <input type="text" value={replenish.billing} placeholder="" readOnly />
+                        <IconContainer>
+                            <CopyIcon width={16} height={18} colorFirst="#FFD26D " colorSecond="#FFB81A" />
+                        </IconContainer>
+                    </InputLabel>
+                )}
                 <PayButton>
-                    <Button variant="primaryWhiteText">
+                    <Button variant="primaryWhiteText" onClick={() => window.open(replenish.paymentURL, "_blank")}>
                         Оплатить
                     </Button>
                 </PayButton>

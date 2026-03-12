@@ -8,8 +8,8 @@ import polFlag from '@/assets/flag/pol-flag.png';
 export const flagsList = [
   { code: 'RU', name: 'Россия', flag: rusFlag },
   { code: 'US', name: 'США', flag: usaFlag },
-  { code: 'KZ', name: 'Казахстан', flag: kazFlag },
-  { code: 'ES', name: 'Испания', flag: spainFlag },
-  { code: 'FR', name: 'Франция', flag: fraFlag },
-  { code: 'PL', name: 'Польша', flag: polFlag },
+  // { code: 'KZ', name: 'Казахстан', flag: kazFlag },
+  // { code: 'ES', name: 'Испания', flag: spainFlag },
+  // { code: 'FR', name: 'Франция', flag: fraFlag },
+  // { code: 'PL', name: 'Польша', flag: polFlag },
 ]

@@ -10,16 +10,20 @@ import Button from "@/shared/Button";
 
 import { usePopupStore } from "@/store/popupStore";
 import { useReceiptStore } from "@/store/receiptStore";
+import { useToastStore } from "@/store/toastStore";
 
 const SelectChannel = () => {
-    const { openPopup, closePopup } = usePopupStore()
+    const { openPopup, goBack } = usePopupStore()
     const { receipt, setChannel } = useReceiptStore();
-    
+    const { showToast } = useToastStore();
+
     const handleNext = () => {
-        if(!receipt.channel?.name) {
-            alert('введите сслыку на канал')
-            return
-        }        
+        if (!receipt.channel?.name) {
+            return showToast("Введите ссылку на канал", "error");
+        }
+        if (!receipt.channel.name.includes('t.me/')) {
+            return showToast("Ссылка должна содержать t.me/", "error");
+        }    
         openPopup('choosing-type-traffic', 'Выберите тип трафика', { step: 4, text: 'Определитесь с нужным типом трафика для вас' })
     }
 
@@ -40,7 +44,7 @@ const SelectChannel = () => {
                 </Button>
             </SelectChannelContainer>
             <Buttons>
-                <Button variant="default" onClick={() => closePopup()}>Отмена</Button>
+                <Button variant="default" onClick={() => goBack()}>Назад</Button>
                 <Button variant="primary" onClick={handleNext}>Далее</Button>
             </Buttons>
         </>

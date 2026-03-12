@@ -18,6 +18,7 @@ const Flags = ({ countries, select }) => {
                         <SearchIcon width={16} height={16} color="currentColor" />
                     </Search>
                 </InputContainer>
+                <Button variant="primaryNoBorder" width="150px" onClick={() => select("all")}><mark>Выбрать все</mark></Button>
             </TitleFlags>
             <FlagsBlocks>
                 <FlagsContainer>
@@ -25,16 +26,13 @@ const Flags = ({ countries, select }) => {
                         <Flag src={item.flag} alt={item.name} onClick={() => select(item.code)} $active={countries?.find((elem) => elem.code == item.code)}/>
                     ))}
                 </FlagsContainer>
-                <ButtonArrow>
+                {/* <ButtonArrow>
                     <ArrowIcon width={7} height={14} color="#FFB81A" />
-                </ButtonArrow>
+                </ButtonArrow> */}
             </FlagsBlocks>
             <SelectFlags>
                 <p>Выбраны:</p>
-                <span>Россия, Америка, Испания</span>
-                <ButtonContainer onClick={() => select("all")}>
-                    <Button variant="primaryNoBorder" width="150px"><mark>Выбрать все</mark></Button>
-                </ButtonContainer>
+                <span>{countries.length == 0 ? 'Выбирите страны' : countries.map((country) => country.name).join(', ')} </span>
             </SelectFlags>
         </>
     )
@@ -43,13 +41,17 @@ const TitleFlags = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 16px;
 	margin-top: 24px;
 `
 const Title = styled.h2`
     font-size: 18px;
 `
-const InputContainer = styled.button`
+const InputContainer = styled.div`
+    display: flex;
+    justify-content: flex-end;
     position: relative;
+    flex: 1;
 
     input {
         box-sizing: border-box;
@@ -60,6 +62,7 @@ const InputContainer = styled.button`
         font-weight: 600;
         padding-right: 40px;
         text-align: right;
+        width: 100%;
 
         &::placeholder {
             color: #6A7080CC;
@@ -136,11 +139,6 @@ const SelectFlags = styled.div`
     span {
         color: #6A7080;
     }
-`
-const ButtonContainer = styled.div`
-    display: flex;
-    justify-content: flex-end;
-    flex: 1;
 `
 
 export default Flags

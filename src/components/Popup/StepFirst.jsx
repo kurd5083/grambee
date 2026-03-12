@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import "swiper/css";
 
-import bot from "@/assets/icons/bot.svg";
+import botIcon from "@/assets/icons/bot-icon.svg";
 import robot from "@/assets/icons/robot.svg";
 import chat from "@/assets/icons/chat.svg";
 import FileIcon from "@/icons/FileIcon";
@@ -20,11 +20,21 @@ import { GapContainer } from "@/shared/GapContainer";
 import OptionCard from "@/components/OptionCard";
 import { usePopupStore } from "@/store/popupStore";
 
-const StepFirst = () => {
-  const [token, setToken] = useState("");
-  const [selectedIndex, setSelectedIndex] = useState(0);
+import { useBotStore } from "@/store/botStore";
+import { useToastStore } from "@/store/toastStore";
 
-  const { openPopup } = usePopupStore()
+const StepFirst = () => {
+  // const [selectedIndex, setSelectedIndex] = useState(0);
+  const { openPopup } = usePopupStore();
+  const { bot, setToken } = useBotStore();
+  const { showToast } = useToastStore();
+
+  const handleNext = () => {
+    if(!bot.token) {
+      return showToast("Введите токен", "error");
+    }
+    openPopup('step-second', 'Создание бота', { step: 2 })
+  }
 
   return (
     <>
@@ -42,6 +52,7 @@ const StepFirst = () => {
           onClick={() => window.open("https://docs.grambee.net/", "_blank")}
         />
       </ContainerPadding>
+      <GapContainer gap="24px">
       <PartnersEarn>
         <PartnersTitle><StarIcon width={24} height={23} colorFirst="#FFD26D" colorSecond="#FFB81A" />Сколько зарабатывают наши партнёры?</PartnersTitle>
         <PartnersList>
@@ -59,9 +70,9 @@ const StepFirst = () => {
           </PartnersItem>
         </PartnersList>
       </PartnersEarn>
-      <StepTitle>Тип продавца</StepTitle>
-      <GapContainer gap="24px">
-        <RadioContainer
+      {/* <StepTitle>Тип продавца</StepTitle> */}
+      
+        {/* <RadioContainer
           spaceBetween={10}
           slidesPerView="auto"
           slidesOffsetBefore={24}
@@ -82,22 +93,22 @@ const StepFirst = () => {
               <img src={chat} alt="chat" /> Чат
             </Radio>
           </SwiperSlideRadio>
-        </RadioContainer>
+        </RadioContainer> */}
         <ContainerPadding>
           <InputField
             id="token"
             label="Введите бота-чекера"
-            status={!token ? "Токен не установлен" : "Токен установлен"}
+            status={!bot.token ? "Токен не установлен" : "Токен установлен"}
             placeholder="Введите токен"
-            value={token}
+            value={bot.token}
             onChange={(e) => setToken(e.target.value)}
-            icon={<img src={bot} alt="bot" />}
+            icon={<img src={botIcon} alt="bot" />}
           />
         </ContainerPadding>
       </GapContainer>
       <Buttons>
         <Button variant="default">Отмена</Button>
-        <Button variant="primary" onClick={() => openPopup('step-second', 'Создание бота', { step: 2 })}>Далее</Button>
+        <Button variant="primary" onClick={() => handleNext()}>Далее</Button>
       </Buttons>
     </>
   )
@@ -122,8 +133,8 @@ const PartnersTitle = styled.h2`
   }
 `
 const PartnersList = styled.ul`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: 8px;
 `
 const PartnersItem = styled.li`

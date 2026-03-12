@@ -3,37 +3,88 @@ import styled from "styled-components";
 import TimeIcon from '@/icons/TimeIcon';
 import HeadphonesIcon from "@/icons/HeadphonesIcon";
 import CrossIcon from '@/icons/CrossIcon';
+import ArrowIcon from "@/icons/ArrowIcon";
 
 import Button from "@/shared/Button";
 
+import useDeleteNotification from "@/hooks/api/Notifications/useDeleteNotification";
+import useReadNotification from "@/hooks/api/Notifications/useReadNotification";
+
 import { usePopupStore } from "@/store/popupStore";
+import { useNotificationStore } from "@/store/notificationStore";
+import { useToastStore } from "@/store/toastStore";
 
 const NotificationsMessage = () => {
-  const { closePopup } = usePopupStore()
+  const { closePopup, goBack } = usePopupStore()
 
+  const { removeNotificationMutate, isDeleting } = useDeleteNotification();
+  const { readNotificationMutate, isReading } = useReadNotification();
+  const { notification } = useNotificationStore();
+  const { showToast } = useToastStore();
+
+  const handleDeleteOne = () => {
+    removeNotificationMutate({ id: notification.id }, {
+      onSuccess: () => {
+        showToast("Уведомление удалено", "success");
+        goBack();
+      },
+      onError: (error) => {
+        showToast(error?.message || "Ошибка при удалении", "error");
+      }
+    });
+  };
+const handleReadOne = () => {
+    readNotificationMutate({ id: notification.id }, {
+      onSuccess: () => {
+        showToast("Уведомление прочитано", "success");
+        goBack();
+      },
+      onError: (error) => {
+        showToast(error?.message || "Ошибка при прочтении", "error");
+      }
+    });
+  };
   return (
     <NotificationsContainer>
       <NotificationsHeader>
-        <ImgContainer><TimeIcon width={16} height={16} color="#4DFFA6"/></ImgContainer>
+        <HeaderLeft>
+          <ArrowContainer onClick={goBack}>
+            <ArrowIcon width={6} height={10} color="currentColor" />
+          </ArrowContainer>
+          <ImgContainer><TimeIcon width={16} height={16} color="#4DFFA6"/></ImgContainer>
+        </HeaderLeft>
         <PopupClose onClick={closePopup}>
-          <CrossIcon width={8} height={8} color="#D6DCEC"/>
+          <CrossIcon width={8} height={8} color="currentColor"/>
         </PopupClose>
       </NotificationsHeader>
       <NotificationsItem>
-        <ItemDate>13.11.2025</ItemDate>
-        <ItemTitle>Удержание средств для ресурса трафика: #T406</ItemTitle>
-        <ItemDesc>Блок отражает объём и структуру удержанных средств
+        <ItemDate>{new Date(notification.createdAt).toLocaleDateString('ru-RU')}</ItemDate>
+        <ItemTitle>{notification.message}</ItemTitle>
+        {/* <ItemDesc>Блок отражает объём и структуру удержанных средств
           по источнику #T406. Информация применяется для
           финансового контроля, расчёта обязательств и оценки
-          надёжности трафика.</ItemDesc>
-          <mark onClick={()=> window.open('https://t.me/ASSISTGB', "_blank")}>
-            <HeadphonesIcon width={16} height={16} colorFirst="#FFD26D" colorSecond="#FFB81A" />Обратиться в поддержку
-          </mark>
+          надёжности трафика.</ItemDesc> */}
+        <mark onClick={()=> window.open('https://t.me/ASSISTGB', "_blank")}>
+          <HeadphonesIcon width={16} height={16} colorFirst="#FFD26D" colorSecond="#FFB81A" uniqueId="notification" />Обратиться в поддержку
+        </mark>
       </NotificationsItem>
-
       <Buttons>
-        <Button variant="outline">Удалить</Button>
-        <Button variant="primaryWhiteText">Прочитать</Button>
+        <Button 
+          variant="outline" 
+          onClick={handleDeleteOne}
+          disabled={isDeleting || isReading}
+        >
+          {isDeleting ? "Удаление..." : "Удалить"}
+        </Button>
+        {!notification.isRead && (
+          <Button 
+            variant="primaryWhiteText" 
+            onClick={handleReadOne}
+            disabled={isReading || isDeleting}
+          >
+            {isReading ? "Прочтение..." : "Прочитать"}
+          </Button>
+        )}
       </Buttons>
     </NotificationsContainer>
   )
@@ -52,11 +103,30 @@ const NotificationsHeader = styled.div`
     gap: 16px;
   }
 `
+const HeaderLeft = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
+`
+const ArrowContainer = styled.div`
+  transform: rotate(180deg);
+  color: #6A7080;
+  cursor: pointer;
+
+  &:hover {
+    color: #D6DCEC;
+  }
+`;
 const PopupClose = styled.button`
   width: 24px;
 	height: 24px;
 	border-radius: 50%;
 	border: 1px solid #272A33;
+  color: #6A7080;
+
+  &:hover {
+    color: #D6DCEC;
+  }
 `;
 const NotificationsItem = styled.div`
   margin-top: 24px;

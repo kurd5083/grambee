@@ -2,14 +2,16 @@ import { create } from "zustand";
 
 const initialReceipt = {
   channel: null,
+  typeResource: null,
+  metrics: null,
   typeTraffic: null,
   typeCoverage: null,
   numberSubscribers: null,
   numberCampaignDays: null,
   countries: [],
-  selectedFilters: [],
+  selectedFilters: null,
   premiumCoverage: null,
-  price: 1540,
+  price: null,
   dailyTraffic: null,
   compDuration: null,
   speedMode: null,
@@ -31,6 +33,22 @@ export const useReceiptStore = create((set) => ({
             receipt: {
                 ...state.receipt,
                 channel: { name, username, data }
+            }
+        }))
+    }),
+    setTypeResource: ((type) => {
+        set((state) => ({
+            receipt: {
+                ...state.receipt,
+                typeResource: type
+            }
+        }))
+    }),
+    setMetrics: ((type) => {
+        set((state) => ({
+            receipt: {
+                ...state.receipt,
+                metrics: type
             }
         }))
     }),
@@ -75,11 +93,16 @@ export const useReceiptStore = create((set) => ({
         }))
     }),
     setFilters: ((filters) => {
-        console.log(filters)
         set((state) => ({
             receipt: {
                 ...state.receipt,
-                selectedFilters: filters
+                selectedFilters: {
+                    allowPremium: filters.allowPremium ?? false,
+                    allowGifts: filters.allowGifts ?? false,
+                    allowCIS: filters.allowCIS ?? false,
+                    allowRussian: filters.allowRussian,
+                    allowForeign: filters.allowForeign,
+                }
             }
         }))
     }),
@@ -88,6 +111,14 @@ export const useReceiptStore = create((set) => ({
             receipt: {
                 ...state.receipt,
                premiumCoverage: bool
+            }
+        }))
+    }),
+    setPrice: ((value) => {
+        set((state) => ({
+            receipt: {
+                ...state.receipt,
+               price: value
             }
         }))
     }),
@@ -162,5 +193,5 @@ export const useReceiptStore = create((set) => ({
                rangeReactionsTo: value
             }
         }))
-    })
+    }),
 }))

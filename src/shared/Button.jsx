@@ -1,8 +1,8 @@
 import styled, { css } from "styled-components";
 
-const Button = ({ variant = "primary", iconLeft, iconRight, children = "Сохранить", width, onClick, ...props }) => {
+const Button = ({ variant = "primary", iconLeft, iconRight, children = "Сохранить", width, onClick, disabled, ...props }) => {
     return (
-        <ButtonContainer $variant={variant} $width={width} {...props} onClick={onClick}>
+        <ButtonContainer $variant={variant} $width={width} {...props} onClick={onClick} disabled={disabled}>
             {iconLeft}
             {children}
             {iconRight}
@@ -103,11 +103,12 @@ const variantStyles = {
     `,
     
     danger: css`
-        background: #FF3C79;
-        color:#FFFFFF;
+        border: 1px solid #ff4d4d;
+        background: #2a2222;
+        color: #ff4d4d;
 
         &:hover {
-            filter: brightness(0.9);
+            background: #3b2b2b;
         }
     `,
     blurGradient: css`

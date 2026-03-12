@@ -7,19 +7,25 @@ import Button from "@/shared/Button";
 import Radio from "@/shared/Radio";
 import InputField from "@/shared/InputField";
 import { ContainerPadding } from "@/shared/ContainerPadding";
+import WarningBox from "@/shared/WarningBox";
 
 import { usePopupStore } from "@/store/popupStore";
 import { useReceiptStore } from "@/store/receiptStore";
+import { useToastStore } from "@/store/toastStore";
 
 const ChoosingTypeTraffic = () => {
     const { openPopup, goBack } = usePopupStore()
     const { receipt, setTypeTraffic } = useReceiptStore();
     const [token, setToken] = useState("");
+    const { showToast } = useToastStore();
 
     const handleNext = () => {
-        if(!token) {
-            return alert('Введите токен бота')
-        }   
+        if (!receipt.typeTraffic) {
+            return showToast("Выбирите тип трафика", "error");
+        }
+        if (receipt.typeTraffic == 'with-verification' && !token) {
+            return showToast("Введите токен бота", "error");
+        }
 
         openPopup('scale-audience', 'Масштабы закупки аудитории', { step: 5, text: 'Укажите нужные вам параметры аудитории' })
     }
@@ -27,31 +33,47 @@ const ChoosingTypeTraffic = () => {
     return (
         <ContainerPadding>
             <RadioContainer>
-                <Radio checked={receipt.typeTraffic === 'with-verification'} onChange={() => setTypeTraffic('with-verification')} text="2.3 ₽ за подписчика" view="circleText">
+                <Radio
+                    checked={receipt.typeTraffic === 'with-verification'}
+                    onChange={() => setTypeTraffic('with-verification')}
+                    text="2.3 ₽ за подписчика"
+                    view="circleText"
+                >
                     С проверкой
                 </Radio>
-                <Radio checked={receipt.typeTraffic  === 'without-verification'} onChange={() => setTypeTraffic('without-verification')} text="1.8 ₽ за подписчика" view="circleText">
+                <Radio
+                    checked={receipt.typeTraffic === 'without-verification'}
+                    onChange={() => setTypeTraffic('without-verification')}
+                    text="1.8 ₽ за подписчика"
+                    view="circleText"
+                >
                     Без проверки
                 </Radio>
             </RadioContainer>
-            <ChoosingTypeContainer>
-                <InputField
-                    id="token"
-                    label="Токен бота-чекера"
-                    placeholder="1245231521:AAHwPlf1t3mzjwx8uhlFXojD2lmpr021..."
-                    value={token}
-                    onChange={(e) => setToken(e.target.value)}
-                    status={<mark>Инструкция</mark>}
-                />
-                <Button variant="blueDark">Добавить бота в администраторы</Button>
-            </ChoosingTypeContainer>
-            <ButtonsActions>
-                <Button variant="default">
-                    <img src={createBot} alt="createBot" />
-                    Создать бота-чекер
-                </Button>
-                <Button variant="default">Проверить бота</Button>
-            </ButtonsActions>
+            {receipt.typeTraffic === 'with-verification' ? (
+                <>
+                    <ChoosingTypeContainer>
+                        <InputField
+                            id="token"
+                            label="Токен бота-чекера"
+                            placeholder="1245231521:AAHwPlf1t3mzjwx8uhlFXojD2lmpr021..."
+                            value={token}
+                            onChange={(e) => setToken(e.target.value)}
+                            status={<mark>Инструкция</mark>}
+                        />
+                        <Button variant="blueDark">Добавить бота в администраторы</Button>
+                    </ChoosingTypeContainer>
+                    <ButtonsActions>
+                        <Button variant="default">
+                            <img src={createBot} alt="createBot" />
+                            Создать бота-чекер
+                        </Button>
+                        <Button variant="default">Проверить бота</Button>
+                    </ButtonsActions>
+                </>
+            ) : receipt.typeTraffic === 'without-verification' && (
+                <WarningBox text="Lorem ipsum dolor sit, amet consectetur adipisicing elit. Porro, dicta." />
+            )}
             <Buttons>
                 <Button variant="default" onClick={() => goBack()}>Назад</Button>
                 <Button variant="primary" onClick={handleNext}>Далее</Button>

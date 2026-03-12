@@ -11,6 +11,7 @@ import { ContainerPadding } from "@/shared/ContainerPadding";
 
 import { usePopupStore } from "@/store/popupStore";
 import { useReceiptStore } from "@/store/receiptStore";
+import { useToastStore } from "@/store/toastStore";
 
 import { flagsList } from "@/data/flagsList";
 
@@ -19,7 +20,8 @@ const PurchaseCoverageOnceDay = () => {
     const navigate = useNavigate();
     
    const { receipt, setCountries } = useReceiptStore();
-    
+    const { showToast } = useToastStore();
+
     const selectCountries = (code) => {
         let newData = [];
         if (code === "all" && receipt.countries.length === flagsList.length) {
@@ -31,7 +33,7 @@ const PurchaseCoverageOnceDay = () => {
                 if (code === "all") {
                     newData = [...flagsList];
                 } else {
-                    newData = [...receipt.countries, { code, price: 1 }];
+                    newData = [...receipt.countries, { code, price: 1, name: flagsList.find((flag) => flag.code == code).name }];
                 }
             }
         }
@@ -40,7 +42,7 @@ const PurchaseCoverageOnceDay = () => {
     
     const handleNext = () => {
         if(receipt.countries.lenght == 0) {
-            return alert('выбирете страну')  
+            return showToast("Выбирете страну", "error");
         }        
 
         navigate('/final-receipt')

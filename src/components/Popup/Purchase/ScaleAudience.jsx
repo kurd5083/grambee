@@ -14,8 +14,11 @@ import InputField from "@/shared/InputField";
 
 import Flags from "@/components/Flags";
 
+import useCalculatePrice from "@/hooks/api/Resource/useCalculatePrice";
+
 import { usePopupStore } from "@/store/popupStore";
 import { useReceiptStore } from "@/store/receiptStore";
+import { useToastStore } from "@/store/toastStore";
 
 import { flagsList } from "@/data/flagsList";
 
@@ -23,7 +26,9 @@ const ScaleAudience = () => {
     const { openPopup, goBack } = usePopupStore()
     const navigate = useNavigate();
 
-    const { receipt, setNumberSubscribers, setNumberCampaignDays, setCountries } = useReceiptStore();
+    const { receipt, setNumberSubscribers, setNumberCampaignDays, setCountries, setPrice } = useReceiptStore();
+    const { showToast } = useToastStore();
+    const { computePrice } = useCalculatePrice()
 
     const selectCountries = (code) => {
         let newData = [];
@@ -36,7 +41,7 @@ const ScaleAudience = () => {
                 if (code === "all") {
                     newData = [...flagsList];
                 } else {
-                    newData = [...receipt.countries, { code, price: 1 }];
+                    newData = [...receipt.countries, { code, price: 1, name: flagsList.find((flag) => flag.code == code).name }];
                 }
             }
         }
@@ -44,15 +49,27 @@ const ScaleAudience = () => {
     }
 
     const handleNext = () => {
-        if (receipt.countries.lenght == 0) {
-            return alert('выбирете страну')
-        } else if (receipt.numberCampaignDays == '') {
-            return alert('введите количество дней')
-        } else if (receipt.numberSubscribers == '') {
-            return alert('введите количество подписчиков')
-        }
+        if (!receipt.numberSubscribers) return showToast("Введите количество подписчиков", "error");
+        if (!receipt.numberCampaignDays) return showToast("Введите количество дней", "error");
+        if (receipt.countries.length == 0) return showToast("Выбирете страну", "error"); 
 
-        navigate('/final-receipt')
+        computePrice({
+            type: receipt.typeResource.toUpperCase(),
+            quantity: Number(receipt.numberSubscribers),
+            linkChangeDays: Number(receipt.numberCampaignDays),
+            allowPremium: receipt.selectedFilters?.allowPremium ?? false,
+            allowRussian: receipt.selectedFilters?.allowRussian ?? false,
+            allowForeign: receipt.selectedFilters?.allowForeign ?? false,
+            allowCIS: receipt.selectedFilters?.allowCIS ?? false,
+            allowMixed: false,
+            allowGifts: receipt.selectedFilters?.allowGifts ?? false,
+            userLevel: "BRONZE"
+        }, {
+            onSuccess: (response) => {
+                setPrice(response.totalPrice)
+                navigate('/final-receipt')
+            },
+        })
     }
 
     return (
@@ -62,7 +79,7 @@ const ScaleAudience = () => {
                     <InputField
                         id="numberSubscribers"
                         label="Кол-во подписчиков"
-                        placeholder="Кол-во подписчиков"
+                        placeholder="КДП"
                         value={receipt.numberSubscribers}
                         onChange={(e) => setNumberSubscribers(e.target.value)}
                         icon={<UserIcon width={16} height={16} colorFirst='#FFD26D' colorSecond='#FFB81A' />}
@@ -71,7 +88,7 @@ const ScaleAudience = () => {
                     <InputField
                         id="numberCampaign"
                         label="Кол-во дней кампании"
-                        placeholder="Кол-во дней"
+                        placeholder="дни"
                         value={receipt.numberCampaignDays}
                         onChange={(e) => setNumberCampaignDays(e.target.value)}
                         icon={<img src={calendar} alt="calendar" />}

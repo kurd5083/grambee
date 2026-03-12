@@ -1,6 +1,5 @@
 import styled from "styled-components";
 
-
 import internet from '@/assets/icons/internet.svg';
 import fire from '@/assets/icons/fire.svg';
 import TgSplashIcon from "@/icons/TgSplashIcon";

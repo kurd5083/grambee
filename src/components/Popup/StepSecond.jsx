@@ -1,4 +1,3 @@
-import { useState } from "react"
 import styled from 'styled-components';
 
 import ArrowIcon from "@/icons/ArrowIcon";
@@ -10,68 +9,92 @@ import Button from "@/shared/Button";
 
 import { ContainerPadding } from "@/shared/ContainerPadding";
 
+import useCreateBot from "@/hooks/api/Bots/useCreateBot";
+
+import { useToastStore } from "@/store/toastStore";
 import { usePopupStore } from "@/store/popupStore";
+import { useBotStore } from "@/store/botStore";
 
 const StepSecond = () => {
-  const { goBack } = usePopupStore()
-  const [channelsCount, setChannelsCount] = useState("")
-  const [channelsButtonText, setChannelsButtonText] = useState("")
-  const [viewsButtonText, setViewsButtonText] = useState("")
-  const [boostButtonText, setBoostButtonText] = useState("")
-  const [chatsButtonText, setChatsButtonText] = useState("")
+  const { closePopup, goBack } = usePopupStore()
+  const { bot, setRequiredChannelsCount, setChannelButtonText, setChatButtonText, setBotButtonText, setBoostButtonText } = useBotStore();
+
+  const { addBot, isAdding } = useCreateBot();
+  const { showToast } = useToastStore();
+
+  const handleSave = () => {
+    if (!bot.requiredChannelsCount) return showToast("Введите количество каналов", "error");
+    if (!bot.channelButtonText) return showToast("Введите текст кнопки каналов", "error");
+    if (!bot.botButtonText) return showToast("Введите текст кнопки просмотров поста", "error");
+    if (!bot.boostButtonText) return showToast("Введите текст кнопки буста", "error");
+    if (!bot.chatButtonText) return showToast("Введите текст кнопки частов", "error");
+
+    addBot(bot, {
+      onSuccess: () => {
+        showToast("Бот успешно создан!", "success");
+        closePopup()
+      },
+      onError: (error) => {
+        showToast(
+          error?.message || "Ошибка при создании бота",
+          "error"
+        );
+      }
+    })
+  }
 
   return (
     <>
       <ContainerPadding>
         <GapContainer gap="16px">
-        <InputField
-          id="numberChannels"
-          label="Кол-во каналов"
-          placeholder="Введите текст"
-          value={channelsCount}
-          onChange={(e) => setChannelsCount(e.target.value)}
-          iconRight={<ArrowContainer>
-            <ArrowIcon width={6} height={10} color="currentColor" />
-            <ArrowIcon width={6} height={10} color="currentColor" />
-          </ArrowContainer>}
-        />
-        <InputField
-          id="numberChannels"
-          label="Текст кнопки каналов"
-          placeholder="Введите текст"
-          value={channelsButtonText}
-          onChange={(e) => setChannelsButtonText(e.target.value)}
-          iconRight={<EditIcon width={16} height={16} color="currentColor" />}
-        />
-        <InputField
-          id="numberChannels"
-          label="Текст кнопки просмотров поста"
-          placeholder="Введите текст"
-          value={viewsButtonText}
-          onChange={(e) => setViewsButtonText(e.target.value)}
-          iconRight={<EditIcon width={16} height={16} color="currentColor" />}
-        />
-        <InputField
-          id="numberChannels"
-          label="Текст кнопки буста"
-          placeholder="Введите текст"
-          value={boostButtonText}
-          onChange={(e) => setBoostButtonText(e.target.value)}
-          iconRight={<EditIcon width={16} height={16} color="currentColor" />}
-        />
-        <InputField
-          id="numberChannels"
-          label="Текст кнопки чатов"
-          placeholder="Введите текст"
-          value={chatsButtonText}
-          onChange={(e) => setChatsButtonText(e.target.value)}
-          iconRight={<EditIcon width={16} height={16} color="currentColor" />}
-        />
+          <InputField
+            id="numberChannels"
+            label="Кол-во каналов"
+            placeholder="Введите текст"
+            value={bot.requiredChannelsCount}
+            onChange={(e) => setRequiredChannelsCount(e.target.value)}
+            iconRight={<ArrowContainer>
+              <ArrowIcon width={6} height={10} color="currentColor" />
+              <ArrowIcon width={6} height={10} color="currentColor" />
+            </ArrowContainer>}
+          />
+          <InputField
+            id="numberChannels"
+            label="Текст кнопки каналов"
+            placeholder="Введите текст"
+            value={bot.channelButtonText}
+            onChange={(e) => setChannelButtonText(e.target.value)}
+            iconRight={<EditIcon width={16} height={16} color="currentColor" />}
+          />
+          <InputField
+            id="numberChannels"
+            label="Текст кнопки просмотров поста"
+            placeholder="Введите текст"
+            value={bot.botButtonText}
+            onChange={(e) => setBotButtonText(e.target.value)}
+            iconRight={<EditIcon width={16} height={16} color="currentColor" />}
+          />
+          <InputField
+            id="numberChannels"
+            label="Текст кнопки буста"
+            placeholder="Введите текст"
+            value={bot.boostButtonText}
+            onChange={(e) => setBoostButtonText(e.target.value)}
+            iconRight={<EditIcon width={16} height={16} color="currentColor" />}
+          />
+          <InputField
+            id="numberChannels"
+            label="Текст кнопки чатов"
+            placeholder="Введите текст"
+            value={bot.chatButtonText}
+            onChange={(e) => setChatButtonText(e.target.value)}
+            iconRight={<EditIcon width={16} height={16} color="currentColor" />}
+          />
         </GapContainer>
       </ContainerPadding>
       <Buttons>
         <Button variant="default" onClick={() => goBack()}>Назад</Button>
-        <Button variant="primary">Сохранить</Button>
+        <Button variant="primary" onClick={() => handleSave()} disabled={isAdding}>{isAdding ? 'Сохранение...' : 'Сохранить'}</Button>
       </Buttons>
     </>
   )

@@ -12,11 +12,28 @@ import Button from "@/shared/Button";
 import Radio from "@/shared/Radio";
 
 import { usePopupStore } from "@/store/popupStore";
+import { useReceiptStore } from "@/store/receiptStore";
+import { useToastStore } from "@/store/toastStore";
+
+import { getPriceResource } from "@/api/Resource/getPriceResource";
 
 const CreateResurceFirst = () => {
     const { openPopup, closePopup } = usePopupStore();
-    const [selectedRadio, setSelectedRadio] = useState('channel');
+    const { receipt, setTypeResource } = useReceiptStore();
+    const { showToast } = useToastStore();
 
+    const handleNext = () => {
+        if (!receipt.typeResource) return showToast("Выбирите тип ресурса", "error");
+
+        const resourceType = getPriceResource({ type: receipt.typeResource })
+         
+        receipt.typeResource === 'channel' || receipt.typeResource === 'chat' ? (
+            openPopup('create-resources-second', 'Создание ресурса', { step: 2, text: 'Укажите основные данные вашего ресурса' })
+        ) : (
+            openPopup('select-channel-bot', 'Выберите канал', { step: 2, text: 'Можете выбрать канал или же написать ссылку' })
+        )
+    }
+    
     return (
         <>
             <RadioContainer
@@ -26,31 +43,24 @@ const CreateResurceFirst = () => {
                 slidesOffsetAfter={24}
             >
                 <SwiperSlideRadio>
-                    <Radio checked={selectedRadio === 'channel'} onChange={() => setSelectedRadio('channel')} view="circle">
+                    <Radio checked={receipt.typeResource === 'channel'} onChange={() => setTypeResource('channel')} view="circle">
                         <SpeakerIcon width={18} height={16} color="#FFB000" /> Канал
                     </Radio>
                 </SwiperSlideRadio>
                 <SwiperSlideRadio>
-                    <Radio checked={selectedRadio === 'bot'} onChange={() => setSelectedRadio('bot')} view="circle">
+                    <Radio checked={receipt.typeResource === 'bot'} onChange={() => setTypeResource('bot')} view="circle">
                         <img src={robot} alt="robot" /> Бот
                     </Radio>
                 </SwiperSlideRadio>
                 <SwiperSlideRadio>
-                    <Radio checked={selectedRadio === 'chat'} onChange={() => setSelectedRadio('chat')} view="circle">
+                    <Radio checked={receipt.typeResource === 'chat'} onChange={() => setTypeResource('chat')} view="circle">
                         <img src={chat} alt="chat" /> Чат
                     </Radio>
                 </SwiperSlideRadio>
             </RadioContainer>
             <Buttons>
                 <Button variant="default" onClick={() => closePopup()}>Отмена</Button>
-                <Button variant="primary"
-                    onClick={() => {
-                        selectedRadio === 'channel' || selectedRadio === 'chat' ? (
-                            openPopup('create-resources-second', 'Создание ресурса', { step: 2, text: 'Укажите основные данные вашего ресурса'})
-                        ) : (
-                            openPopup('select-channel-bot', 'Выберите канал', { step: 2, text: 'Можете выбрать канал или же написать ссылку'})
-                        )
-                    }}>Далее</Button>
+                <Button variant="primary" onClick={() => handleNext()}>Далее</Button>
             </Buttons>
         </>
     )

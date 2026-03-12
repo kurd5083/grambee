@@ -7,7 +7,7 @@ const TimeIcon = ({ width, height, color }) => {
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
         >
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M8.6 7.504V3.2H7.4V8L10.7944 11.3944L11.6424 10.5464L8.6 7.504ZM8 16C3.5816 16 0 12.4184 0 8C0 3.5816 3.5816 0 8 0C12.4184 0 16 3.5816 16 8C16 12.4184 12.4184 16 8 16Z" fill={color} />
+            <path fill-rule="evenodd" clipRule="evenodd" d="M8.6 7.504V3.2H7.4V8L10.7944 11.3944L11.6424 10.5464L8.6 7.504ZM8 16C3.5816 16 0 12.4184 0 8C0 3.5816 3.5816 0 8 0C12.4184 0 16 3.5816 16 8C16 12.4184 12.4184 16 8 16Z" fill={color} />
         </svg>
 
     )

@@ -8,15 +8,17 @@ import Button from "@/shared/Button";
 
 import { usePopupStore } from "@/store/popupStore";
 import { useReceiptStore } from "@/store/receiptStore";
+import { useToastStore } from "@/store/toastStore";
 
 const SelectAreas = () => {
     const { openPopup, goBack } = usePopupStore();
 
     const { receipt, setTypeCoverage } = useReceiptStore();
+    const { showToast } = useToastStore();
 
     const handleNext = () => {
         if (!receipt.typeCoverage) {
-            return alert('выбирете охваты')
+            return showToast("Выбирете охваты", "error");
         }
 
         receipt.typeCoverage === 'constantly' ? (

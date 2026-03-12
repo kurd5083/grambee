@@ -1,4 +1,3 @@
-import { useState } from "react";
 import styled from "styled-components";
 
 import question from "@/assets/icons/question.svg";
@@ -10,17 +9,75 @@ import InputField from "@/shared/InputField";
 import ToggleSwitch from "@/shared/ToggleSwitch";
 import { GapContainer } from "@/shared/GapContainer";
 
+import useUpdateBot from "@/hooks/api/Bots/useUpdateBot";
+import useUpdateLeave from "@/hooks/api/Bots/useUpdateLeave";
+import useDeleteBot from "@/hooks/api/Bots/useDeleteBot";
+import useCopyToClipboard from '@/hooks/useCopyToClipboard';
+
+import { useBotStore } from "@/store/botStore";
+import { usePopupStore } from "@/store/popupStore";
+import { useToastStore } from "@/store/toastStore";
+
 const GeneralTab = () => {
-    const [token, setToken] = useState("");
-    const [webhook, setWebhook] = useState("");
-    const [checked, setChecked] = useState("");
+    const { popup, closePopup } = usePopupStore()
+
+    const { bot, setIsActive, setToken, setLeaveWebHookUrl, setApiLinksOnly } = useBotStore();
+    
+    const { renewBot } = useUpdateBot({ id: popup.data.botId });
+    const { renewLeave } = useUpdateLeave({ botId: popup.data.botId })
+    const { removeBot } = useDeleteBot();
+    const { copied, copyToClipboard } = useCopyToClipboard();
+
+    const { showToast } = useToastStore();
+
+    const handleSave = () => {
+        renewBot({
+            token: bot.token,
+            isActive: bot.isActive,
+        }, {
+            onSuccess: () => {
+                renewLeave({ leaveWebHookUrl: bot.leaveWebHookUrl }, {
+                    onSuccess: () => {
+                        showToast("Бот успешно обнавлен!", "success");
+                    },
+                    onError: (error) => {
+                        showToast(
+                            error?.message || "Ошибка при обнавлении бота",
+                            "error"
+                        );
+                    }
+                })
+            },
+            onError: (error) => {
+                showToast(
+                    error?.message || "Ошибка при обновлении бота",
+                    "error"
+                );
+            }
+        })
+    }
+    const handleRemove = (id) => {
+        removeBot({ id }, {
+            onSuccess: () => {
+               showToast("Бот успешно удален!", "success");
+               closePopup()
+            },
+            onError: (error) => {
+                showToast(
+                    error?.message || "Ошибка при удалении бота",
+                    "error"
+                );
+            }
+        })
+    }
 
     return (
         <>
             <InfoContainer>
                 <InfoRow
                     label="Токен"
-                    value="8240...gk50"
+                    value={bot.token.slice(0, 4)+'...'+bot.token.slice(bot.token.length-4, bot.token.length)}
+                    onClick={() => copyToClipboard(bot.token)}
                     actionIcon={
                         <IconWrapper>
                             <CopyIcon
@@ -34,7 +91,8 @@ const GeneralTab = () => {
                     } />
                 <InfoRow
                     label="Ключ доступа"
-                    value="GRAM...853D"
+                    value={bot.apiToken.slice(0, 4)+'...'+bot.apiToken.slice(bot.apiToken.length-4, bot.apiToken.length)}
+                    onClick={() => copyToClipboard(bot.apiToken)}
                     actionIcon={
                         <IconWrapper>
                             <CopyIcon
@@ -49,8 +107,8 @@ const GeneralTab = () => {
             </InfoContainer>
             <GapContainer gap="24px">
                 <ToggleContainer>
-                    <ToggleSwitch checked={checked} onChange={setChecked}><p>Статус</p></ToggleSwitch>
-                    <ToggleSwitch checked={checked} onChange={setChecked}>
+                    <ToggleSwitch checked={bot.isActive} onChange={setIsActive}><p>Статус</p></ToggleSwitch>
+                    <ToggleSwitch checked={bot.apiLinksOnly} onChange={setApiLinksOnly}>
                         <p>Получать только ссылки в API</p>
                         <img src={question} alt="question icon" />
                     </ToggleSwitch>
@@ -60,7 +118,7 @@ const GeneralTab = () => {
                     id="token"
                     label="Редактирование токена"
                     placeholder="824124:AAFmByelOqKFVa3C0Y7dYKL"
-                    value={token}
+                    value={bot.token}
                     onChange={(e) => setToken(e.target.value)}
                 />
                 <InputField
@@ -68,14 +126,17 @@ const GeneralTab = () => {
                     label="Webhook URL для отписок"
                     labelIcon={question}
                     placeholder="https://example.com/webhook/leaves"
-                    value={webhook}
-                    onChange={(e) => setWebhook(e.target.value)}
+                    value={bot.leaveWebHookUrl}
+                    onChange={(e) => setLeaveWebHookUrl(e.target.value)}
                 />
             </GapContainer>
             <Buttons>
                 <Button variant="default" width="100%">Выпустить новый ключ</Button>
-                <Button variant="danger" width="40%">Удалить</Button>
+                <Button variant="danger" width="40%" onClick={() => handleRemove(popup.data.botId)}>Удалить</Button>
             </Buttons>
+            <ButtonSaveContainer onClick={() => handleSave()}>
+                <Button variant="primary"><mark>Сохранить</mark></Button>
+            </ButtonSaveContainer>
         </>
     )
 }
@@ -110,6 +171,10 @@ const Buttons = styled.div`
   align-items: center;
   gap: 8px;
   margin-top: 16px;
+`
+const ButtonSaveContainer = styled.div`
+  margin-top: 32px;
+  width: 100%;
 `
 
 export default GeneralTab

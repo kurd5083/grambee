@@ -3,15 +3,11 @@ import styled from "styled-components";
 import { useState, useRef, useMemo } from "react";
 import chartBack from "@/assets/chart-back.png";
 
-const pointsMock = [
-    120, 450, 780, 320, 610, 900, 430, 670,
-    150, 980, 540, 300, 760, 810, 220, 640,
-    890, 370, 500, 720, 610, 430, 880, 970
-];
+const defaultPoints = Array(24).fill(0);
 
-const dataXMock = ['1 час', '2 час', '3 час', '4 час', '5 час', '6 час', '7 час', '8 час', '9 час', '10 час', '11 час', '12 час', '13 час', '14 час', '15 час', '16 час', '17 час', '18 час', '19 час', '20 час', '21 час', '22 час', '23 час', '24 час']
+const defaultXAxisLabels = ['1 час', '2 час', '3 час', '4 час', '5 час', '6 час', '7 час', '8 час', '9 час', '10 час', '11 час', '12 час', '13 час', '14 час', '15 час', '16 час', '17 час', '18 час', '19 час', '20 час', '21 час', '22 час', '23 час', '24 час']
 
-const Chart = ({ type }) => {
+const Chart = ({ type, points, xAxisLabels }) => {
     const [hoverChart, setHoverChart] = useState(null)
     const containerRef = useRef(null)
     const isDragging = useRef(false)
@@ -24,12 +20,14 @@ const Chart = ({ type }) => {
     const width = 1400;
     const height = 250;
 
-    const points = pointsMock;
-    const dataX = dataXMock;
-    const xLabels = dataXMock;
+    const safePoints = points ?? defaultPoints;
+    const safeXAxisLabels = xAxisLabels ?? defaultXAxisLabels;
 
-    const maxY = Math.max(...points, 1);
-    const minY = Math.min(...points, 0);
+    const dataX = safeXAxisLabels;
+    const xLabels = safeXAxisLabels;
+
+    const maxY = Math.max(...safePoints, 1);
+    const minY = Math.min(...safePoints, 0);
 
     const step = (maxY - minY) / 4;
 
@@ -40,13 +38,13 @@ const Chart = ({ type }) => {
     const maxYLength = Math.max(...dataY).toString().length;
     const yColumnWidth = maxYLength * 8 + 16;
 
-    const chartPoints = useMemo(() => points.map((item, i) => {
+    const chartPoints = useMemo(() => safePoints.map((item, i) => {
         const x = paddingX + (i * (width - paddingX * 2)) / (dataX.length - 1);
 
         const y = chartHeight - ((item - minY) / (maxY - minY)) * chartHeight;
 
         return { x, y };
-    }), [points, width, minY, maxY]);
+    }), [safePoints, width, minY, maxY]);
 
     const createBezierPath = (chartPoints) => {
         let d = `M ${chartPoints[0].x} ${chartPoints[0].y}`;
@@ -89,7 +87,7 @@ const Chart = ({ type }) => {
         setHoverChart({
             x: closest.x,
             y: closest.y,
-            value: points[closestIndex],
+            value: safePoints[closestIndex],
             date: dataX[closestIndex],
             label: 'Прибыль',
         });
@@ -167,8 +165,8 @@ const Chart = ({ type }) => {
                             x2="0"
                             y2={chartHeight}
                         >
-                            <stop offset="0%" stopColor="#FFB81A" stopOpacity="1" />
-                            <stop offset="100%" stopColor="#191b217b" stopOpacity="0" />
+                            <stop offset="0%" stop-color="#FFB81A" stopOpacity="1" />
+                            <stop offset="100%" stop-color="#191b217b" stopOpacity="0" />
                         </linearGradient>
 
                         <linearGradient
@@ -179,8 +177,8 @@ const Chart = ({ type }) => {
                             x2="0"
                             y2="0"
                         >
-                            <stop offset="50%" stopColor="#191B2100" stopOpacity="0" />
-                            <stop offset="100%" stopColor="#FFB81A" stopOpacity="1" />
+                            <stop offset="50%" stop-color="#191B2100" stopOpacity="0" />
+                            <stop offset="100%" stop-color="#FFB81A" stopOpacity="1" />
                         </linearGradient>
                     </defs>
                     <path d={createBezierPath(chartPoints)} fill="none" stroke="url(#line)" strokeWidth={2} />
@@ -195,6 +193,7 @@ const Chart = ({ type }) => {
                                 textAnchor="middle"
                                 fontSize="10"
                                 fill="#6A7080CC"
+                                style={{userSelect: 'none'}}
                             >
                                 {label}
                             </text>
@@ -211,7 +210,6 @@ const Chart = ({ type }) => {
 
                         return (
                             <g transform={`translate(${circleX}, ${circleY})`}>
-                                {/* Вертикальная линия */}
                                 <line
                                     x1={0}
                                     y1={0}
@@ -223,7 +221,6 @@ const Chart = ({ type }) => {
                                     pointerEvents="none"
                                 />
 
-                                {/* Горизонтальная линия */}
                                 <line
                                     x1={0}
                                     y1={0}
@@ -360,7 +357,6 @@ const Chart = ({ type }) => {
                             </>
                         );
                     })()}
-
                 </Svg>
             </ScrollContainer >
         </ChartGrid >
@@ -383,6 +379,7 @@ const YAxis = styled.div`
   position: relative;
   grid-column: 1;
   grid-row: 1;
+  user-select: none;
 `;
 
 const YLabel = styled.p`

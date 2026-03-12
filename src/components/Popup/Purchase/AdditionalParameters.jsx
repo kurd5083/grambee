@@ -35,15 +35,36 @@ const countryFilters = [
 
 const AdditionalParameters = () => {
     const [selectedCountry, setSelectedCountry] = useState(countryFilters[0])
-    const [selectedAccountFirst, setSelectedAccountFirst] = useState(fiterList[0])
-    const [selectedAccountSecond, setSelectedAccountSecond] = useState(fiterList[2])
+    const [selectedAccounts, setSelectedAccounts] = useState([]);
 
     const { goBack } = usePopupStore();
+
     const { setFilters } = useReceiptStore();
+
+    const toggleSelectedAccount = (item) => {
+        setSelectedAccounts(prev => {
+            const isSelected = prev.some(elem => elem.code === item.code);
+            if (isSelected) {
+                return prev.filter(elem => elem.code !== item.code);
+            } else {
+                return [...prev, item];
+            }
+        });
+    };
+
     const handleSave = () => {
-        setFilters([selectedAccountFirst, selectedAccountSecond]);
-        goBack()
-    }
+        const filters = {
+            allowPremium: selectedAccounts.some(acc => acc.code === "premium"),
+            allowGifts: selectedAccounts.some(acc => acc.code === "gifts"),
+            allowCIS: selectedCountry.id === "cis",
+            allowRussian: selectedCountry.id === "russia",
+            allowForeign: selectedCountry.id === "world",
+        };
+        
+        setFilters(filters);
+        goBack();
+    };
+
     return (
         <>
             <AdditionalTitle>
@@ -82,8 +103,8 @@ const AdditionalParameters = () => {
                 {fiterList.slice(0, 2).map((item, index) => (
                     <SwiperSlideRadio key={index}>
                         <Radio
-                            checked={selectedAccountFirst.code === item.code}
-                            onChange={() => setSelectedAccountFirst(item)}
+                            checked={selectedAccounts.some(elem => elem.code === item.code)}
+                            onChange={() => toggleSelectedAccount(item)}
                             view="circleBG"
                         >
                             {item.icon}
@@ -101,8 +122,8 @@ const AdditionalParameters = () => {
                 {fiterList.slice(2, 4).map((item, index) => (
                     <SwiperSlideRadio key={index}>
                         <Radio
-                            checked={selectedAccountSecond.code === item.code}
-                            onChange={() => setSelectedAccountSecond(item)}
+                            checked={selectedAccounts.some(elem => elem.code === item.code)}
+                            onChange={() => toggleSelectedAccount(item)}
                             view="circleBG"
                         >
                             {item.icon}

@@ -5,7 +5,7 @@ import CustomSelect from "@/shared/CustomSelect";
 import Button from "@/shared/Button";
 import { usePopupStore } from "@/store/popupStore";
 
-const TrafficFilter = ({ type }) => {
+const TrafficFilter = ({ type, filter, onChange }) => {
     const { openPopup } = usePopupStore()
 
     return (
@@ -13,10 +13,13 @@ const TrafficFilter = ({ type }) => {
             <CustomSelect
                 placeholder="Каналы"
                 options={[
-                    { value: "1", label: "1" },
-                    { value: "2", label: "2" },
-                    { value: "3", label: "3" },
+                    { value: "all", label: "Все" },
+                    { value: "channels", label: "Каналы" },
+                    { value: "bots", label: "Боты" },
+                    { value: "chats", label: "Чаты" },
                 ]}
+                value={filter}
+                onChange={onChange}
                 icon={<SpeakerIcon width={16} height={15} color="#D6DCEC" />}
             />
             <Button

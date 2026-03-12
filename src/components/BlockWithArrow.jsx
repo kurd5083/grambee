@@ -1,21 +1,47 @@
 import styled from "styled-components";
 import ArrowIcon from "@/icons/ArrowIcon";
 
-const BlockWithArrow = ({ img, type, title, text, onClick }) => {
+const BlockWithArrow = ({ img, type, title, text, state, value, options, onClick, onChange }) => {
+    const selectedOption = type === "select" && value?.currency 
+        ? options?.find(opt => opt.currency === value.currency) 
+        : null;
     return (
         <BlockContainer $type={type}>
             <ItemHead>
-                <ImgContainer $type={type}>
-                    {img}
+                <ImgContainer $type={type} $bg={selectedOption?.bg}>
+                    {type === "select" 
+                        ? selectedOption?.img || img  // Добавлен fallback
+                        : img
+                    }
                 </ImgContainer>
+
                 <ItemBody>
-                    <BodyTitle>{title}</BodyTitle>
-                    <BodyText>{text}</BodyText>
+                    <BodyTitle>
+                        {type == "select" ? 'Отправить на' : title}
+                    </BodyTitle>
+                    <BodyText>
+                        {type == "select" ? 'BEP20 Address' : text}
+                    </BodyText>
                 </ItemBody>
                 <ArrowContainer onClick={onClick} $type={type}>
                     <ArrowIcon width={6} height={10} color="#D6DCEC" />
                 </ArrowContainer>
             </ItemHead>
+            {state && (
+                <SelectList>
+                    {options?.map((opt) => (
+                        <SelectItem key={opt.currency} onClick={() => onChange({state: false, currency: opt})}>
+                            <ImgContainer $type={type} $bg={opt.bg}>
+                                {opt.img}
+                            </ImgContainer>
+                            <ItemBody>
+                                <BodyTitle>{opt.title}</BodyTitle>
+                                <BodyText>{opt.text}</BodyText>
+                            </ItemBody>
+                        </SelectItem>
+                    ))}
+                </SelectList>
+            )}
         </BlockContainer>
     )
 }
@@ -31,8 +57,9 @@ const BlockContainer = styled.div`
     padding: 16px;
     border-radius: 16px;
     margin-top: 24px;
+    z-index: 10;
 
-    ${({$type}) => $type == "select" && `
+    ${({ $type }) => $type == "select" && `
         max-width: 320px;
     `};
 `
@@ -43,17 +70,18 @@ const ItemHead = styled.div`
     gap: 16px;
 `;
 const ImgContainer = styled.div`
+    box-sizing: border-box;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 8px;
     width: 37px;
     height: 37px;
+    padding: 6px;
     border-radius: 10px;
     overflow: hidden;
-
-    ${({$type}) => $type == "select" && `
-        background-color: #17322D;
+   
+    ${({ $type, $bg }) => $type == "select" && `
+        background-color: ${$bg};
     `}
    
     img {
@@ -67,7 +95,7 @@ const ArrowContainer = styled.button`
     background-color: #383D4C;
     border-radius: 50%;
 
-    ${({$type}) => $type == "select" && `
+    ${({ $type }) => $type == "select" && `
        transform: rotate(90deg);
     `}
 `;
@@ -86,5 +114,40 @@ const BodyText = styled.p`
   color: #6A7080CC;
   font-weight: 600;
 `
+const SelectList = styled.ul`
+  box-sizing: border-box;
+  position: absolute;
+  top: calc(100% + 4px);
+  min-width: fit-content;
+  left: 0;
+  width: 100%;
+  background: #272A33;
+  border-radius: 16px;
+  max-height: 150px;
+  overflow-y: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+`;
+const SelectItem = styled.li`
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    cursor: pointer;
+    color: #d6dcec;
+    font-size: 14px;
+    border-bottom: 1px solid #30343F;
+
+    &:last-child {
+        border-bottom: 0;
+    }
+
+    &:hover {
+        background-color: #1F222B;
+    }
+`;
 
 export default BlockWithArrow

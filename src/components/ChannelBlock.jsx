@@ -1,21 +1,25 @@
 import styled from 'styled-components';
 import channel_ava from '@/assets/channel-ava.png';
+import SpeakerIcon from "@/icons/SpeakerIcon";
 
-const ChannelBlock = ({ type }) => {
-    return (
-        <ChannelContainer>
-            <ChannelAva src={channel_ava} alt="ava icon" />
-            <ChannelText>
-                <p>Antropia Digital</p>
-                <span>t.me/antropiadigital</span>
-            </ChannelText>
-            {type == "button" ? (
-                <ChannelButton>Выключить</ChannelButton>
-            ) : (
-                <ChannelSubText>1.500 подписчиков</ChannelSubText>
-            )}
-        </ChannelContainer>
-    )
+const ChannelBlock = ({ type, name, username, disabled, onClick }) => {
+  return (
+    <ChannelContainer>
+      {/* <ChannelAva src={channel_ava} alt="ava icon" /> */}
+      <ItemDefoultAva>
+        <SpeakerIcon width={18} height={16} color="#6A7080CC" />
+      </ItemDefoultAva>
+      <ChannelText>
+        <p>{name}</p>
+        <span>{username}</span>
+      </ChannelText>
+      {type == "button" ? (
+        <ChannelButton onClick={onClick} disabled={disabled}>{disabled ? 'Включение...' : 'Включить'}</ChannelButton>
+      ) : (
+        <ChannelSubText>{subscribers} подписчиков</ChannelSubText>
+      )}
+    </ChannelContainer>
+  )
 }
 
 const ChannelContainer = styled.div`
@@ -33,6 +37,15 @@ const ChannelAva = styled.img`
   object-fit: cover;
   border-radius: 10px;
 `;
+const ItemDefoultAva = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+  background-color: #333845;
+`
 const ChannelText = styled.div`
   flex-grow: 1;
   display: flex;

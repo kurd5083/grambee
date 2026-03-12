@@ -1,36 +1,71 @@
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 
-import head_ava from '@/assets/head-ava.png';
 import PlusIcon from '@/icons/PlusIcon';
 import BellIcon from '@/icons/BellIcon';
+
+import { SkeletonAvaHeader, SkeletonName, SkeletonLevel } from '@/shared/Skeleton';
+
+// import useGetBalance from '@/hooks/api/useGetBalance';
 import { usePopupStore } from "@/store/popupStore";
+import { useUserStore } from '@/store/userStore';
+import useGetNotifications from "@/hooks/api/Notifications/useGetNotifications";
 
 const Header = () => {
   const { popup, openPopup } = usePopupStore()
-	const navigate = useNavigate();
+  
+  const navigate = useNavigate();
+
+  const { userLocal } = useUserStore()
+  const isLoading = !userLocal
+  const { notifications } = useGetNotifications({ telegramId: userLocal?.telegramId });
 
   return (
     <HeaderContainer>
-      <HeaderAva src={head_ava} alt="ava user" onClick={() => navigate('/account')}/>
+      {isLoading ? (
+        <SkeletonAvaHeader />
+      ) : (
+        <HeaderAva
+          src={userLocal.avatarUrl}
+          alt="ava user"
+          onClick={() => navigate('/account')}
+        />
+      )}
       <InfoUser>
-        <UserName onClick={() => navigate('/account')}>Arseniy Popkov</UserName>
-        <UserLevel onClick={() => openPopup('level-system', 'Система уровней')}>уровень: <mark>новичек</mark></UserLevel>
+        {isLoading ? (
+          <>
+            <SkeletonName />
+            <SkeletonLevel />
+          </>
+        ) : (
+          <>
+            <UserName onClick={() => navigate('/account')}>
+              {userLocal.firstName} {userLocal.lastName}
+            </UserName>
+            <UserLevel onClick={() => openPopup('level-system', 'Система уровней')}>
+              уровень: <mark>новичок</mark>
+            </UserLevel>
+          </>
+        )}
       </InfoUser>
       <HeaderBalance>
-        <p>1,876 <mark>₽</mark></p>
+        <p>
+          {userLocal?.balance?.d 
+            ? Number(userLocal.balance.d.join('.')).toFixed(2)
+            : '0.00'} <mark>₽</mark>
+        </p>
         <ButtonBalance onClick={() => navigate('/replenish')}>
-          <PlusIcon width={10} height={10} colorFirst = "#FFD26D" colorSecond = "#FFB81A" />
+          <PlusIcon width={10} height={10} colorFirst="#FFD26D" colorSecond="#FFB81A" />
         </ButtonBalance>
       </HeaderBalance>
       <BellContainer onClick={() => openPopup('notifications')}>
-        <BellIcon 
-          width ={18} 
+        <BellIcon
+          width={18}
           height={20}
-          colorFirst={popup.content == 'notifications' ? '#FFD26D' : '#EFF5FF'}  
+          colorFirst={popup.content == 'notifications' ? '#FFD26D' : '#EFF5FF'}
           colorSecond={popup.content == 'notifications' ? '#FFB81A' : '#EFF5FF'}
         />
-        <BellCount>13</BellCount>
+        <BellCount>{notifications?.length || 0}</BellCount>
       </BellContainer>
     </HeaderContainer>
   )
@@ -46,6 +81,10 @@ const HeaderContainer = styled.header`
   z-index: 10;
 `;
 const HeaderAva = styled.img`
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 50%;
   cursor: pointer;
 `;
 const InfoUser = styled.div`
@@ -96,11 +135,16 @@ const BellContainer = styled.div`
   cursor: pointer;
 `;
 const BellCount = styled.p`
+  box-sizing: border-box;
   position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   top: -6px;
   right: -11px;
   border-radius: 50%;
   padding: 4px;
+  min-width: 18px;
   background-color: #FF3C79;
   font-size: 10px;
   line-height: 10px;

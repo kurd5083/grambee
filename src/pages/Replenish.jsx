@@ -4,24 +4,91 @@ import { useNavigate } from "react-router-dom";
 
 import tb from '@/assets/icons/tb.svg';
 import tbBg from '@/assets/icons/tbBg.svg';
-import UsdtIcon from '@/icons/UsdtIcon';
-
-import PlusIcon from '@/icons/PlusIcon';
 import cryptoBot from '@/assets/icons/crypto-bot.svg';
+import UsdtIcon from '@/icons/UsdtIcon';
+import PlusIcon from '@/icons/PlusIcon';
 
 import OptionCard from "@/components/OptionCard";
 import TitleHead from "@/components/TitleHead";
 
-  
-const Replenish = () => {
-  const [value, setValue] = useState("0");
-  const navigate = useNavigate();
+import useCreatePaymentTbank from '@/hooks/api/Payment/useCreatePaymentTbank';
+import useCreateUSDTPayment from '@/hooks/api/Payment/useCreateUSDTPayment';
+import useCreateInvoiceCrypto from '@/hooks/api/Payment/useCreateInvoiceCrypto';
 
+import { useReplenishStore } from '@/store/replenishStore';
+import { useUserStore } from '@/store/userStore';
+import { useToastStore } from "@/store/toastStore";
+
+const Replenish = () => {
+  const navigate = useNavigate();
+  const { replenish, setState, setOrderId, setPaymentId, setPaymentURL, setAmountDeposit, setMethod, 
+    setCommission, setBilling, setStatus } = useReplenishStore()
+  const { userLocal } = useUserStore()
+  const { showToast } = useToastStore();
+
+  const { createTbank } = useCreatePaymentTbank()
+  const { createUSDT } = useCreateUSDTPayment()
+  const { createInvoice } = useCreateInvoiceCrypto()
+  
   const changeInput = (text) => {
     const digits = text.replace(/\D/g, "").slice(0, 7)
-    setValue(digits)
+    setAmountDeposit(digits)
   }
-  const formatted = value ? Number(value).toLocaleString("en-US") : ""
+  const formatted = replenish.amountDeposit ? Number(replenish.amountDeposit).toLocaleString("en-US") : ""
+
+  const handleMethod = async (method) => {
+    if (!replenish.amountDeposit) return showToast("Введите сумму", "error");
+
+    setMethod(method)
+
+    if (method == "TBank") {
+      const reternData = await createTbank({
+        telegramId: String(userLocal.telegramId),
+        amount: Number(replenish.amountDeposit),
+        orderId: `ORDER-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+        description: "Пополнение баланса"
+      })
+      setOrderId(reternData.OrderId)
+      setPaymentId(reternData.PaymentId)
+      setPaymentURL(reternData.PaymentURL)
+    } 
+
+    if(method == "USDT") {
+      const reternData = await createUSDT({
+        amount: String(replenish.amountDeposit),
+        order_id: `ORDER-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+        currency: "USD",
+      })
+      setAmountDeposit(reternData.result.amount)
+      setPaymentURL(reternData.result.url)
+      setCommission(reternData.result?.commission || 0)
+      setBilling(reternData.result.uuid)
+    } 
+    
+    if(method == "CryptoBot") {
+      const reternData = await createInvoice({
+        amount: Number(replenish.amountDeposit),
+        asset: "USDT",
+        description: "Payment for services",
+        hiddenMessage: "Thank you for your payment!",
+        paidBtnName: "viewItem",
+        paidBtnUrl: "https://example.com/order/123",
+        payload: "order12345",
+        isAllowComments: true,
+        isAllowAnonymous: true,
+        expiresIn: 3600,
+        telegramId: Number(userLocal.telegramId),
+      })
+      setAmountDeposit(reternData.amount)
+      setPaymentId(reternData.paymentId)
+      setPaymentURL(reternData.botPayUrl)
+      setStatus(reternData.status)
+      setCommission(reternData.commission || 0)
+    } 
+    
+    setState(true)
+    navigate("/payment")
+  }
 
   return (
     <ReplenishContainer>
@@ -31,9 +98,10 @@ const Replenish = () => {
         <AmountRow>
           <BalanceCount
             value={formatted}
+            placeholder='0'
             onChange={(e) => changeInput(e.target.value)}
             onBlur={() => {
-              if (!value) setValue("0")
+              if (!replenish.amountDeposit) setAmountDeposit(0)
             }}
             style={{ width: `${Math.max(formatted.length, 1)}ch` }}
           />
@@ -41,37 +109,46 @@ const Replenish = () => {
         </AmountRow>
         <BalanceDesc>Введите предпочитаемую сумму для пополнения в рублях</BalanceDesc>
         <BalanceMenu>
-          <MenuItem $active={value == 1000} onClick={() => setValue(1000)}>1.000 <mark>₽</mark></MenuItem>
-          <MenuItem $active={value == 2500} onClick={() => setValue(2500)}>2.500 <mark>₽</mark></MenuItem>
-          <MenuItem $active={value == 5000} onClick={() => setValue(5000)}>5.000 <mark>₽</mark></MenuItem>
+          <MenuItem
+            $active={replenish.amountDeposit == 1000}
+            onClick={() => setAmountDeposit(1000)}>1.000 <mark>₽</mark>
+          </MenuItem>
+          <MenuItem
+            $active={replenish.amountDeposit == 2500}
+            onClick={() => setAmountDeposit(2500)}>2.500 <mark>₽</mark>
+          </MenuItem>
+          <MenuItem
+            $active={replenish.amountDeposit == 5000}
+            onClick={() => setAmountDeposit(5000)}>5.000 <mark>₽</mark>
+          </MenuItem>
         </BalanceMenu>
         <BalanceWay>
           <WayContainer>
             <OptionCard
               title="T-Банк"
               text="Рубли (RUB)"
-              icon={<img src={tb} alt="tb"/>}
-              bgIcon={<img src={tbBg} alt="tb"/>}
+              icon={<img src={tb} alt="tb" />}
+              bgIcon={<img src={tbBg} alt="tb" />}
               direction="vertical"
-              onClick={() => navigate("/payment")}
+              onClick={() => handleMethod("TBank")}
             />
             <OptionCard
               title="Tether USDT"
               text="Crypto TRC20"
-              icon={<UsdtIcon width={16} height={16} colorFirst="#09FF98" colorSecond="#09FF98"  uniqueId="small" />}
+              icon={<UsdtIcon width={16} height={16} colorFirst="#09FF98" colorSecond="#09FF98" uniqueId="small" />}
               bgIcon={
-                <UsdtIcon width={98} height={98} colorFirst="#252934" colorSecond="#1F222B" uniqueId="bg"/>
+                <UsdtIcon width={98} height={98} colorFirst="#252934" colorSecond="#1F222B" uniqueId="bg" />
               }
               direction="vertical"
-              onClick={() => navigate("/payment")}
+              onClick={() => handleMethod("USDT")}
             />
           </WayContainer>
           <OptionCard
             title="CryptoBot"
             text="Tether USDT TRC20"
-            icon={<img src={cryptoBot} alt="cryptoBot icon"/>}
+            icon={<img src={cryptoBot} alt="cryptoBot icon" />}
             direction="horizontal"
-            onClick={() => navigate("/payment")}
+            onClick={() => handleMethod("CryptoBot")}
           />
         </BalanceWay>
       </Balance>
@@ -143,7 +220,6 @@ const BalanceCount = styled.input`
     min-width: 100px;
     text-align: center;
 `
-
 const BalanceDesc = styled.p`
     text-align: center;
     text-transform: uppercase;

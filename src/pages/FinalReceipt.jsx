@@ -1,4 +1,7 @@
+import { useEffect } from "react";
 import styled from "styled-components";
+
+import { useNavigate } from "react-router";
 
 import { Swiper, SwiperSlide } from 'swiper/react';
 import "swiper/css";
@@ -22,16 +25,23 @@ import BlockWithArrow from "@/components/BlockWithArrow";
 import TitleHead from "@/components/TitleHead";
 
 import { useReceiptStore } from "@/store/receiptStore";
+
 import { flagsList } from "@/data/flagsList";
-import { useEffect } from "react";
 
 const FinalReceipt = () => {
     const { receipt, resetReceipt } = useReceiptStore()
+    const navigate = useNavigate();
+
     useEffect(() => {
-        return () => {
-            resetReceipt()
+        if (!receipt.price) {
+            resetReceipt();
+            navigate("/")
         }
-    }, [])
+        
+        return () => {
+            resetReceipt();
+        };
+    }, []); 
 
     return (
         <FinalReceiptContainer>

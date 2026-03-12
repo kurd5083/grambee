@@ -8,17 +8,15 @@ import { ContainerPadding } from "@/shared/ContainerPadding";
 
 import { usePopupStore } from "@/store/popupStore";
 import { useReceiptStore } from "@/store/receiptStore";
-
-
+import { useToastStore } from "@/store/toastStore";
    
 const SelectChannelOnceDay = () => {
     const { openPopup, goBack } = usePopupStore()
     const { receipt, setChannel } = useReceiptStore();
+    const { showToast } = useToastStore();
 
     const handleNext = () => {
-        if(!receipt.channel?.name) {
-            return alert('выбирите канал')
-        }  
+        if(!receipt.channel?.name) return showToast("Выбирите канал", "error"); 
             
         openPopup('purchase-coverage-once-day', 'Покупка охватов', { step: 4, text: 'Укажите нужные вам параметры для канала' })
     }

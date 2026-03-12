@@ -16,6 +16,7 @@ import Flags from "@/components/Flags";
 
 import { usePopupStore } from "@/store/popupStore";
 import { useReceiptStore } from "@/store/receiptStore";
+import { useToastStore } from "@/store/toastStore";
 
 import { flagsList } from "@/data/flagsList";
 
@@ -24,6 +25,7 @@ const PurchaseCoverageConstantly = () => {
     const navigate = useNavigate();
 
     const { receipt, setCountries, setErFrom, setErTo, setCoveragePeriod, setCoveragePeriodHours, setRangeReactionsFrom, setRangeReactionsTo } = useReceiptStore();
+    const { showToast } = useToastStore();
 
     const selectCountries = (code) => {
         let newData = [];
@@ -36,7 +38,7 @@ const PurchaseCoverageConstantly = () => {
                 if (code === "all") {
                     newData = [...flagsList];
                 } else {
-                    newData = [...receipt.countries, { code, price: 1 }];
+                    newData = [...receipt.countries, { code, price: 1, name: flagsList.find((flag) => flag.code == code).name }];
                 }
             }
         }
@@ -45,7 +47,7 @@ const PurchaseCoverageConstantly = () => {
 
     const handleNext = () => {
         if(receipt.countries.lenght == 0) {
-            return alert('выбирете страну')
+            return showToast("Выбирете страну", "error");
         }   
              
             

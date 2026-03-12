@@ -1,8 +1,6 @@
 import { useState } from "react";
 import styled from "styled-components";
 
-import Button from "@/shared/Button";
-
 import TabsNav from "@/components/TabsNav";
 import GeneralTab from "@/components/Popup/Bot/GeneralTab";
 import ContentTab from "@/components/Popup/Bot/ContentTab";
@@ -39,20 +37,12 @@ const Bot = () => {
         ) : activeTab == 'filters' && (
           <FilterTab/>
         )}
-        
-        <ButtonSaveContainer>
-          <Button variant="primary"><mark>Сохранить</mark></Button>
-        </ButtonSaveContainer>
       </BotContainer>
     </>
   )
 }
 const BotContainer = styled.div`
   padding: 0 24px 24px;
-`
-const ButtonSaveContainer = styled.div`
-  margin-top: 32px;
-  width: 100%;
 `
 
 export default Bot

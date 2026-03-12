@@ -1,4 +1,3 @@
-import { useState } from "react"
 import styled from 'styled-components';
 
 import SpeakerIcon from "@/icons/SpeakerIcon";
@@ -6,8 +5,17 @@ import SpeakerIcon from "@/icons/SpeakerIcon";
 import InputField from "@/shared/InputField";
 import Button from "@/shared/Button";
 
+import useGetReferralCode from "@/hooks/api/useGetReferralCode";
+import useCopyToClipboard from '@/hooks/useCopyToClipboard';
+
+import { useUserStore } from "@/store/userStore";
+
 const ShareResources = () => {
-  const [link, setLink] = useState("");
+  const { userLocal } = useUserStore()
+  const { code, codeLoading } = useGetReferralCode({ telegramId: userLocal?.telegramId})
+  
+  const { copied, copyToClipboard } = useCopyToClipboard();
+
   return (
     <ShareResourcesContainer>
       <ResourcesTitle>Ваша ссылка</ResourcesTitle>
@@ -15,27 +23,26 @@ const ShareResources = () => {
       <InputField
         id="link"
         placeholder="Ссылка на канал"
-        value={link}
-        onChange={(e) => setLink(e.target.value)}
+        value={`https://t.me/GRAMBEEBOT?start=motiv_${code?.referralCode}`}
         icon={<SpeakerIcon width={18} height={16} color="#FFB000"/>}
+        readOnly={true}
       />
-      <ButtonSaveContainer>
-        <Button variant="primary"><mark>Скопировать ссылку</mark></Button>
+      <ButtonSaveContainer onClick={() => copyToClipboard(`https://t.me/GRAMBEEBOT?start=motiv_${code?.referralCode}`)}>
+        <Button variant="primary"><mark>{copied ? 'Ссылка скопированна' : 'Скопировать ссылку'}</mark></Button>
       </ButtonSaveContainer>
     </ShareResourcesContainer>
   )
 }
 
-
 const ShareResourcesContainer = styled.div`
   padding: 0 24px 24px;
 `
 const ResourcesTitle = styled.h2`
-  margin-top: 32px;
   font-size: 24px;
 `
 const ResourcesSubTitle = styled.p`
   margin-top: 16px;
+  margin-bottom: 24px;
   font-size: 12px;
   color: #6A7080CC;
 `
@@ -43,4 +50,5 @@ const ButtonSaveContainer = styled.button`
   margin-top: 32px;
   width: 100%;
 `
+
 export default ShareResources

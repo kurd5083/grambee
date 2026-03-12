@@ -1,18 +1,18 @@
 import styled from 'styled-components';
 
-const StatisticList = () => {
+const StatisticList = ({price, dayLimit, verificationEnabled}) => {
     return (
         <StatisticContainer>
             <StatisticItem>
-                <mark>32.2 ₽</mark>
+                <mark>{price} ₽</mark>
                 <p>Стоимость ресурса</p>
             </StatisticItem>
             <StatisticItem>
-                <mark>Без проверки</mark>
+                <mark>{dayLimit}</mark>
                 <p>Дневной лимит</p>
             </StatisticItem>
             <StatisticItem>
-                <mark>Без проверки</mark>
+                <mark>{verificationEnabled ? 'С проверкой' : 'Без проверки'}</mark>
                 <p>Тип проверки</p>
             </StatisticItem>
             <StatisticItem>
