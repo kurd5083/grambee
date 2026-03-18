@@ -50,7 +50,6 @@ const BasicInformation = () => {
             username: receipt.username,
             channelId: receipt.channelId,
 
-            verificationEnabled: receipt.verificationEnabled,
             checkerBotToken: receipt.checkerBotToken,
 
             trafficSpeed: receipt.dayLimit,
@@ -67,7 +66,7 @@ const BasicInformation = () => {
             isAdult: receipt.isAdult,
             workBotApiKey: receipt.workBotApiKey,
             maintainBoosts: receipt.maintainBoosts,
-            
+
             verificationEnabled: false,
             isBotMembersKey: false,
             linkRefreshDays: 1,

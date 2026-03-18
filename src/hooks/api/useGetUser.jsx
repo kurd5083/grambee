@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query"
-import { getUser } from "@/api/getuser"
+import { getUserTelegram } from "@/api/getUserTelegram"
 
 const useGetUser = ({ telegramId }) => {
     const {data: user, isLoading: userLoading} = useQuery({
         queryKey: ['user', telegramId],
-        queryFn: () => getUser({ telegramId }),
+        queryFn: () => getUserTelegram({ telegramId }),
         enabled: !!telegramId,
     })
     return { user, userLoading }
