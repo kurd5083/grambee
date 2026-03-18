@@ -48,11 +48,11 @@ const Wallet = () => {
 	const [eyeState, setEyeState] = useState(localStorage.getItem('state-eye') === 'true');
 	const [isActive, setIsActive] = useState(false)
 	const [period, setPeriod] = useState("all");
-	const navigate = useNavigate();	
-	
+	const navigate = useNavigate();
+
 	const { userLocal } = useUserStore()
 	const { setTransactionDetails } = useTransactionDetailsStore()
-	
+
 	const isLoading = !userLocal
 
 	const { transactions, transactionsLoading } = useGetTransactions({ telegramId: userLocal?.telegramId })
@@ -60,11 +60,11 @@ const Wallet = () => {
 	const { dateFrom, dateTo } = getDatesByPeriod(period)
 
 	const { balanceStatistics, balanceStatisticsLoading } = useGetBalanceStatistics({
-		telegramId : userLocal?.telegramId,
+		telegramId: userLocal?.telegramId,
 		startDate: dateFrom,
-		endDate: dateTo 
+		endDate: dateTo
 	});
-	
+
 	const xAxisLabels = useMemo(() => {
 		if (!balanceStatistics?.daily) return [];
 		return generateXAxisLabels(period, balanceStatistics.daily);
@@ -131,20 +131,27 @@ const Wallet = () => {
 						{ value: "week", label: "За неделю" },
 						{ value: "month", label: "За месяц" },
 					]}
-					value={period} 
-					onChange={setPeriod} 
+					value={period}
+					onChange={setPeriod}
 					width="150px"
 				/>
 			</SelectContainer>
-			<Chart 
+			{console.log(balanceStatistics)}
+			<Chart
 				params={
-					balanceStatistics?.daily.map(item => ({
-						additions: item.additions,
-						subtractions: item.subtractions,
-						date: item.date
-					}))
+					period == '24h'
+						? balanceStatistics?.daily.map(item => ({
+							additions: item.additions,
+							subtractions: item.subtractions,
+							date: `${item.hour} час`
+						}))
+						: balanceStatistics?.daily.map(item => ({
+							additions: item.additions,
+							subtractions: item.subtractions,
+							date: item.date
+						}))
 				}
-				points={balanceStatistics?.daily.map((item) => item.additions)} 
+				points={balanceStatistics?.daily.map((item) => item.additions)}
 				xAxisLabels={xAxisLabels}
 			/>
 			<TransactionsContainer $isActive={isActive}>

@@ -17,7 +17,7 @@ import { useToastStore } from "@/store/toastStore";
 
 const CreateResurceFirst = () => {
     const { openPopup, closePopup } = usePopupStore();
-    const { receipt, setTypeFirst, resetReceipt } = useReceiptStore();
+    const { receipt, setTypeFirst, setType, resetReceipt } = useReceiptStore();
     const { showToast } = useToastStore();
     
     useEffect(() => {
@@ -48,7 +48,10 @@ const CreateResurceFirst = () => {
                     </Radio>
                 </SwiperSlideRadio>
                 <SwiperSlideRadio>
-                    <Radio checked={receipt.typeFirst === 'BOT'} onChange={() => setTypeFirst('BOT')} view="circle">
+                    <Radio checked={receipt.typeFirst === 'BOT'} onChange={() => {
+                        setType('BOT')
+                        setTypeFirst('BOT')
+                    }} view="circle">
                         <img src={robot} alt="robot" /> Бот
                     </Radio>
                 </SwiperSlideRadio>

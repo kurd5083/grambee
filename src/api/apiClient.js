@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { publicClient } from './publicClient';
 
 const createApiClient = (baseURL) => {
   const client = axios.create({
@@ -29,11 +30,7 @@ const createApiClient = (baseURL) => {
             throw new Error('InitData отсутствует');
           }
 
-          const response = await axios.post(
-            'https://api.grambee.net/api/v1/auth/refresh',
-            { initData },
-            { headers: { Accept: 'application/json' } }
-          );
+          const response = await publicClient.post('/auth/refresh', { initData });
 
           const newToken = response.data?.accessToken;
 

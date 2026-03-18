@@ -3,7 +3,7 @@ export const generateXAxisLabels = (selectedPeriod, data) => {
     
     switch(selectedPeriod) {
       case "24h":
-        return data.map((_, index) => `${index + 1}ч`);
+        return data.map((_, index) => `${index}ч`);
         
       case "week":
         const days = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];

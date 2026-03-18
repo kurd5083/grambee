@@ -17,28 +17,77 @@ import { GapContainer } from "@/shared/GapContainer";
 
 import SpeedMode from "@/components/SpeedMode";
 
+import useCreateResource from "@/hooks/api/Resource/useCreateResource";
+
 import { useReceiptStore } from "@/store/receiptStore";
 import { usePopupStore } from "@/store/popupStore";
 import { useToastStore } from "@/store/toastStore";
-
+import { useUserStore } from '@/store/userStore';
 
 const BasicInformation = () => {
     const [botStatAPI, setBotStatAPI] = useState(false)
-    const { openPopup, goBack } = usePopupStore()
+    const { goBack } = usePopupStore()
     const { showToast } = useToastStore();
+    const { userLocal } = useUserStore()
 
     const navigate = useNavigate();
 
-    const { receipt, setName, setTrafficSpeed, setActiveDays } = useReceiptStore();
+    const { receipt, setName, setDayLimit, setActiveDays, setPrice } = useReceiptStore();
 
-     const handleNext = () => {
-        if(!receipt.trafficSpeed) return showToast("Выбирете суточный трафик", "error");
-        // if(!receipt.activeDays) return showToast("Выбирете длительность комп.", "error");
+    const { addResource } = useCreateResource({ userTelegramId: userLocal?.telegramId })
+
+    const handleNext = () => {
+        if(!receipt.dayLimit) return showToast("Выбирете суточный трафик", "error");
+        if(!receipt.activeDays) return showToast("Выбирете длительность комп.", "error");
         if(!receipt.speedMode) return showToast("Выбирите режим скорости", "error");
-        
-        navigate('/final-receipt')
-    }
 
+        addResource({
+            userTelegramId: Number(userLocal?.telegramId),
+            type: receipt.type,
+
+            inviteLink: receipt.inviteLink,
+            name: receipt.name,
+            username: receipt.username,
+            channelId: receipt.channelId,
+
+            verificationEnabled: receipt.verificationEnabled,
+            checkerBotToken: receipt.checkerBotToken,
+
+            trafficSpeed: receipt.dayLimit,
+            dayLimit: receipt.dayLimit,
+            activeDays: receipt.activeDays,
+            speedMode: receipt.speedMode,
+
+            regions: receipt.regions,
+
+            allowCIS: receipt.allowCIS,
+            allowGifts: receipt.allowGifts,
+            allowPremium: receipt.allowPremium,
+
+            isAdult: receipt.isAdult,
+            workBotApiKey: receipt.workBotApiKey,
+            maintainBoosts: receipt.maintainBoosts,
+            
+            verificationEnabled: false,
+            isBotMembersKey: false,
+            linkRefreshDays: 1,
+            allowRussian: false,
+            allowForeign: false,
+            allowMixed: false,
+            autoPostType: "FUTURE",
+            pastPostsPeriod: 7,
+
+            posts: [],
+        }, {
+            onSuccess: (response) => {
+                setPrice(response.price)
+                showToast("Ресурс успешно создан", "success");
+                navigate('/final-receipt')
+            }, onError: (error) => {
+                showToast(error?.message || "Ошибка при создании ресурса", "error");
+            }
+        })
+    }
     return (
         <>
             <ContainerPadding>
@@ -57,8 +106,8 @@ const BasicInformation = () => {
                             id="trafficSpeed"
                             label="Суточный трафик"
                             placeholder="Суточный трафик"
-                            value={receipt.trafficSpeed}
-                            onChange={(e) => setTrafficSpeed(e.target.value)}
+                            value={receipt.dayLimit}
+                            onChange={(e) => setDayLimit(Number(e.target.value))}
                             icon={<UserIcon width={16} height={16} colorFirst='#FFD26D' colorSecond='#FFB81A' />}
                             iconRight={<EditIcon width={16} height={16} color='currentColor' />}
                         />
@@ -67,7 +116,7 @@ const BasicInformation = () => {
                             label="Длительность комп."
                             placeholder="Длительность комп."
                             value={receipt.activeDays}
-                            onChange={(e) => setActiveDays(e.target.value)}
+                            onChange={(e) => setActiveDays(Number(e.target.value))}
                             icon={<img src={calendar} alt="calendar" />}
                             iconRight={<ArrowContainer>
                                 <ArrowIcon width={6} height={10} color="currentColor" />
@@ -89,7 +138,7 @@ const BasicInformation = () => {
             </ContainerPadding>
             <Buttons>
                 <Button variant="default" onClick={() => goBack()}>Назад</Button>
-                <Button variant="primary"onClick={handleNext}>Далее</Button>
+                <Button variant="primary" onClick={handleNext}>Купить кампанию</Button>
             </Buttons>
         </>
     )

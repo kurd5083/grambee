@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-const StatisticList = ({price, dayLimit, verificationEnabled, timeRemaining, timeRemainingLoading }) => {
+const StatisticList = ({ price, dayLimit, verificationEnabled, timeRemaining, timeRemainingLoading }) => {
     return (
         <StatisticContainer>
             <StatisticItem>
@@ -16,7 +16,14 @@ const StatisticList = ({price, dayLimit, verificationEnabled, timeRemaining, tim
                 <p>Тип проверки</p>
             </StatisticItem>
             <StatisticItem>
-                {/* <mark>{timeRemainingLoading ? '0' : timeRemaining?.timeRemaining ? timeRemaining.timeRemaining : 'Недоступно'}</mark> */}
+                <mark>
+                    {timeRemainingLoading
+                        ? '0'
+                        : timeRemaining?.timeRemaining
+                            ? `${timeRemaining.timeRemaining.days}д ${timeRemaining.timeRemaining.hours}ч ${timeRemaining.timeRemaining.minutes}м`
+                            : 'Недоступно'
+                    }
+                </mark>
                 <p>Осталось времени</p>
             </StatisticItem>
         </StatisticContainer>

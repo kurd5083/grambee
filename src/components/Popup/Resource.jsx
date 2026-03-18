@@ -64,8 +64,14 @@ const Resource = () => {
   });
   console.log(statisticsResource)
   const xAxisLabels = useMemo(() => {
-    if (!statisticsResource?.data.stats.dailyStats) return [];
-    return generateXAxisLabels(period, statisticsResource.data.stats.dailyStats);
+    if (!statisticsResource?.data?.stats?.dailyStats) return [];
+
+    return generateXAxisLabels(
+      period,
+      period === '24h'
+        ? statisticsResource?.data?.stats?.dailyStats[0]?.hourlyStats
+        : statisticsResource?.data?.stats?.dailyStats
+    );
   }, [period, statisticsResource]);
 
   const handleSave = () => {
@@ -198,18 +204,30 @@ const Resource = () => {
           <ContainerPadding>
             <СhoicePeriod name={receipt.name} period={period} onChange={setPeriod} />
           </ContainerPadding>
-          <Chart 
-            points={statisticsResource?.data.stats.dailyStats.map((item) => item.joins)} 
-            params={
-              statisticsResource?.data.stats.dailyStats.map(item => ({
-                joins: item.joins,
-                leaves: item.leaves,
-                remained: item.remained,
-                totalActive: item.totalActive,
-                date: item.date
-              }))
+          <Chart
+            points={
+              period == '24h'
+                ? statisticsResource?.data.stats.dailyStats[0]?.hourlyStats.map((item) => item.joins)
+                : statisticsResource?.data.stats.dailyStats.map((item) => item.joins)
             }
-            xAxisLabels={xAxisLabels} 
+            params={
+              period == '24h'
+                ? statisticsResource?.data.stats.dailyStats[0]?.hourlyStats.map(item => ({
+                  joins: item.joins,
+                  leaves: item.leaves,
+                  remained: item.remained,
+                  totalActive: statisticsResource?.data.stats.dailyStats[0]?.totalActive,
+                  date: `${item.hour} час`
+                }))
+                : statisticsResource?.data.stats.dailyStats.map(item => ({
+                  joins: item.joins,
+                  leaves: item.leaves,
+                  remained: item.remained,
+                  totalActive: item.totalActive,
+                  date: item.date
+                }))
+            }
+            xAxisLabels={xAxisLabels}
           />
           <ContainerPadding>
             <IndicatorsContainer>

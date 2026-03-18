@@ -9,19 +9,21 @@ import InputField from "@/shared/InputField";
 import { ContainerPadding } from "@/shared/ContainerPadding";
 import WarningBox from "@/shared/WarningBox";
 
-import useInviteLinkResolve from "@/hooks/api/Resource/useInviteLinkResolve";
+import { extractUsernameFromLink } from "@/lib/extractUsernameFromLink";
 
 import { usePopupStore } from "@/store/popupStore";
 import { useReceiptStore } from "@/store/receiptStore";
 import { useToastStore } from "@/store/toastStore";
 
-import { checkBotAdmin } from "@/api/Resource/checkBotAdmin";
+import { getBotInfo } from '@/api/Bots/getBotInfo';
+
 
 const SelectChannelBot = () => {
+    const [isCheckingToken, setIsCheckingToken] = useState(false);
+
     const { openPopup, goBack } = usePopupStore()
     const { receipt, setCheckerBotToken, setVerificationEnabled, setInviteLink, setName, setUsername } = useReceiptStore();
     const { showToast } = useToastStore();
-    const { inviteLink } = useInviteLinkResolve();
 
     const handleNext = () => {
         if (!receipt.inviteLink) {
@@ -34,24 +36,71 @@ const SelectChannelBot = () => {
             return showToast("Ссылка на бота должна заканчиваться на 'bot' или '_bot' (например: @username_bot или @usernamebot)", "error");
         }
 
+        const expectedUsername = extractUsernameFromLink(receipt.inviteLink);
+
+        if (!expectedUsername) {
+            return showToast("Не удалось извлечь username из ссылки", "error");
+        }
+
         setName(receipt.inviteLink)
         setUsername(receipt.inviteLink)
 
         if (receipt.verificationEnabled) {
             if (!receipt.checkerBotToken) return showToast("Введите токен бота", "error");
 
-            checkBotAdmin({ botToken: receipt.checkerBotToken, channelId: receipt.channelId })
-                .then((adminResponse) => {
-                    if (!adminResponse?.isAdmin) return showToast(adminResponse?.message || "Бот не является администратором канала", "error");
-                    openPopup('scale-audience', 'Масштабы закупки аудитории', { step: 5, text: 'Укажите нужные вам параметры аудитории' })
+            getBotInfo({ BOT_TOKEN: receipt.checkerBotToken })
+                .then((result) => {
+                    if (result?.ok && result?.result) {
+                        const actualUsername = result.result.username;
+                        const botId = result.result.id;
+                        if (actualUsername.toLowerCase() === expectedUsername.toLowerCase()) {
+                            showToast(`Бот @${actualUsername} успешно проверен`, "success");
+                            openPopup('scale-audience', 'Масштабы закупки аудитории', { step: 5, text: 'Укажите нужные вам параметры аудитории' })
+                        } else {
+                            showToast(`Токен от бота @${actualUsername}, а ожидается @${expectedUsername}`, "error");
+                        }
+                    }
                 })
                 .catch((error) => {
-                    return showToast(error?.message || "Ошибка при проверке бота", "error");
+                    return showToast(error?.message || "Неверный токен бота", "error");
                 })
         } else {
             openPopup('scale-audience', 'Масштабы закупки аудитории', { step: 5, text: 'Укажите нужные вам параметры аудитории' })
         }
     }
+
+    const handleCheckToken = () => {
+        if (!receipt.checkerBotToken) return showToast("Введите токен бота", "error");
+        
+        if (!receipt.inviteLink) return showToast("Сначала введите ссылку на бота", "error");
+
+        const expectedUsername = extractUsernameFromLink(receipt.inviteLink);
+        
+        if (!expectedUsername)  return showToast("Не удалось извлечь username из ссылки", "error");
+
+        setIsCheckingToken(true);
+        
+        getBotInfo({ BOT_TOKEN: receipt.checkerBotToken })
+            .then((result) => {
+                if (result?.ok && result?.result) {
+                    const actualUsername = result.result.username;
+                    
+                    if (actualUsername.toLowerCase() === expectedUsername.toLowerCase()) {
+                        showToast(`Бот @${actualUsername} работает и соответствует ссылке`, "success");
+                    } else {
+                        showToast(`Токен от бота @${actualUsername}, а ожидается @${expectedUsername}`, "error");
+                    }
+                } else {
+                    showToast(result?.description || "Неверный токен бота", "error");
+                }
+            })
+            .catch((error) => {
+                showToast(error?.message || "Ошибка при проверке токена", "error");
+            })
+            .finally(() => {
+                setIsCheckingToken(false);
+            });
+    };
 
     return (
         <ContainerPadding>
@@ -92,7 +141,13 @@ const SelectChannelBot = () => {
                             onChange={(e) => setCheckerBotToken(e.target.value)}
                             status={<mark>Инструкция</mark>}
                         />
-                        <Button variant="blueDark">Проверить исправность токена</Button>
+                       <Button 
+                            variant="blueDark" 
+                            onClick={handleCheckToken}
+                            disabled={isCheckingToken}
+                        >
+                            {isCheckingToken ? "Проверка..." : "Проверить исправность токена"}
+                        </Button>
                     </SelectChannelContainer>
                 </>
             ) : receipt.verificationEnabled === false && (

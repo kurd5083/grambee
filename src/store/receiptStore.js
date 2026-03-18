@@ -35,7 +35,6 @@ const initialReceipt = {
     // allowRussian: false,
     // allowForeign: false,
     // allowMixed: false,
-    trafficSpeed: 1,
     price: null,
     pastPostsPeriod: 7
 };
@@ -43,8 +42,15 @@ const initialReceipt = {
 export const useReceiptStore = create((set) => ({
     receipt: initialReceipt,
 
-    resetReceipt: () => set({ receipt: initialReceipt }),
-
+    resetReceipt: () => set((state) => ({ 
+        receipt: {
+        ...initialReceipt,
+        workBotApiKey: state.receipt.workBotApiKey
+        } 
+    })),
+    resetReceiptFull: () => set(() => ({ 
+        receipt: {...initialReceipt} 
+    })),
     setResource: (({ id, name, pastPostsDays, username, inviteLink, checkerBotToken, price, dayLimit, activeDays, verificationEnabled, autoLinkRefresh }) => {
         set((state) => ({
             receipt: {
@@ -76,6 +82,14 @@ export const useReceiptStore = create((set) => ({
             receipt: {
                 ...state.receipt,
                 checkerBotToken: value
+            }
+        }))
+    }),
+    setWorkBotApiKey: ((value) => {
+        set((state) => ({
+            receipt: {
+                ...state.receipt,
+                workBotApiKey: value
             }
         }))
     }),
@@ -280,14 +294,6 @@ export const useReceiptStore = create((set) => ({
             receipt: {
                 ...state.receipt,
                 isAdult: value,
-            }
-        }))
-    }),
-    setTrafficSpeed: ((value) => {
-        set((state) => ({
-            receipt: {
-                ...state.receipt,
-                trafficSpeed: value
             }
         }))
     }),

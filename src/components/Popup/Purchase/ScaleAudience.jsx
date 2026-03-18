@@ -16,13 +16,11 @@ import InputField from "@/shared/InputField";
 import Flags from "@/components/Flags";
 import SpeedMode from "@/components/SpeedMode";
 
-import useCalculatePrice from "@/hooks/api/Resource/useCalculatePrice";
 import useCreateResource from "@/hooks/api/Resource/useCreateResource";
 
 import { usePopupStore } from "@/store/popupStore";
 import { useReceiptStore } from "@/store/receiptStore";
 import { useToastStore } from "@/store/toastStore";
-
 import { useUserStore } from '@/store/userStore';
 
 import { flagsList } from "@/data/flagsList";
@@ -35,8 +33,6 @@ const ScaleAudience = () => {
 
     const { showToast } = useToastStore();
     const { userLocal } = useUserStore()
-
-    const { computePrice } = useCalculatePrice()
 
     const { addResource } = useCreateResource({ userTelegramId: userLocal?.telegramId })
 
@@ -63,69 +59,51 @@ const ScaleAudience = () => {
         if (!receipt.activeDays) return showToast("Введите количество дней", "error");
         if (receipt.regions.length == 0) return showToast("Выбирете страну", "error");
 
-        computePrice({
+        addResource({
+            userTelegramId: Number(userLocal?.telegramId),
             type: receipt.type,
-            quantity: receipt.dayLimit,
-            linkChangeDays: receipt.activeDays,
-            allowPremium: receipt.allowPremium,
-            // allowRussian: receipt.allowRussian,
-            // allowForeign: receipt.allowForeign,
+
+            inviteLink: receipt.inviteLink,
+            name: receipt.name,
+            username: receipt.username,
+            channelId: receipt.channelId,
+
+            verificationEnabled: receipt.verificationEnabled,
+            checkerBotToken: receipt.checkerBotToken,
+
+            trafficSpeed: receipt.dayLimit,
+            dayLimit: receipt.dayLimit,
+            activeDays: receipt.activeDays,
+            speedMode: receipt.speedMode,
+
+            regions: receipt.regions,
+
             allowCIS: receipt.allowCIS,
-            // allowMixed: receipt.allowMixed,
             allowGifts: receipt.allowGifts,
-            userLevel: "BRONZE"
+            allowPremium: receipt.allowPremium,
+
+            isAdult: receipt.isAdult,
+            workBotApiKey: receipt.workBotApiKey,
+
+            // непонятно зачем в каналах это передается
+            isBotMembersKey: false,
+            linkRefreshDays: 1,
+            allowRussian: false,
+            allowForeign: false,
+            allowMixed: false,
+            maintainBoosts: false,
+            autoPostType: "FUTURE",
+            pastPostsPeriod: 7,
+
+            posts: [],
         }, {
             onSuccess: (response) => {
-                addResource({
-                    userTelegramId: userLocal?.telegramId,
-                    type: receipt.type,
-
-                    inviteLink: receipt.inviteLink,
-                    name: receipt.name,
-                    username: receipt.username,
-                    channelId: receipt.channelId,
-
-                    verificationEnabled: receipt.verificationEnabled,
-                    checkerBotToken: receipt.checkerBotToken,
-
-                    trafficSpeed: receipt.trafficSpeed,
-                    dayLimit: receipt.dayLimit,
-                    activeDays: receipt.activeDays,
-                    speedMode: receipt.speedMode,
-
-                    regions: receipt.regions,
-
-                    allowCIS: receipt.allowCIS,
-                    allowGifts: receipt.allowGifts,
-                    allowPremium: receipt.allowPremium,
-
-                    isAdult: receipt.isAdult,
-                    workBotApiKey: receipt.workBotApiKey,
-                    // price: response.price,
-
-                    // непонятно зачем в каналах это передается
-                    isBotMembersKey: false,
-                    linkRefreshDays: 1,
-                    allowRussian: false,
-                    allowForeign: false,
-                    allowMixed: false,
-                    maintainBoosts: false,
-                    autoPostType: "FUTURE",
-                    pastPostsPeriod: 7,
-
-                    posts: [],
-                }, {
-                    onSuccess: () => {
-                        showToast("Ресурс успешно создан", "success");
-                        navigate('/final-receipt')
-                    }, onError: (error) => {
-                        showToast(error?.message || "Ошибка при создании ресурса", "error");
-                    }
-                })
-                setPrice(response.totalPrice)
+                setPrice(response.price)
+                showToast("Ресурс успешно создан", "success");
+                navigate('/final-receipt')
             }, onError: (error) => {
                 showToast(error?.message || "Ошибка при создании ресурса", "error");
-            },
+            }
         })
     }
 

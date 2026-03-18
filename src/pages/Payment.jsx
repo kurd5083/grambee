@@ -11,16 +11,22 @@ import Button from "@/shared/Button";
 
 import TitleHead from "@/components/TitleHead";
 
-import { useReplenishStore } from '@/store/replenishStore';
+import useCopyToClipboard from '@/hooks/useCopyToClipboard';
 
-const Payment = () => {
-    const { state, replenish, setState } = useReplenishStore()
+import { useReplenishStore } from '@/store/replenishStore';
   
+const Payment = () => {
+    const { state, replenish, setState, setAmountDeposit } = useReplenishStore()
+    const { copied, copyToClipboard } = useCopyToClipboard();
+
     const navigate = useNavigate();
 
     useEffect(() => {
         if(!state) navigate("/replenish")
-        return () => setState(false)
+        return () => {
+            setState(false)
+            setAmountDeposit(null)
+        }
     }, [state])
 
     return (
@@ -58,7 +64,7 @@ const Payment = () => {
                     <InputLabel>
                         Счёт
                         <input type="text" value={replenish.billing} placeholder="" readOnly />
-                        <IconContainer>
+                        <IconContainer onClick={() => copyToClipboard(replenish.billing)}>
                             <CopyIcon width={16} height={18} colorFirst="#FFD26D " colorSecond="#FFB81A" />
                         </IconContainer>
                     </InputLabel>

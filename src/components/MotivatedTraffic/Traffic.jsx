@@ -32,8 +32,8 @@ import { statsResource } from "@/api/Resource/statsResource";
 
 const Traffic = ({ type, traffic, loading, title, text, status, filter, apiToken }) => {
 	const [loadingStates, setLoadingStates] = useState({});
-	const { openPopup } = usePopupStore();
-	const { setResource } = useReceiptStore();
+	const { openPopup, closePopup } = usePopupStore();
+	const { setResource, setWorkBotApiKey } = useReceiptStore();
 	const { setBot } = useBotStore();
 	const { showToast } = useToastStore();
 
@@ -142,21 +142,24 @@ const Traffic = ({ type, traffic, loading, title, text, status, filter, apiToken
 				verificationEnabled: item.verificationEnabled,
 				autoLinkRefresh: item.autoLinkRefresh,
 			})
-			:
-			setBot({
-				id: item.id,
-				token: item.token,
-				apiToken: item.apiToken,
-				boostButtonText: item.boostButtonText,
-				botButtonText: item.botButtonText,
-				channelButtonText: item.channelButtonText,
-				chatButtonText: item.chatButtonText,
-				leaveWebHookUrl: item.leaveWebHookUrl,
-				isActive: item.isActive,
-				apiLinksOnly: item.apiLinksOnly,
-			})
+			: 
+			(
+				setWorkBotApiKey(item.apiToken),
+				setBot({
+					id: item.id,
+					token: item.token,
+					apiToken: item.apiToken,
+					boostButtonText: item.boostButtonText,
+					botButtonText: item.botButtonText,
+					channelButtonText: item.channelButtonText,
+					chatButtonText: item.chatButtonText,
+					leaveWebHookUrl: item.leaveWebHookUrl,
+					isActive: item.isActive,
+					apiLinksOnly: item.apiLinksOnly,
+				})
+			)
 
-		type === 'home' || type === 'resources' ?
+			type === 'home' || type === 'resources' ?
 			openPopup('resource', `Ресурс # T${item.id}`) :
 			openPopup('bot', 'Бот # T221', { botId: item.id })
 	}
@@ -176,6 +179,7 @@ const Traffic = ({ type, traffic, loading, title, text, status, filter, apiToken
 						archive({ id: item.id }, {
 							onSuccess: () => {
 								showToast("Ресурс успешно архивирован", "success");
+								closePopup();
 							},
 							onError: (error) => {
 								showToast(error?.message || "Ошибка при архивировании", "error");
@@ -185,6 +189,7 @@ const Traffic = ({ type, traffic, loading, title, text, status, filter, apiToken
 						removeBot({ id: item.id }, {
 							onSuccess: () => {
 								showToast("Бот успешно удален", "success");
+								closePopup();
 							},
 							onError: (error) => {
 								showToast(error?.message || "Ошибка при удалении", "error");

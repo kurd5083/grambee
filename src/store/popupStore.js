@@ -27,8 +27,6 @@ export const usePopupStore = create((set) => ({
     closePopup: () => {
         document.body.style.overflow = "auto"
         
-        // useReceiptStore.getState().resetReceipt()
-        
         set(() => ({
             popup: { state: false, content: null, name: null, data: null, previousPage: [] }
         }))

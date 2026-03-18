@@ -32,17 +32,17 @@ import { useReceiptStore } from "@/store/receiptStore";
 import { flagsList } from "@/data/flagsList";
 
 const FinalReceipt = () => {
-    const { receipt, resetReceipt } = useReceiptStore()
+    const { receipt, resetReceiptFull } = useReceiptStore()
     const navigate = useNavigate();
 
     useEffect(() => {
         if (!receipt.price) {
-            resetReceipt();
+            resetReceiptFull();
             navigate("/")
         }
 
         return () => {
-            resetReceipt();
+            resetReceiptFull();
         };
     }, []);
 
@@ -86,12 +86,6 @@ const FinalReceipt = () => {
                         <ParamsBlocks options={[
                             { value: <>От <mark>{receipt.rangeReactionsFrom || 0}</mark></>, iconRight: <img src={fireFilling} alt="fireFilling" /> },
                             { value: <>До <mark>{receipt.rangeReactionsTo || 0}</mark></>, iconRight: <img src={fireFilling} alt="fireFilling" /> }
-                        ]} />
-                    )}
-                    {receipt.trafficSpeed && receipt.activeDays && (
-                        <ParamsBlocks options={[
-                            { value: `${receipt.trafficSpeed || 0}`, lableLeft: <mark>Бусты</mark> },
-                            { value: `${receipt.activeDays || 0} дней`, lableLeft: <mark>Дни</mark> }
                         ]} />
                     )}
                     {receipt.channel?.data && (

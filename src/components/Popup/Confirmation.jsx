@@ -8,11 +8,7 @@ const Confirmation = () => {
     const { popup, closePopup } = usePopupStore();
 
     const handleConfirm = () => {
-        popup.data.onConfirm({
-            onSuccess: () => {
-                closePopup();
-            }
-        });
+        popup.data.onConfirm();
     };
 
     return (
