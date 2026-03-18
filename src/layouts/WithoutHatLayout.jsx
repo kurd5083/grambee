@@ -57,7 +57,7 @@ const Container = styled.div`
   margin: 0 auto;
   min-height: 100vh;
   box-sizing: border-box;
-  padding-bottom: 126px;
+  padding-bottom: 108px;
   overflow: hidden;
 `;
 
