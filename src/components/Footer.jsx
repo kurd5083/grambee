@@ -26,8 +26,8 @@ const Footer = () => {
 		<FooterContainer $width={widthScreen}>
 			<MenuItem $active={locationState == '/'} onClick={() => navigate('/')}>
 				<ShopIcon 
-					width={26}
-					height={28}
+					width={24}
+					height={24}
 					colorFirst={locationState == '/' ? '#FFD26D' : '#6A7080'} 
 					colorSecond={locationState == '/' ? '#FFB81A' : '#6A7080'}
 				/>
@@ -35,8 +35,8 @@ const Footer = () => {
 			</MenuItem>
 			<MenuItem $active={locationState == '/sell'} onClick={() => navigate('/sell')}>
 				<DollarIcon 
-					width={27}
-					height={27}
+					width={24}
+					height={24}
 					colorFirst={locationState == '/sell' ? '#FFD26D' : '#6A7080'} 
 					colorSecond={locationState == '/sell' ? '#FFB81A' : '#6A7080'}
 				/>
@@ -47,8 +47,8 @@ const Footer = () => {
 				onClick={() => navigate('/wallet')}
 			>
 				<WalletIcon 
-					width={30}
-					height={29}
+					width={24}
+					height={24}
 					colorFirst={isActiveWallet ? '#FFD26D' : '#6A7080'} 
 					colorSecond={isActiveWallet ? '#FFB81A' : '#6A7080'}
 				/>
@@ -56,8 +56,8 @@ const Footer = () => {
 			</MenuItem>
 			<MenuItem $active={locationState == '/account'} onClick={() => navigate('/account')}>
 				<ProfileIcon 
-					width={29}
-					height={29}
+					width={24}
+					height={24}
 					colorFirst={locationState == '/account' ? '#FFD26D' : '#6A7080'} 
 					colorSecond={locationState == '/account' ? '#FFB81A' : '#6A7080'}
 				/>
@@ -87,7 +87,7 @@ const MenuItem = styled.button`
 	flex-direction: column;
 	align-items: center;
 	gap: 12px;
-	padding: 24px 0 46px;
+	padding: 24px 0 32px;
 	color: ${({ $active }) => $active ? '#FFB81A' : '#6A7080'};
 
 	${({ $active }) =>
