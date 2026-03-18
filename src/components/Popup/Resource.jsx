@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import bot from "@/assets/icons/bot-icon.svg";
 import question from "@/assets/icons/question.svg";
-import cheque from "@/assets/icons/cheque.svg";
+import ChequeIcon from "@/icons/ChequeIcon";
 import SpeakerIcon from "@/icons/SpeakerIcon";
 import EditIcon from "@/icons/EditIcon";
 
@@ -24,12 +24,17 @@ import TabsNav from "@/components/TabsNav";
 import useUpdateResource from "@/hooks/api/Resource/useUpdateResource";
 import useResourceActivate from "@/hooks/api/Resource/useResourceActivate";
 import useStatsResource from "@/hooks/api/Resource/useStatsResource";
+import useGetTimeRemaining from "@/hooks/api/Resource/useGetTimeRemaining";
+import useInviteLinkResolve from "@/hooks/api/Resource/useInviteLinkResolve";
 
 import { getDatesByPeriod } from "@/lib/getDatesByPeriod";
 import { generateXAxisLabels } from "@/lib/generateXAxisLabels";
 
-import { useResourceStore } from "@/store/resourceStore";
+import { useReceiptStore } from "@/store/receiptStore";
 import { useToastStore } from "@/store/toastStore";
+import { usePopupStore } from "@/store/popupStore";
+
+import { checkBotAdmin } from "@/api/Resource/checkBotAdmin";
 
 const tabs = [
   { label: "Общая", value: "general" },
@@ -39,46 +44,65 @@ const tabs = [
 const Resource = () => {
   const [activeTab, setActiveTav] = useState('general')
   const [period, setPeriod] = useState("all");
-  const [checked, setChecked] = useState("");
 
-  const { resource, setInviteLink, setCheckerBotToken } = useResourceStore();
+  const { openPopup } = usePopupStore()
+  const { receipt, setInviteLink, setCheckerBotToken, setAutoLinkRefresh } = useReceiptStore();
 
-  const { activate, isEnabling } = useResourceActivate({ id: resource.id });
-  const { renewResource, isConservation } = useUpdateResource({ id: resource.id });
+  const { activate, isEnabling } = useResourceActivate();
+  const { renewResource, isConservation } = useUpdateResource({ id: receipt.id });
+  const { timeRemaining, timeRemainingLoading } = useGetTimeRemaining({ resourceId: receipt.id });
+  const { inviteLink, isGetting } = useInviteLinkResolve()
+
   const { showToast } = useToastStore();
 
   const { dateFrom, dateTo } = getDatesByPeriod(period)
 
-	const { statisticsResource, statisticsResourceLoading } = useStatsResource({
-		resourceId: resource.id,
-		dateFrom,
-		dateTo
-	});
-
+  const { statisticsResource, statisticsResourceLoading } = useStatsResource({
+    resourceId: receipt.id,
+    dateFrom,
+    dateTo
+  });
+  console.log(statisticsResource)
   const xAxisLabels = useMemo(() => {
     if (!statisticsResource?.data.stats.dailyStats) return [];
     return generateXAxisLabels(period, statisticsResource.data.stats.dailyStats);
   }, [period, statisticsResource]);
-  console.log(xAxisLabels)
+
   const handleSave = () => {
-      renewResource({
-        inviteLink: resource.inviteLink,
-        checkerBotToken: resource.checkerBotToken,
-      }, {
-        onSuccess: () => {
-          showToast("Ресурс успешно обнавлен!", "success");
-        },
-        onError: (error) => {
-          showToast(
-            error?.message || "Ошибка при обнавлении ресурса",
-            "error"
-          );
-        }
+    if (!receipt.inviteLink) return showToast("Введите ссылку на канал", "error");
+    if (!receipt.checkerBotToken) return showToast("Введите токен бота", "error");
+
+    inviteLink({ inviteLink: receipt.inviteLink }, {
+      onSuccess: (response) => {
+        checkBotAdmin({ botToken: receipt.checkerBotToken, channelId: response.channelId })
+          .then((adminResponse) => {
+            if (!adminResponse?.isAdmin) return showToast(adminResponse?.message || "Бот не является администратором канала", "error");
+
+            renewResource({
+              inviteLink: receipt.inviteLink,
+              checkerBotToken: receipt.checkerBotToken,
+              autoLinkRefresh: receipt.autoLinkRefresh
+            }, {
+              onSuccess: () => {
+                showToast("Ресурс успешно обновлен!", "success");
+              },
+              onError: (error) => {
+                showToast(error?.message || "Ошибка при обновлении ресурса", "error");
+              }
+            })
+          })
+          .catch((error) => {
+            showToast(error?.message || "Ошибка при проверке бота", "error");
+          })
+      },
+      onError: (error) => {
+        showToast(error?.message || "Не удалось резолвить публичную ссылку", "error");
+      }
     })
   }
 
   const handleActive = () => {
-    activate(null, {
+    activate({ id: receipt.id }, {
       onSuccess: () => {
         showToast("Ресурс успешно активирован!", "success");
       },
@@ -90,7 +114,9 @@ const Resource = () => {
       }
     })
   }
-  
+
+  const isLoading = isConservation || isGetting
+
   return (
     <>
       <TabsNav
@@ -105,14 +131,21 @@ const Resource = () => {
         <ContainerPadding>
           <TextBlock>
             <Label>Параметры ресурса</Label>
-            <Status><mark>Итоговый чек</mark> <img src={cheque} alt="cheque icon" /></Status>
+            <Status><mark>Итоговый чек</mark><ChequeIcon width={12} height={12} colorFirst="#FFD26D " colorSecond="#FFB81A" /></Status>
           </TextBlock>
-          <ChannelBlock type="button" name={resource.name} username={resource.username} disabled={isEnabling} onClick={() => handleActive()} />
-          <StatisticList price={resource.price} dayLimit={resource.dayLimit} verificationEnabled={resource.verificationEnabled} />
+          <ChannelBlock type="button" name={receipt.name} username={receipt.username} disabled={isEnabling} onClick={() => handleActive()} />
+          <StatisticList
+            price={receipt.price}
+            dayLimit={receipt.dayLimit}
+            verificationEnabled={receipt.verificationEnabled}
+            timeRemaining={timeRemaining}
+            timeRemainingLoading={timeRemainingLoading}
+          />
           <ButtonEditContainer>
             <Button
               variant="outline"
               iconLeft={<EditIcon width={16} height={16} color="#6A7080" />}
+              onClick={() => openPopup('change-resource-limits', 'Изменить лимиты ресурса')}
             >
               Изменить лимиты
             </Button>
@@ -124,14 +157,14 @@ const Resource = () => {
           <GapContainer gap="24px">
             <CheckboxContainer>
               <Checkbox
-                checked={checked == "grambee"}
-                onChange={() => setChecked("grambee")}
+                checked={receipt.autoLinkRefresh == true}
+                onChange={() => setAutoLinkRefresh(true)}
               >
                 Заменять через Grambee
               </Checkbox>
               <Checkbox
-                checked={checked == "manually"}
-                onChange={() => setChecked("manually")}
+                checked={receipt.autoLinkRefresh == false}
+                onChange={() => setAutoLinkRefresh(false)}
               >
                 Вручную
               </Checkbox>
@@ -141,7 +174,7 @@ const Resource = () => {
               label="Инвайт ссылка"
               labelIcon={question}
               placeholder="Ссылка на канал"
-              value={resource.inviteLink}
+              value={receipt.inviteLink}
               onChange={(e) => setInviteLink(e.target.value)}
               icon={<SpeakerIcon width={18} height={16} color="#FFB000" />}
               inputAction="Сохранить"
@@ -152,9 +185,9 @@ const Resource = () => {
             <InputField
               id="token"
               label="Введите бота-чекера"
-              status={!resource.checkerBotToken ? "Токен не установлен" : "Токен установлен"}
+              status={!receipt.checkerBotToken ? "Токен не установлен" : "Токен установлен"}
               placeholder="Введите токен"
-              value={resource.checkerBotToken}
+              value={receipt.checkerBotToken}
               onChange={(e) => setCheckerBotToken(e.target.value)}
               icon={<img src={bot} alt="bot" />}
             />
@@ -163,22 +196,40 @@ const Resource = () => {
       ) : (
         <>
           <ContainerPadding>
-            <СhoicePeriod name={resource.name} period={period} onChange={setPeriod} />
+            <СhoicePeriod name={receipt.name} period={period} onChange={setPeriod} />
           </ContainerPadding>
-          <Chart points={statisticsResource?.data.stats.dailyStats.map((item) => item.joins)} xAxisLabels={xAxisLabels}/>
+          <Chart 
+            points={statisticsResource?.data.stats.dailyStats.map((item) => item.joins)} 
+            params={
+              statisticsResource?.data.stats.dailyStats.map(item => ({
+                joins: item.joins,
+                leaves: item.leaves,
+                remained: item.remained,
+                totalActive: item.totalActive,
+                date: item.date
+              }))
+            }
+            xAxisLabels={xAxisLabels} 
+          />
           <ContainerPadding>
             <IndicatorsContainer>
-              <MainIndicators 
+              <MainIndicators
                 totalJoins={statisticsResource?.data.stats.summary.totalJoins}
                 totalLeaves={statisticsResource?.data.stats.summary.totalLeaves}
               />
             </IndicatorsContainer>
-            <StatisticList price={resource.price} dayLimit={resource.dayLimit} verificationEnabled={resource.verificationEnabled}/>
+            <StatisticList
+              price={receipt.price}
+              dayLimit={receipt.dayLimit}
+              verificationEnabled={receipt.verificationEnabled}
+              timeRemaining={timeRemaining}
+              timeRemainingLoading={timeRemainingLoading}
+            />
           </ContainerPadding>
         </>
       )}
       <ButtonSaveContainer onClick={() => handleSave()}>
-        <Button variant="primary" disabled={isConservation}><mark>{isConservation ? 'Сохранение...' : 'Сохранить'}</mark></Button>
+        <Button variant="primary" disabled={isLoading}><mark>{isLoading ? 'Сохранение...' : 'Сохранить'}</mark></Button>
       </ButtonSaveContainer>
     </>
   )
@@ -218,7 +269,8 @@ const CheckboxContainer = styled.div`
     border-bottom: 1px solid #272A33;
   }
 `
-const ButtonSaveContainer = styled.button`
+const ButtonSaveContainer = styled.div`
+  box-sizing: border-box;
   margin-top: 32px;
   width: 100%;
   padding: 0 24px 24px;

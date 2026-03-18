@@ -1,4 +1,3 @@
-import { useState } from "react";
 import styled from "styled-components";
 
 import eyeCilia from '@/assets/icons/eye-cilia.svg';
@@ -13,25 +12,23 @@ import { usePopupStore } from "@/store/popupStore";
 import { useReceiptStore } from "@/store/receiptStore";
 import { useToastStore } from "@/store/toastStore";
 
-import { getPriceResource } from "@/api/Resource/getPriceResource";
-
 const CreateResurceSecond = () => {
     const { openPopup, closePopup } = usePopupStore();
-    const { receipt, setMetrics } = useReceiptStore();
+    const { receipt, setType } = useReceiptStore();
     const { showToast } = useToastStore();
     
     const handleNext = () => {
-        if (!receipt.metrics) return showToast("Выбирите тип метрики", "error");
+        if (!receipt.type) return showToast("Выбирите тип метрики", "error");
 
-        const resourceType = getPriceResource({ type: receipt.metrics })
-        
-        receipt.metrics === 'subscribers' ? (
+        receipt.type === 'CHANNEL' ? (
             openPopup('select-channel', 'Выберите канал', { step: 3, text: 'Можете выбрать канал или же написать ссылку' })
-        ) : receipt.metrics === 'boosts' ? (
+        ) : receipt.type === 'BOOST' ? (
             openPopup('fill-fields-below', 'Заполните поля ниже', { step: 3, text: 'Укажите основные данные для вашего ресурса' })
-        ) : receipt.metrics === 'coverage' ? (
-            openPopup('select-areas', 'Выберите охваты', { step: 3, text: 'Определитесь с нужным типом трафика для вас' })
-        ) : (
+        ) 
+        // : receipt.type === 'coverage' ? (
+        //     openPopup('select-areas', 'Выберите охваты', { step: 3, text: 'Определитесь с нужным типом трафика для вас' })
+        // ) 
+        : receipt.type === 'CHANNEL_JOIN_REQUEST' && (
             openPopup('select-channel-application', 'Выберите канал', { step: 3, text: 'Можете выбрать канал или же написать ссылку' })
         )
     }
@@ -40,22 +37,24 @@ const CreateResurceSecond = () => {
         <>
             <CreateResurceTitle>Выберите, какой тип трафика вам нужен:</CreateResurceTitle>
             <RadioContainer>
-                <Radio checked={receipt.metrics === 'subscribers'} onChange={() => setMetrics('subscribers')} text="2.3 ₽ за подписчика" view="circleText">
+                <Radio checked={receipt.type === 'CHANNEL'} onChange={() => setType('CHANNEL')} text="2.3 ₽ за подписчика" view="circleText">
                     <img src={people} alt="people" />
                     Подписчики
                 </Radio>
-                <Radio checked={receipt.metrics === 'boosts'} onChange={() => setMetrics('boosts')} text="1.5 ₽ за буст" view="circleText">
+                <Radio checked={receipt.type === 'BOOST'} onChange={() => setType('BOOST')} text="1.5 ₽ за буст" view="circleText">
                     <StarIcon width={16} height={16} colorFirst="#FFD26D" colorSecond="#FFB81A" uniqueId="second" />
                     Бусты
                 </Radio>
-                <Radio checked={receipt.metrics === 'coverage'} onChange={() => setMetrics('coverage')} text="1.63 ₽ за охват" view="circleText">
+                {/* <Radio checked={receipt.type === 'coverage'} onChange={() => setType('coverage')} text="1.63 ₽ за охват" view="circleText">
                     <img src={eyeCilia} alt="eyeCilia" />
                     Охваты
-                </Radio>
-                <Radio checked={receipt.metrics === 'applications'} onChange={() => setMetrics('applications')} text="4.5 ₽ за заявку" view="circleText">
-                    <img src={fireFilling} alt="fireFilling" />
-                    Заявки
-                </Radio>
+                </Radio> */}
+                {receipt.typeFirst !== 'CHAT' && (
+                    <Radio checked={receipt.type === 'CHANNEL_JOIN_REQUEST'} onChange={() => setType('CHANNEL_JOIN_REQUEST')} text="4.5 ₽ за заявку" view="circleText">
+                        <img src={fireFilling} alt="fireFilling" />
+                        Заявки
+                    </Radio>
+                )}
             </RadioContainer>
             <Buttons>
                 <Button variant="default" onClick={() => closePopup()}>Отмена</Button>
@@ -75,7 +74,7 @@ const RadioContainer = styled.div`
     gap: 8px;
     margin-top: 24px;
     padding: 0 24px;
-    @media(max-width: 430px) {
+    @media (width <= 430px) {
         grid-template-columns: 1fr;
     }
 `

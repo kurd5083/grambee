@@ -3,15 +3,26 @@ import styled from "styled-components";
 import rating from "@/assets/icons/rating.svg";
 import PlusIcon from "@/icons/PlusIcon";
 import MinusIcon from "@/icons/MinusIcon";
+
 import Button from "@/shared/Button";
 
+import { usePopupStore } from "@/store/popupStore";
+
 const MainIndicators = ({ totalJoins, totalLeaves }) => {
+	const { openPopup } = usePopupStore()
+
 	return (
 		<>
 			<Header>
 				<img src={rating} alt="rating icon" />
 				<h2>Главные показатели</h2>
-				<Button variant="primaryNoBorder" width="200px"><mark>Выгрузить</mark></Button>
+				<Button 
+					variant="primaryNoBorder" 
+					width="200px" 
+					onClick={() => openPopup('upload-statistics', 'Выгрузить статистику')}
+				>
+					<mark>Выгрузить</mark>
+				</Button>
 			</Header>
 
 			<IndicatorsList>
@@ -55,7 +66,7 @@ const IndicatorsList = styled.div`
     display: flex;
     gap: 8px;
 
-	@media(max-width: 400px) {
+	@media (width <= 400px) {
         flex-direction: column;
     }
 `;

@@ -11,6 +11,7 @@ import Replenish from '@/pages/Replenish';
 import Bring from '@/pages/Bring';
 import Payment from '@/pages/Payment';
 import FinalReceipt from '@/pages/FinalReceipt';
+import TransactionDetails from '@/pages/TransactionDetails';
 
 const router = createBrowserRouter([
     {
@@ -69,5 +70,13 @@ const router = createBrowserRouter([
             { index: true, element: <FinalReceipt /> } 
         ],
     },
+    {
+        path: '/transaction-details',
+        element: <WithoutHatLayout />,
+        children: [
+            { index: true, element: <TransactionDetails /> } 
+        ],
+    },
+    
 ])
 export default router

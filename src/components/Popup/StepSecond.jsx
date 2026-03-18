@@ -14,33 +14,60 @@ import useCreateBot from "@/hooks/api/Bots/useCreateBot";
 import { useToastStore } from "@/store/toastStore";
 import { usePopupStore } from "@/store/popupStore";
 import { useBotStore } from "@/store/botStore";
+import { useUserStore } from '@/store/userStore';
+
+import { getBotInfo } from '@/api/Bots/getBotInfo';
 
 const StepSecond = () => {
   const { closePopup, goBack } = usePopupStore()
   const { bot, setRequiredChannelsCount, setChannelButtonText, setChatButtonText, setBotButtonText, setBoostButtonText } = useBotStore();
+  const { userLocal } = useUserStore()
 
   const { addBot, isAdding } = useCreateBot();
   const { showToast } = useToastStore();
 
   const handleSave = () => {
     if (!bot.requiredChannelsCount) return showToast("Введите количество каналов", "error");
+    if (bot.requiredChannelsCount < 4) return showToast("Количество каналов должно быть не менее 4", "error");
     if (!bot.channelButtonText) return showToast("Введите текст кнопки каналов", "error");
     if (!bot.botButtonText) return showToast("Введите текст кнопки просмотров поста", "error");
     if (!bot.boostButtonText) return showToast("Введите текст кнопки буста", "error");
     if (!bot.chatButtonText) return showToast("Введите текст кнопки частов", "error");
+    
+    getBotInfo({ BOT_TOKEN: bot.token })
+      .then((response) => {
+        addBot({
+          boostButtonText: bot.boostButtonText,
+          botButtonText: bot.botButtonText,
+          buttonLayout: 2,
+          channelButtonText: bot.channelButtonText,
+          chatButtonText: bot.chatButtonText,
+          isActive: bot.isActive,
+          isApproved: false,
+          moderationStatus: "PENDING",
+          name: response.result.username,
+          requiredChannelsCount: bot.requiredChannelsCount,
+          sellerType: "CHAT",
+          subscriptionMessage: bot.subscriptionMessage,
+          token: bot.token,
+          userTelegramId: userLocal?.telegramId,
+        }, {
+          onSuccess: () => {
+            showToast("Бот успешно создан!", "success");
+            closePopup()
+          },
+          onError: (error) => {
+            showToast(
+              error?.message || "Ошибка при создании бота",
+              "error"
+            );
+          }
+        })
+      })
+      .catch((error) => {
+        showToast(error?.message || "Ошибка при проверке токена бота", "error");
+      })
 
-    addBot(bot, {
-      onSuccess: () => {
-        showToast("Бот успешно создан!", "success");
-        closePopup()
-      },
-      onError: (error) => {
-        showToast(
-          error?.message || "Ошибка при создании бота",
-          "error"
-        );
-      }
-    })
   }
 
   return (
@@ -52,7 +79,7 @@ const StepSecond = () => {
             label="Кол-во каналов"
             placeholder="Введите текст"
             value={bot.requiredChannelsCount}
-            onChange={(e) => setRequiredChannelsCount(e.target.value)}
+            onChange={(e) => setRequiredChannelsCount(Number(e.target.value))}
             iconRight={<ArrowContainer>
               <ArrowIcon width={6} height={10} color="currentColor" />
               <ArrowIcon width={6} height={10} color="currentColor" />

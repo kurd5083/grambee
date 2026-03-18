@@ -20,7 +20,10 @@ export const useChatStore = create(
                         }
                     ]
                 }))
-            }
+            },
+            clearChat: () => {
+                set({ chat: [] });
+            },
         }),
         { 
             name: 'chat-storage',

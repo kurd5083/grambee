@@ -17,9 +17,7 @@ const SelectAreas = () => {
     const { showToast } = useToastStore();
 
     const handleNext = () => {
-        if (!receipt.typeCoverage) {
-            return showToast("Выбирете охваты", "error");
-        }
+        if (!receipt.typeCoverage) return showToast("Выбирете охваты", "error");
 
         receipt.typeCoverage === 'constantly' ? (
             openPopup('select-channel-constantly', 'Выберите канал', { step: 3, text: 'Можете выбрать канал или же написать ссылку' })
@@ -74,7 +72,7 @@ const RadioContainer = styled.div`
     grid-template-columns: repeat(2, 1fr);
     gap: 8px;
 
-    @media(max-width: 430px) {
+    @media (width <= 430px) {
         grid-template-columns: 1fr;
     }
 `

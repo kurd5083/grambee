@@ -7,7 +7,7 @@ import Button from "@/shared/Button";
 
 import { flagsList } from "@/data/flagsList";
 
-const Flags = ({ countries, select }) => {
+const Flags = ({ regions, select }) => {
     return (
         <>
             <TitleFlags>
@@ -23,7 +23,7 @@ const Flags = ({ countries, select }) => {
             <FlagsBlocks>
                 <FlagsContainer>
                     {flagsList.map((item) => (
-                        <Flag src={item.flag} alt={item.name} onClick={() => select(item.code)} $active={countries?.find((elem) => elem.code == item.code)}/>
+                        <Flag src={item.flag} alt={item.name} onClick={() => select(item.code)} $active={regions?.find((elem) => elem == item.code)}/>
                     ))}
                 </FlagsContainer>
                 {/* <ButtonArrow>
@@ -32,7 +32,7 @@ const Flags = ({ countries, select }) => {
             </FlagsBlocks>
             <SelectFlags>
                 <p>Выбраны:</p>
-                <span>{countries.length == 0 ? 'Выбирите страны' : countries.map((country) => country.name).join(', ')} </span>
+                <span>{regions.length == 0 ? 'Выбирите страны' : regions.map(code => flagsList.find(item => item.code === code)?.name || code).join(', ')}</span>
             </SelectFlags>
         </>
     )

@@ -30,8 +30,6 @@ const LevelSystem = () => {
 
 	const { levels, levelsLoading } = useGetLevels()
 	const { progress, progressLoading } = useGetProgressUser({ telegramId: userLocal?.telegramId })
-	console.log(levels, progress)
-
 
 	return (
 		<ContainerPadding>

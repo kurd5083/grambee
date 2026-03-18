@@ -13,22 +13,45 @@ import useUpdateBot from "@/hooks/api/Bots/useUpdateBot";
 import useUpdateLeave from "@/hooks/api/Bots/useUpdateLeave";
 import useDeleteBot from "@/hooks/api/Bots/useDeleteBot";
 import useCopyToClipboard from '@/hooks/useCopyToClipboard';
+import useRegenerateApiKey from "@/hooks/api/Bots/useRegenerateApiKey";
+import useUpdateApiLinksOnly from "@/hooks/api/Bots/useUpdateApiLinksOnly";
 
 import { useBotStore } from "@/store/botStore";
 import { usePopupStore } from "@/store/popupStore";
 import { useToastStore } from "@/store/toastStore";
 
 const GeneralTab = () => {
-    const { popup, closePopup } = usePopupStore()
+    const { popup, openPopup, closePopup } = usePopupStore()
 
     const { bot, setIsActive, setToken, setLeaveWebHookUrl, setApiLinksOnly } = useBotStore();
     
+    const { copied, copyToClipboard } = useCopyToClipboard();
     const { renewBot } = useUpdateBot({ id: popup.data.botId });
     const { renewLeave } = useUpdateLeave({ botId: popup.data.botId })
     const { removeBot } = useDeleteBot();
-    const { copied, copyToClipboard } = useCopyToClipboard();
+    const { regenerateApi } = useRegenerateApiKey();
+    const { renewApiLinks } = useUpdateApiLinksOnly({ id: popup.data.botId });
 
     const { showToast } = useToastStore();
+
+    const handleNewKey = () => {
+        openPopup('confirmation', 'Выпустить новый ключ доступа',
+            {
+                text: `Вы уверены, что хотите выпустить новый ключ доступа?\nСтарый ключ будет недействителен.\nЭто действие нельзя будет отменить.`,
+                onConfirm: () => {
+                    regenerateApi({ id: bot.id }, {
+                        onSuccess: () => {
+                            showToast("Новый ключ успешно выпущен!", "success");
+                        },
+                        onError: (error) => {
+                            showToast(error?.message || "Ошибка при перевыпуске ключа", "error");
+                        }
+                    });
+                },
+                buttonConfirm: { text: 'Выпустить', type: "primary" }
+            }
+        )
+    }
 
     const handleSave = () => {
         renewBot({
@@ -38,37 +61,42 @@ const GeneralTab = () => {
             onSuccess: () => {
                 renewLeave({ leaveWebHookUrl: bot.leaveWebHookUrl }, {
                     onSuccess: () => {
-                        showToast("Бот успешно обнавлен!", "success");
+                        renewApiLinks({ apiLinksOnly: bot.apiLinksOnly }, {
+                            onSuccess: () => {
+                                showToast("Бот успешно обнавлен!", "success");
+                            }, 
+                            onError: (error) => showToast(error?.message || "Ошибка при обнавлении бота", "error")
+                        })
                     },
-                    onError: (error) => {
-                        showToast(
-                            error?.message || "Ошибка при обнавлении бота",
-                            "error"
-                        );
-                    }
+                    onError: (error) => showToast(error?.message || "Ошибка при обнавлении бота", "error")
                 })
             },
-            onError: (error) => {
-                showToast(
-                    error?.message || "Ошибка при обновлении бота",
-                    "error"
-                );
-            }
+            onError: (error) => showToast(error?.message || "Ошибка при обновлении бота", "error")
         })
     }
-    const handleRemove = (id) => {
-        removeBot({ id }, {
-            onSuccess: () => {
-               showToast("Бот успешно удален!", "success");
-               closePopup()
-            },
-            onError: (error) => {
-                showToast(
-                    error?.message || "Ошибка при удалении бота",
-                    "error"
-                );
+
+    const handleRemove = () => {
+        openPopup('confirmation', 'Удалить бота?',
+            {
+                text: `Вы действительно хотите удалить бота “${bot.name}”?\nЭто действие нельзя будет отменить.`,
+                onConfirm: () => {
+                    removeBot({ id: bot.id }, {
+                        onSuccess: () => {
+                            showToast("Бот успешно удален!", "success");
+                            closePopup()
+                        },
+                        onError: (error) => {
+                            showToast(
+                                error?.message || "Ошибка при удалении бота",
+                                "error"
+                            );
+                        }
+                    })
+                },
+                buttonConfirm: { text: 'Удалить', type: "danger" }
             }
-        })
+        )
+
     }
 
     return (
@@ -76,7 +104,7 @@ const GeneralTab = () => {
             <InfoContainer>
                 <InfoRow
                     label="Токен"
-                    value={bot.token.slice(0, 4)+'...'+bot.token.slice(bot.token.length-4, bot.token.length)}
+                    value={bot.token.slice(0, 4) + '...' + bot.token.slice(bot.token.length - 4, bot.token.length)}
                     onClick={() => copyToClipboard(bot.token)}
                     actionIcon={
                         <IconWrapper>
@@ -91,7 +119,7 @@ const GeneralTab = () => {
                     } />
                 <InfoRow
                     label="Ключ доступа"
-                    value={bot.apiToken.slice(0, 4)+'...'+bot.apiToken.slice(bot.apiToken.length-4, bot.apiToken.length)}
+                    value={bot.apiToken.slice(0, 4) + '...' + bot.apiToken.slice(bot.apiToken.length - 4, bot.apiToken.length)}
                     onClick={() => copyToClipboard(bot.apiToken)}
                     actionIcon={
                         <IconWrapper>
@@ -113,7 +141,6 @@ const GeneralTab = () => {
                         <img src={question} alt="question icon" />
                     </ToggleSwitch>
                 </ToggleContainer>
-
                 <InputField
                     id="token"
                     label="Редактирование токена"
@@ -131,8 +158,8 @@ const GeneralTab = () => {
                 />
             </GapContainer>
             <Buttons>
-                <Button variant="default" width="100%">Выпустить новый ключ</Button>
-                <Button variant="danger" width="40%" onClick={() => handleRemove(popup.data.botId)}>Удалить</Button>
+                <Button variant="default" width="100%" onClick={() => handleNewKey()}>Выпустить новый ключ</Button>
+                <Button variant="danger" width="40%" onClick={() => handleRemove()}>Удалить</Button>
             </Buttons>
             <ButtonSaveContainer onClick={() => handleSave()}>
                 <Button variant="primary"><mark>Сохранить</mark></Button>

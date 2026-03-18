@@ -22,6 +22,12 @@ export const SkeletonAvaHeader = styled.div`
   border-radius: 50%;
   ${shimmer}
 `
+export const SkeletonAvaChat = styled.div`
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  ${shimmer}
+`
 export const SkeletonAvaWallet = styled.div`
   width: 56px;
   height: 56px;

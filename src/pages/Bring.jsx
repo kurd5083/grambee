@@ -44,12 +44,28 @@ const Bring = () => {
     const { conclusionFunds, isCalculation } = useWithdrawalFunds()
     const { userLocal } = useUserStore()
     const { showToast } = useToastStore();
+ 
+    const userBalance = Number(userLocal?.balance).toFixed(2)
 
     const changeInput = (text) => {
-        const digits = text.replace(/\D/g, "").slice(0, 7)
-        setAmount(digits)
-    }
-    const formatted = amount ? Number(amount).toLocaleString("en-US") : ""
+        const digits = text.replace(/\D/g, "");
+        
+        if (digits === "") {
+            setAmount("");
+            return;
+        }
+
+        const numAmount = Number(digits);
+        
+        if (numAmount > userBalance) {
+            showToast(`Недостаточно средств. Максимум: ${userBalance.toLocaleString("en-US")} ₽`, "error");
+            setAmount(String(userBalance));
+        } else {
+            setAmount(digits.slice(0, 7));
+        }
+    };
+
+    const formatted = amount ? Number(amount).toLocaleString("en-US") : "";
 
     const handleBring = () => {
         if (!amount || Number(amount) <= 0) {
@@ -240,7 +256,7 @@ const PaymentInputs = styled.div`
     width: 100%;
     margin-top: 16px;
 
-    @media(max-width: 430px) {
+    @media (width <= 430px) {
         flex-direction: column;
     }
 `

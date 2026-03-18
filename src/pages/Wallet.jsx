@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
@@ -21,10 +21,13 @@ import Chart from '@/components/Chart';
 import TabMenu from "@/components/TabMenu";
 
 import useGetTransactions from "@/hooks/api/useGetTransactions";
-import useCreateNotification from '@/hooks/api/Notifications/useCreateNotification';
+import useGetBalanceStatistics from "@/hooks/api/Balance/useGetBalanceStatistics";
 
-import { usePopupStore } from "@/store/popupStore";
+import { getDatesByPeriod } from "@/lib/getDatesByPeriod";
+import { generateXAxisLabels } from "@/lib/generateXAxisLabels";
+
 import { useUserStore } from '@/store/userStore';
+import { useTransactionDetailsStore } from "@/store/transactionDetailsStore";
 
 const tabs = [
 	{
@@ -44,32 +47,29 @@ const tabs = [
 const Wallet = () => {
 	const [eyeState, setEyeState] = useState(localStorage.getItem('state-eye') === 'true');
 	const [isActive, setIsActive] = useState(false)
+	const [period, setPeriod] = useState("all");
 	const navigate = useNavigate();	
 	
-	const { openPopup } = usePopupStore()
 	const { userLocal } = useUserStore()
-
-	const { addNotification } = useCreateNotification()
-
+	const { setTransactionDetails } = useTransactionDetailsStore()
+	
 	const isLoading = !userLocal
+
 	const { transactions, transactionsLoading } = useGetTransactions({ telegramId: userLocal?.telegramId })
 
-	useEffect(() => {
-		if (userLocal?.telegramId) {
-			addNotification({
-				telegramId: Number(userLocal?.telegramId),
-				message: "Your balance has been updated",
-				sellerId: "123",
-				sellerIds: [
-					"mybot:123",
-					"anotherbot:456"
-				],
-				photoUrl: "https://t.me/i/userpic/320/GGg05xPKfkrn_5K5qiBU-V-DFSbNzv2f87WKGxbCCAc.svg",
-				resourceId: 228
-			})
-		}
-	}, [userLocal?.telegramId])
+	const { dateFrom, dateTo } = getDatesByPeriod(period)
+
+	const { balanceStatistics, balanceStatisticsLoading } = useGetBalanceStatistics({
+		telegramId : userLocal?.telegramId,
+		startDate: dateFrom,
+		endDate: dateTo 
+	});
 	
+	const xAxisLabels = useMemo(() => {
+		if (!balanceStatistics?.daily) return [];
+		return generateXAxisLabels(period, balanceStatistics.daily);
+	}, [period, balanceStatistics]);
+
 	const handleEye = () => {
 		const newState = !eyeState;
 		setEyeState(newState);
@@ -79,7 +79,7 @@ const Wallet = () => {
 	return (
 		<>
 			<TitleHead
-				icon={<WalletIcon width={24} height={23} colorFirst="#FFD26D " colorSecond="#FFB81A" />}
+				icon={<WalletIcon width={24} height={23} colorFirst="#FFD26D" colorSecond="#FFB81A" />}
 				title="Кошелёк"
 			>
 				<EyeContainer onClick={() => handleEye()}>
@@ -109,10 +109,10 @@ const Wallet = () => {
 						<BalanceCount >
 							{!eyeState ?
 								'.......' :
-								<>{userLocal?.balance?.d ? Number(userLocal.balance.d.join('.')).toFixed(2) : '0.00'} <mark>₽</mark></>
+								<>{userLocal?.balance || '0.00'} <mark>₽</mark></>
 							}
 						</BalanceCount>
-						<BalanceHold>На удержании: {!eyeState ? '.....' : Number(userLocal?.holdBalance?.d.join('.')).toFixed(2) || 0}</BalanceHold>
+						<BalanceHold>На удержании: {!eyeState ? '.....' : userLocal?.holdBalance || 0}</BalanceHold>
 					</Balance>
 					<BalanceAction>
 						<ActionButton onClick={() => navigate('/bring')} $rotate={true}>
@@ -131,10 +131,22 @@ const Wallet = () => {
 						{ value: "week", label: "За неделю" },
 						{ value: "month", label: "За месяц" },
 					]}
+					value={period} 
+					onChange={setPeriod} 
 					width="150px"
 				/>
 			</SelectContainer>
-			<Chart type="full" />
+			<Chart 
+				params={
+					balanceStatistics?.daily.map(item => ({
+						additions: item.additions,
+						subtractions: item.subtractions,
+						date: item.date
+					}))
+				}
+				points={balanceStatistics?.daily.map((item) => item.additions)} 
+				xAxisLabels={xAxisLabels}
+			/>
 			<TransactionsContainer $isActive={isActive}>
 				<TransactionsHead>
 					<TransactionsIcon width={16} height={16} colorFirst="#FFD26D" colorSecond="#FFB81A" uniqueId="small" />
@@ -152,7 +164,22 @@ const Wallet = () => {
 								<ImgContainer>
 									<TimeIcon width={16} height={16} color="#FFB81A" />
 								</ImgContainer>
-								<h3>{transaction.description}</h3>
+								<h3 onClick={() => {
+									navigate('/transaction-details')
+									setTransactionDetails({
+										transactionId: transaction.id,
+										amount: transaction.amount,
+										description: transaction.description,
+										type: transaction.type,
+										status: transaction.status,
+										serviceType: transaction.serviceType,
+										userId: transaction.userId,
+										createdAt: transaction.createdAt,
+										updatedAt: transaction.updatedAt
+									})
+								}}>
+									{transaction.description}
+								</h3>
 								<span>{transaction.type == "DEPOSIT" ? '+' : '-'}{transaction.amount}<mark>₽</mark></span>
 							</li>
 						))}
@@ -308,6 +335,7 @@ const TransactionsList = styled.ul`
 
 		h3 {
 			font-size: 16px;
+			cursor: pointer;
 		}
 		span {
 			display: flex;

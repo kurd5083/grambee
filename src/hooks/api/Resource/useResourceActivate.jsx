@@ -1,11 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { resourceActivate } from '@/api/Resource/resourceActivate'
 
-const useResourceActivate = ({ id }) => {
+const useResourceActivate = () => {
     const queryClient = useQueryClient()
 
     const { mutate: activate, isPending: isEnabling } = useMutation({
-        mutationFn: () => resourceActivate({ id }),
+        mutationFn: ({ id }) => resourceActivate({ id }),
         onSuccess: () => {
             queryClient.invalidateQueries(['resources'])
         },

@@ -71,7 +71,7 @@ const OptionContainer = styled.div`
     gap: 8px;
     margin-top: 24px;
 
-    @media(max-width: 400px) {
+    @media (width <= 400px) {
         flex-direction: column;
     }
 `

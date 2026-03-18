@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -15,19 +15,19 @@ import { usePopupStore } from "@/store/popupStore";
 import { useReceiptStore } from "@/store/receiptStore";
 import { useToastStore } from "@/store/toastStore";
 
-import { getPriceResource } from "@/api/Resource/getPriceResource";
-
 const CreateResurceFirst = () => {
     const { openPopup, closePopup } = usePopupStore();
-    const { receipt, setTypeResource } = useReceiptStore();
+    const { receipt, setTypeFirst, resetReceipt } = useReceiptStore();
     const { showToast } = useToastStore();
+    
+    useEffect(() => {
+        resetReceipt()
+    }, [])
 
     const handleNext = () => {
-        if (!receipt.typeResource) return showToast("Выбирите тип ресурса", "error");
+        if (!receipt.typeFirst) return showToast("Выбирите тип ресурса", "error");
 
-        const resourceType = getPriceResource({ type: receipt.typeResource })
-         
-        receipt.typeResource === 'channel' || receipt.typeResource === 'chat' ? (
+        receipt.typeFirst === 'CHANNEL' || receipt.typeFirst === 'CHAT' ? (
             openPopup('create-resources-second', 'Создание ресурса', { step: 2, text: 'Укажите основные данные вашего ресурса' })
         ) : (
             openPopup('select-channel-bot', 'Выберите канал', { step: 2, text: 'Можете выбрать канал или же написать ссылку' })
@@ -43,17 +43,17 @@ const CreateResurceFirst = () => {
                 slidesOffsetAfter={24}
             >
                 <SwiperSlideRadio>
-                    <Radio checked={receipt.typeResource === 'channel'} onChange={() => setTypeResource('channel')} view="circle">
+                    <Radio checked={receipt.typeFirst === 'CHANNEL'} onChange={() => setTypeFirst('CHANNEL')} view="circle">
                         <SpeakerIcon width={18} height={16} color="#FFB000" /> Канал
                     </Radio>
                 </SwiperSlideRadio>
                 <SwiperSlideRadio>
-                    <Radio checked={receipt.typeResource === 'bot'} onChange={() => setTypeResource('bot')} view="circle">
+                    <Radio checked={receipt.typeFirst === 'BOT'} onChange={() => setTypeFirst('BOT')} view="circle">
                         <img src={robot} alt="robot" /> Бот
                     </Radio>
                 </SwiperSlideRadio>
                 <SwiperSlideRadio>
-                    <Radio checked={receipt.typeResource === 'chat'} onChange={() => setTypeResource('chat')} view="circle">
+                    <Radio checked={receipt.typeFirst === 'CHAT'} onChange={() => setTypeFirst('CHAT')} view="circle">
                         <img src={chat} alt="chat" /> Чат
                     </Radio>
                 </SwiperSlideRadio>

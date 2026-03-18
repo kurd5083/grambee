@@ -12,11 +12,11 @@ import { useToastStore } from "@/store/toastStore";
    
 const SelectChannelOnceDay = () => {
     const { openPopup, goBack } = usePopupStore()
-    const { receipt, setChannel } = useReceiptStore();
+    const { receipt, setInviteLink } = useReceiptStore();
     const { showToast } = useToastStore();
 
     const handleNext = () => {
-        if(!receipt.channel?.name) return showToast("Выбирите канал", "error"); 
+        if(!receipt?.name) return showToast("Выбирите канал", "error"); 
             
         openPopup('purchase-coverage-once-day', 'Покупка охватов', { step: 4, text: 'Укажите нужные вам параметры для канала' })
     }
@@ -42,16 +42,12 @@ const SelectChannelOnceDay = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        <Row $active={receipt.channel?.name == 't.me/antropia..'} onClick={() => {
-                            setChannel('t.me/antropia..', 't.me/antropia..', {numberCoverage: 1600, price: 1200})
-                        }}>
+                        <Row $active={receipt.name == 't.me/antropia..'} onClick={() => setInviteLink('t.me/antropia..')}>
                             <td>t.me/antropia..</td>
                             <td>1,600</td>
                             <td><mark>1 200 ₽</mark></td>
                         </Row>
-                        <Row $active={receipt.channel?.name == 't.me/kurdnika..'} onClick={() => {
-                            setChannel('t.me/kurdnika..', 't.me/kurdnika..', {numberCoverage: 3100, price: 2100})
-                        }}>
+                        <Row $active={receipt.name == 't.me/kurdnika..'} onClick={() => setInviteLink('t.me/kurdnika..')}>
                             <td>t.me/kurdnika..</td>
                             <td>3,100</td>
                             <td><mark>2 100 ₽</mark></td>

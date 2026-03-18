@@ -6,7 +6,6 @@ import BellIcon from '@/icons/BellIcon';
 
 import { SkeletonAvaHeader, SkeletonName, SkeletonLevel } from '@/shared/Skeleton';
 
-// import useGetBalance from '@/hooks/api/useGetBalance';
 import { usePopupStore } from "@/store/popupStore";
 import { useUserStore } from '@/store/userStore';
 import useGetNotifications from "@/hooks/api/Notifications/useGetNotifications";
@@ -50,9 +49,7 @@ const Header = () => {
       </InfoUser>
       <HeaderBalance>
         <p>
-          {userLocal?.balance?.d 
-            ? Number(userLocal.balance.d.join('.')).toFixed(2)
-            : '0.00'} <mark>₽</mark>
+          {userLocal?.balance || '0.00'} <mark>₽</mark>
         </p>
         <ButtonBalance onClick={() => navigate('/replenish')}>
           <PlusIcon width={10} height={10} colorFirst="#FFD26D" colorSecond="#FFB81A" />
@@ -115,7 +112,7 @@ const HeaderBalance = styled.div`
   font-weight: 700;
   p {
     margin-left: 12px;
-    @media(max-width: 400px) {
+    @media (width <= 430px) {
       display: none;
     }
   }

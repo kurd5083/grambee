@@ -11,7 +11,7 @@ const InputField = ({ id, label, labelIcon, status, value, onChange, icon, iconR
       )}
       <InputContainer>
         {icon && <IconWrapper>{icon}</IconWrapper>}
-        <Input id={id} {...inputProps} hasIconLeft={!!icon} hasIconRight={!!iconRight} value={value} onChange={onChange} readOnly={readOnly}/>
+        <Input id={id} {...inputProps} $hasIconLeft={!!icon} $hasIconRight={!!iconRight} $inputAction={!!inputAction} value={value} onChange={onChange} readOnly={readOnly}/>
         {iconRight && <IconWrapperRight>{iconRight}</IconWrapperRight>}
         {inputAction && <TextWrapper><mark>{inputAction}</mark></TextWrapper>}
       </InputContainer>
@@ -47,8 +47,8 @@ const InputContainer = styled.div`
 const Input = styled.input`
   width: 100%;
   padding: 20px 24px;
-  padding-left: ${({ hasIconLeft }) => (hasIconLeft ? "56px" : "24px")};
-  padding-right: ${({ hasIconRight }) => (hasIconRight ? "44px" : "24px")};
+  padding-left: ${({ $hasIconLeft }) => ($hasIconLeft ? "56px" : "24px")};
+  padding-right: ${({ $hasIconRight, $inputAction }) => ($inputAction ? "100px" : $hasIconRight ? "44px" : "24px")};
   border-radius: 14px;
   border: 1px solid #272a33;
   background: transparent;

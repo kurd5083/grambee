@@ -13,6 +13,7 @@ import { ContainerPadding } from "@/shared/ContainerPadding";
 import InputField from "@/shared/InputField";
 
 import Flags from "@/components/Flags";
+import SpeedMode from "@/components/SpeedMode";
 
 import { usePopupStore } from "@/store/popupStore";
 import { useReceiptStore } from "@/store/receiptStore";
@@ -24,29 +25,29 @@ const PurchaseCoverageConstantly = () => {
     const { goBack } = usePopupStore()
     const navigate = useNavigate();
 
-    const { receipt, setCountries, setErFrom, setErTo, setCoveragePeriod, setCoveragePeriodHours, setRangeReactionsFrom, setRangeReactionsTo } = useReceiptStore();
+    const { receipt, setRegions, setErFrom, setErTo, setCoveragePeriod, setCoveragePeriodHours, setRangeReactionsFrom, setRangeReactionsTo } = useReceiptStore();
     const { showToast } = useToastStore();
 
-    const selectCountries = (code) => {
+    const selectRegions = (code) => {
         let newData = [];
-        if (code === "all" && receipt.countries.length === flagsList.length) {
+        if (code === "all" && receipt.regions.length === flagsList.length) {
             newData = [];
         } else {
-            if (receipt.countries.find((item) => item.code == code)) {
-                newData = receipt.countries.filter((item) => item.code !== code);
+            if (receipt.regions.includes(code)) {
+                newData = receipt.regions.filter((item) => item !== code);
             } else {
                 if (code === "all") {
-                    newData = [...flagsList];
+                newData = flagsList.map(flag => flag.code);
                 } else {
-                    newData = [...receipt.countries, { code, price: 1, name: flagsList.find((flag) => flag.code == code).name }];
+                    newData = [...receipt.regions, code];
                 }
             }
         }
-        setCountries(newData)
+        setRegions(newData)
     }
 
     const handleNext = () => {
-        if(receipt.countries.lenght == 0) {
+        if(receipt.regions.lenght == 0) {
             return showToast("Выбирете страну", "error");
         }   
              
@@ -126,7 +127,8 @@ const PurchaseCoverageConstantly = () => {
                         onChange={(e) => setRangeReactionsTo(e.target.value)}
                     />
                 </InputContainer>
-                <Flags countries={receipt.countries} select={selectCountries}/>
+                <Flags regions={receipt.regions} select={selectRegions}/>
+                <SpeedMode/>
             </ContainerPadding>
             <Buttons>
                 <Button variant="default" onClick={() => goBack()}>Назад</Button>

@@ -21,7 +21,7 @@ import { useToastStore } from "@/store/toastStore";
 
 const Replenish = () => {
   const navigate = useNavigate();
-  const { replenish, setState, setOrderId, setPaymentId, setPaymentURL, setAmountDeposit, setMethod, 
+  const { replenish, setState, setOrderId, setPaymentId, setPaymentURL, setAmountDeposit, setMethod,
     setCommission, setBilling, setStatus } = useReplenishStore()
   const { userLocal } = useUserStore()
   const { showToast } = useToastStore();
@@ -29,7 +29,7 @@ const Replenish = () => {
   const { createTbank } = useCreatePaymentTbank()
   const { createUSDT } = useCreateUSDTPayment()
   const { createInvoice } = useCreateInvoiceCrypto()
-  
+
   const changeInput = (text) => {
     const digits = text.replace(/\D/g, "").slice(0, 7)
     setAmountDeposit(digits)
@@ -51,9 +51,9 @@ const Replenish = () => {
       setOrderId(reternData.OrderId)
       setPaymentId(reternData.PaymentId)
       setPaymentURL(reternData.PaymentURL)
-    } 
+    }
 
-    if(method == "USDT") {
+    if (method == "USDT") {
       const reternData = await createUSDT({
         amount: String(replenish.amountDeposit),
         order_id: `ORDER-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
@@ -63,9 +63,9 @@ const Replenish = () => {
       setPaymentURL(reternData.result.url)
       setCommission(reternData.result?.commission || 0)
       setBilling(reternData.result.uuid)
-    } 
-    
-    if(method == "CryptoBot") {
+    }
+
+    if (method == "CryptoBot") {
       const reternData = await createInvoice({
         amount: Number(replenish.amountDeposit),
         asset: "USDT",
@@ -84,8 +84,8 @@ const Replenish = () => {
       setPaymentURL(reternData.botPayUrl)
       setStatus(reternData.status)
       setCommission(reternData.commission || 0)
-    } 
-    
+    }
+
     setState(true)
     navigate("/payment")
   }
@@ -283,7 +283,7 @@ const WayContainer = styled.div`
     padding-bottom: 24px;
     border-bottom: 1px dashed #6A7080;
     
-    @media(max-width: 400px) {
+    @media (width <= 400px) {
         flex-direction: column;
     }
 `

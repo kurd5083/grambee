@@ -1,7 +1,10 @@
-import { useState } from "react";
 import styled from "styled-components";
 
+import gift from "@/assets/icons/gift.svg";
+import like from "@/assets/icons/like.svg";
 import flag from "@/assets/icons/flag.svg";
+import ImgIcon from "@/icons/ImgIcon";
+import StarIcon from "@/icons/StarIcon";
 import UserIcon from "@/icons/UserIcon";
 
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -13,55 +16,12 @@ import Button from "@/shared/Button";
 import { usePopupStore } from "@/store/popupStore";
 import { useReceiptStore } from "@/store/receiptStore";
 
-import { fiterList } from "@/data/fiterList";
-
-const countryFilters = [
-    {
-        id: "cis",
-        title: "Только СНГ",
-        price: 0.25,
-    },
-    {
-        id: "target",
-        title: "Подходящий ЦА",
-        price: 0.5,
-    },
-    {
-        id: "world",
-        title: "Весь мир",
-        price: 0.25,
-    },
-]
-
 const AdditionalParameters = () => {
-    const [selectedCountry, setSelectedCountry] = useState(countryFilters[0])
-    const [selectedAccounts, setSelectedAccounts] = useState([]);
-
     const { goBack } = usePopupStore();
 
-    const { setFilters } = useReceiptStore();
-
-    const toggleSelectedAccount = (item) => {
-        setSelectedAccounts(prev => {
-            const isSelected = prev.some(elem => elem.code === item.code);
-            if (isSelected) {
-                return prev.filter(elem => elem.code !== item.code);
-            } else {
-                return [...prev, item];
-            }
-        });
-    };
+    const { receipt, setAllowCIS, setAllowPremium, setAllowGifts, setIsAdult } = useReceiptStore();
 
     const handleSave = () => {
-        const filters = {
-            allowPremium: selectedAccounts.some(acc => acc.code === "premium"),
-            allowGifts: selectedAccounts.some(acc => acc.code === "gifts"),
-            allowCIS: selectedCountry.id === "cis",
-            allowRussian: selectedCountry.id === "russia",
-            allowForeign: selectedCountry.id === "world",
-        };
-        
-        setFilters(filters);
         goBack();
     };
 
@@ -77,18 +37,16 @@ const AdditionalParameters = () => {
                 slidesOffsetBefore={24}
                 slidesOffsetAfter={24}
             >
-                {countryFilters.map((item) => (
-                    <SwiperSlideRadio key={item.id}>
-                        <Radio
-                            checked={selectedCountry.id === item.id}
-                            onChange={() => setSelectedCountry(item)}
-                            text={`+ ${item.price} ₽`}
-                            view="noCircleText"
-                        >
-                            {item.title}
-                        </Radio>
-                    </SwiperSlideRadio>
-                ))}
+                <SwiperSlideRadio>
+                    <Radio
+                        checked={receipt.allowCIS}
+                        onChange={() => setAllowCIS(!receipt.allowCIS)}
+                        text={`+ 0.25 ₽`}
+                        view="noCircleText"
+                    >
+                        Только СНГ
+                    </Radio>
+                </SwiperSlideRadio>
             </RadioContainer>
             <AdditionalTitle>
                 <UserIcon width={16} height={16} colorFirst='#FFD26D' colorSecond='#FFB81A' />
@@ -100,18 +58,26 @@ const AdditionalParameters = () => {
                 slidesOffsetBefore={24}
                 slidesOffsetAfter={24}
             >
-                {fiterList.slice(0, 2).map((item, index) => (
-                    <SwiperSlideRadio key={index}>
-                        <Radio
-                            checked={selectedAccounts.some(elem => elem.code === item.code)}
-                            onChange={() => toggleSelectedAccount(item)}
-                            view="circleBG"
-                        >
-                            {item.icon}
-                            {item.name}
-                        </Radio>
-                    </SwiperSlideRadio>
-                ))}
+                <SwiperSlideRadio>
+                    <Radio
+                        checked={receipt.allowPremium}
+                        onChange={() => setAllowPremium(!receipt.allowPremium)}
+                        view="circleBG"
+                    >
+                        <StarIcon width={16} height={16} colorFirst="#579AFF" colorSecond="#236EDE" uniqueId="first" />
+                        Только с премиумом
+                    </Radio>
+                </SwiperSlideRadio>
+                <SwiperSlideRadio>
+                    <Radio
+                        checked={receipt.allowGifts}
+                        onChange={() => setAllowGifts(!receipt.allowGifts)}
+                        view="circleBG"
+                    >
+                        <img src={gift} alt="gift" />
+                        С наличием подарков
+                    </Radio>
+                </SwiperSlideRadio>
             </RadioContainerFirst>
             <RadioContainer
                 spaceBetween={10}
@@ -119,18 +85,26 @@ const AdditionalParameters = () => {
                 slidesOffsetBefore={24}
                 slidesOffsetAfter={24}
             >
-                {fiterList.slice(2, 4).map((item, index) => (
-                    <SwiperSlideRadio key={index}>
+                <SwiperSlideRadio>
+                    <Radio
+                        checked={receipt.isAdult}
+                        onChange={() => setIsAdult(!receipt.isAdult)}
+                        view="circleBG"
+                    >
+                        <img src={like} alt="like" />
+                        Взрослые (18+)
+                    </Radio>
+                </SwiperSlideRadio>
+                {/* <SwiperSlideRadio>
                         <Radio
-                            checked={selectedAccounts.some(elem => elem.code === item.code)}
+                            checked={receipt.img}
                             onChange={() => toggleSelectedAccount(item)}
                             view="circleBG"
                         >
-                            {item.icon}
-                            {item.name}
+                            <ImgIcon width={16} height={16} color="#56C4FF" />
+                            Фотография в профиле
                         </Radio>
-                    </SwiperSlideRadio>
-                ))}
+                    </SwiperSlideRadio> */}
             </RadioContainer>
             <Buttons>
                 <Button variant="default" onClick={() => goBack()}>Назад</Button>

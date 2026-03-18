@@ -34,6 +34,8 @@ const Home = () => {
   const { userLocal } = useUserStore()
   const { resources, resourcesLoading, refetch } = useGetResources({ userTelegramId: userLocal?.telegramId })
 
+  const isLoading = !userLocal || resourcesLoading
+
   return (
     <div>
       <BannerSlider />
@@ -44,7 +46,7 @@ const Home = () => {
         <Traffic
           type="home"
           traffic={resources} 
-          loading={resourcesLoading} 
+          loading={isLoading} 
           title='Упс! Кажется, у вас еще нет ресурсов:('
           text='Подключайте любые ресурсы Telegram, а также внешние источники — и покупайте трафик на выгодных условиях!'
           status={stateStatus}

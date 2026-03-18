@@ -7,8 +7,9 @@ const defaultPoints = Array(24).fill(0);
 
 const defaultXAxisLabels = ['1 час', '2 час', '3 час', '4 час', '5 час', '6 час', '7 час', '8 час', '9 час', '10 час', '11 час', '12 час', '13 час', '14 час', '15 час', '16 час', '17 час', '18 час', '19 час', '20 час', '21 час', '22 час', '23 час', '24 час']
 
-const Chart = ({ type, points, xAxisLabels }) => {
+const Chart = ({ params, points, xAxisLabels }) => {
     const [hoverChart, setHoverChart] = useState(null)
+
     const containerRef = useRef(null)
     const isDragging = useRef(false)
     const startX = useRef(0)
@@ -21,6 +22,7 @@ const Chart = ({ type, points, xAxisLabels }) => {
     const height = 250;
 
     const safePoints = points ?? defaultPoints;
+
     const safeXAxisLabels = xAxisLabels ?? defaultXAxisLabels;
 
     const dataX = safeXAxisLabels;
@@ -88,8 +90,15 @@ const Chart = ({ type, points, xAxisLabels }) => {
             x: closest.x,
             y: closest.y,
             value: safePoints[closestIndex],
-            date: dataX[closestIndex],
-            label: 'Прибыль',
+
+            joins: params[closestIndex].joins,
+            leaves: params[closestIndex].leaves,
+            remained: params[closestIndex].remained,
+            totalActive: params[closestIndex].totalActive,
+
+            additions: params[closestIndex].additions,
+            subtractions: params[closestIndex].subtractions,
+            date: params[closestIndex].date,
         });
     };
 
@@ -193,7 +202,7 @@ const Chart = ({ type, points, xAxisLabels }) => {
                                 textAnchor="middle"
                                 fontSize="10"
                                 fill="#6A7080CC"
-                                style={{userSelect: 'none'}}
+                                style={{ userSelect: 'none' }}
                             >
                                 {label}
                             </text>
@@ -243,116 +252,104 @@ const Chart = ({ type, points, xAxisLabels }) => {
                         const circleX = Math.max(CIRCLE_RADIUS, Math.min(hoverChart.x, width - CIRCLE_RADIUS));
                         const circleY = hoverChart.y;
 
-                        const TOOLTIP_HEIGHT = type == "full" ? 150 : 90;
-                        const valueText = `${hoverChart.value}`;
-                        const labelText = hoverChart.label;
-
-                        const approxCharWidth = 8;
-                        const textWidth = Math.max(valueText.length * approxCharWidth, labelText.length * approxCharWidth);
-                        const TOOLTIP_WIDTH = type == "full" ? textWidth * 2 + 80 : textWidth + 80;
+                        const TOOLTIP_HEIGHT = 200;
+                        const TOOLTIP_WIDTH = 280;
 
                         const isLeftEdge = circleX - TOOLTIP_WIDTH / 2 < 0;
                         const isRightEdge = circleX + TOOLTIP_WIDTH / 2 > width;
-                        let tooltipY;
+
                         const chartCenterY = chartHeight / 2;
-                        if (type === "full") {
-                            tooltipY = chartCenterY - circleY - TOOLTIP_HEIGHT / 2;
-                        } else {
-                            const isTopEdge = circleY - TOOLTIP_HEIGHT - 10 < 0;
-                            tooltipY = isTopEdge ? 10 : -TOOLTIP_HEIGHT - 10;
-                        }
+                        let tooltipY = chartCenterY - circleY - TOOLTIP_HEIGHT / 2;
 
                         const tooltipX = isLeftEdge ? 0 : isRightEdge ? -TOOLTIP_WIDTH : -TOOLTIP_WIDTH / 2;
-
 
                         return (
                             <>
                                 <g transform={`translate(${circleX}, ${circleY})`}>
-                                    {type == "full" ? (
-                                        <foreignObject
-                                            x={tooltipX}
-                                            y={tooltipY}
-                                            width={TOOLTIP_WIDTH}
-                                            height={TOOLTIP_HEIGHT}
+                                    <foreignObject
+                                        x={tooltipX}
+                                        y={tooltipY}
+                                        width={TOOLTIP_WIDTH}
+                                        height={TOOLTIP_HEIGHT}
+                                    >
+                                        <div
+                                            style={{
+                                                borderRadius: '24px',
+                                                backdropFilter: 'blur(24px)',
+                                                background: '#2A2F3E3D',
+                                                padding: '16px',
+                                                userSelect: 'none'
+                                            }}
                                         >
-                                            <div
-                                                style={{
-                                                    borderRadius: '24px',
-                                                    backdropFilter: 'blur(24px)',
-                                                    background: '#2A2F3E3D',
-                                                    padding: '16px',
-                                                    userSelect: 'none'
-                                                }}
-                                            >
-                                                <p style={{ fontSize: 10, color: '#D6DCEC', lineHeight: "10px" }}>
-                                                    {hoverChart.date}
-                                                </p>
-                                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px', marginTop: 12 }} >
+                                            <p style={{ fontSize: 10, color: '#D6DCEC', lineHeight: "10px" }}>
+                                                {hoverChart.date}
+                                            </p>
+                                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px', marginTop: 12 }}>
+                                                {hoverChart.joins !== undefined && (
                                                     <div>
                                                         <h4 style={{ fontSize: 14, color: '#6A7080', lineHeight: "14px" }}>
-                                                            Подписки
+                                                            Присоединились
                                                         </h4>
                                                         <h3 style={{ fontSize: 20, color: '#D6DCEC', marginTop: 8, lineHeight: "20px" }}>
-                                                            <mark>+</mark> {valueText}
+                                                            <mark>+</mark> {hoverChart.joins} <span style={{ fontSize: 14, color: '#A3ABBC' }}>чел.</span>
                                                         </h3>
                                                     </div>
+                                                )}
+                                                
+                                                {hoverChart.leaves !== undefined && (
                                                     <div>
                                                         <h4 style={{ fontSize: 14, color: '#6A7080', lineHeight: "14px" }}>
-                                                            Отписки
+                                                            Покинули
                                                         </h4>
                                                         <h3 style={{ fontSize: 20, color: '#D6DCEC', marginTop: 8, lineHeight: "20px" }}>
-                                                            + {valueText}
+                                                            <mark>-</mark> {hoverChart.leaves} <span style={{ fontSize: 14, color: '#A3ABBC' }}>чел.</span>
                                                         </h3>
                                                     </div>
+                                                )}
+                                                
+                                                {hoverChart.remained !== undefined && (
                                                     <div>
                                                         <h4 style={{ fontSize: 14, color: '#6A7080', lineHeight: "14px" }}>
-                                                            Трафик
+                                                            Осталось
                                                         </h4>
                                                         <h3 style={{ fontSize: 20, color: '#D6DCEC', marginTop: 8, lineHeight: "20px" }}>
-                                                            + {valueText}
+                                                            {hoverChart.remained} <span style={{ fontSize: 14, color: '#A3ABBC' }}>чел.</span>
                                                         </h3>
                                                     </div>
+                                                )}
+                                                {hoverChart.totalActive !== undefined && (
                                                     <div>
                                                         <h4 style={{ fontSize: 14, color: '#6A7080', lineHeight: "14px" }}>
-                                                            Прибыль
+                                                            Всего активных
                                                         </h4>
                                                         <h3 style={{ fontSize: 20, color: '#D6DCEC', marginTop: 8, lineHeight: "20px" }}>
-                                                            + {valueText} <span style={{ fontSize: 14, color: '#A3ABBC' }}><mark>₽</mark></span>
+                                                            {hoverChart.totalActive} <span style={{ fontSize: 14, color: '#A3ABBC' }}>чел.</span>
                                                         </h3>
                                                     </div>
-                                                </div>
+                                                )}
+                                                {hoverChart.additions !== undefined && (
+                                                    <div>
+                                                        <h4 style={{ fontSize: 14, color: '#6A7080', lineHeight: "14px" }}>
+                                                            Пополнения
+                                                        </h4>
+                                                        <h3 style={{ fontSize: 20, color: '#D6DCEC', marginTop: 8, lineHeight: "20px" }}>
+                                                            <mark>+</mark> {hoverChart.additions.toFixed(2)} <mark>₽</mark>
+                                                        </h3>
+                                                    </div>
+                                                )}
+                                                {hoverChart.subtractions !== undefined && (
+                                                    <div>
+                                                        <h4 style={{ fontSize: 14, color: '#6A7080', lineHeight: "14px" }}>
+                                                            Списания
+                                                        </h4>
+                                                        <h3 style={{ fontSize: 20, color: '#D6DCEC', marginTop: 8, lineHeight: "20px" }}>
+                                                            - {hoverChart.subtractions.toFixed(2)} <mark>₽</mark>
+                                                        </h3>
+                                                    </div>
+                                                )}
                                             </div>
-                                        </foreignObject >
-                                    ) : (
-                                        <foreignObject
-                                            x={tooltipX}
-                                            y={tooltipY}
-                                            width={TOOLTIP_WIDTH}
-                                            height={TOOLTIP_HEIGHT}
-                                        >
-
-                                            <div
-                                                style={{
-                                                    borderRadius: '24px',
-                                                    backdropFilter: 'blur(24px)',
-                                                    background: '#2A2F3E3D',
-                                                    padding: '16px',
-                                                    userSelect: 'none'
-                                                }}
-                                            >
-                                                <h4 style={{ fontSize: 16, color: '#D6DCEC', lineHeight: "16px" }}>
-                                                    {hoverChart.label}
-                                                </h4>
-                                                <h3 style={{ fontSize: 24, color: '#D6DCEC', marginTop: 8, lineHeight: "24px" }}>
-                                                    + {valueText} <span style={{ fontSize: 14, color: '#A3ABBC' }}><mark>₽</mark></span>
-                                                </h3>
-                                                <p style={{ fontSize: 10, color: '#6A7080CC', lineHeight: "10px" }}>
-                                                    {hoverChart.date}
-                                                </p>
-                                            </div>
-                                        </foreignObject >
-                                    )}
-
+                                        </div>
+                                    </foreignObject >
                                 </g>
                             </>
                         );

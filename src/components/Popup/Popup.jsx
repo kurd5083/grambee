@@ -14,6 +14,8 @@ import StepFirst from '@/components/Popup/StepFirst';
 import StepSecond from '@/components/Popup/StepSecond';
 import Notifications from '@/components/Popup/Notifications';
 import NotificationsMessage from '@/components/Popup/NotificationsMessage';
+import ChangeResourceLimits from '@/components/Popup/ChangeResourceLimits';
+import Confirmation from '@/components/Popup/Confirmation';
 import CreateResurceFirst from '@/components/Popup/Purchase/CreateResurceFirst';
 import CreateResurceSecond from '@/components/Popup/Purchase/CreateResurceSecond';
 import SelectChannel from '@/components/Popup/Purchase/SelectChannel';
@@ -78,6 +80,10 @@ const Popup = () => {
 					<Notifications />
 				) : popup.content == 'notifications-message' ? (
 					<NotificationsMessage />
+				) : popup.content == 'change-resource-limits' ? (
+					<ChangeResourceLimits />
+				) : popup.content == 'confirmation' ? (
+					<Confirmation />
 				) : popup.content == 'create-resources-first' ? (
 					<CreateResurceFirst />
 				) : popup.content == 'create-resources-second' ? (

@@ -6,6 +6,8 @@ import { useNavigate } from "react-router";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import "swiper/css";
 
+import gift from "@/assets/icons/gift.svg";
+import like from "@/assets/icons/like.svg";
 import channel_ava from '@/assets/channel-ava.png';
 import calendar from '@/assets/icons/calendar.svg';
 import finalReceipt from "@/assets/icons/final-receipt.svg";
@@ -13,6 +15,7 @@ import fireFilling from '@/assets/icons/fire-filling.svg';
 import StarIcon from "@/icons/StarIcon";
 import HeadphonesIcon from "@/icons/HeadphonesIcon";
 import UserIcon from "@/icons/UserIcon";
+import SpeakerIcon from "@/icons/SpeakerIcon";
 
 import { GapContainer } from "@/shared/GapContainer";
 import { ContainerPadding } from "@/shared/ContainerPadding";
@@ -37,11 +40,11 @@ const FinalReceipt = () => {
             resetReceipt();
             navigate("/")
         }
-        
+
         return () => {
             resetReceipt();
         };
-    }, []); 
+    }, []);
 
     return (
         <FinalReceiptContainer>
@@ -60,16 +63,17 @@ const FinalReceipt = () => {
                 </FinalReceiptContent>
                 <GapContainer>
                     <BlockWithArrow
-                        img={<img src={channel_ava} alt="channel_ava" />}
+                        // img={<img src={channel_ava} alt="channel_ava" />}
+                        img={<SpeakerIcon width={18} height={16} color="#6A7080CC" />}
                         type="pass"
-                        title={receipt.channel?.name}
-                        text={receipt.channel?.username}
+                        title={receipt.name}
+                        text={receipt.username}
                         onClick=""
                     />
-                    {receipt.numberSubscribers && receipt.numberCampaignDays && (
+                    {receipt.dayLimit && receipt.activeDays && (
                         <ParamsBlocks options={[
-                            { value: `${receipt.numberSubscribers || 0}`, iconLeft: <UserIcon width={16} height={16} colorFirst='#FFD26D' colorSecond='#FFB81A' /> },
-                            { value: `${receipt.numberCampaignDays || 0} дней`, iconLeft: <img src={calendar} alt="calendar" /> }
+                            { value: `${receipt.dayLimit || 0}`, iconLeft: <UserIcon width={16} height={16} colorFirst='#FFD26D' colorSecond='#FFB81A' /> },
+                            { value: `${receipt.activeDays || 0} дней`, iconLeft: <img src={calendar} alt="calendar" /> }
                         ]} />
                     )}
                     {receipt.erFrom && receipt.erTo && (
@@ -84,56 +88,54 @@ const FinalReceipt = () => {
                             { value: <>До <mark>{receipt.rangeReactionsTo || 0}</mark></>, iconRight: <img src={fireFilling} alt="fireFilling" /> }
                         ]} />
                     )}
-                    {receipt.dailyTraffic && receipt.compDuration && (
+                    {receipt.trafficSpeed && receipt.activeDays && (
                         <ParamsBlocks options={[
-                            { value: `${receipt.dailyTraffic || 0}`, lableLeft: <mark>Бусты</mark> },
-                            { value: `${receipt.compDuration || 0} дней`, lableLeft: <mark>Дни</mark> }
+                            { value: `${receipt.trafficSpeed || 0}`, lableLeft: <mark>Бусты</mark> },
+                            { value: `${receipt.activeDays || 0} дней`, lableLeft: <mark>Дни</mark> }
                         ]} />
                     )}
                     {receipt.channel?.data && (
                         <SelectChannelBlock>
                             <Col>
                                 <span>Ссылка</span>
-                                <p>{receipt.channel.username}</p>
+                                <p>{receipt.username}</p>
                             </Col>
                             <Col>
                                 <span>Кол-во охватов</span>
-                                <p>{receipt.channel.data.numberCoverage}</p>
+                                <p>{receipt.data.numberCoverage}</p>
                             </Col>
                             <Col>
                                 <span>Стоимость</span>
-                                <p><mark>{receipt.channel.data.price} р</mark></p>
+                                <p><mark>{receipt.data.price} р</mark></p>
                             </Col>
                         </SelectChannelBlock>
                     )}
-
                 </GapContainer>
-
-                {receipt.countries && receipt.countries.length > 0 && (
+                {receipt.regions && receipt.regions.length > 0 && (
                     <>
                         <FinalReceiptTitle>Выбранные страны</FinalReceiptTitle>
                         <FlagsBlocks>
-                            {receipt.countries?.map((item, index) => (
+                            {receipt.regions?.map((item, index) => (
                                 <Flag key={index}>
-                                    <img src={flagsList.find((flag) => flag.code == item.code)?.flag} alt={item.code} />
-                                    <p>+{item.price} ₽</p>
+                                    <img src={flagsList.find((flag) => flag.code == item)?.flag} alt={item} />
+                                    <p>+{flagsList.find((flag) => flag.code == item)?.price} ₽</p>
                                 </Flag>
                             ))}
                         </FlagsBlocks>
                     </>
                 )}
-                {receipt.typeTraffic && (
+                {receipt.verificationEnabled && (
                     <>
                         <FinalReceiptTitle>Тип выбранного трафика</FinalReceiptTitle>
-                        <Text>{receipt.typeTraffic == 'with-verification' ? 'С проверкой' : 'Без проверки'}</Text>
+                        <Text>{receipt.verificationEnabled == true ? 'С проверкой' : 'Без проверки'}</Text>
                     </>
                 )}
                 {receipt.speedMode && (
                     <>
                         <FinalReceiptTitle>Режим скорости</FinalReceiptTitle>
                         <Text>{
-                            receipt.speedMode == 'two-hours' ? 'Быстрый (около 1-2 часа)' :
-                                receipt.speedMode == 'twelve-hours' ? 'Средний (около 12 часов)' :
+                            receipt.speedMode == 'HIGH' ? 'Быстрый (около 1-2 часа)' :
+                                receipt.speedMode == 'MEDIUM' ? 'Средний (около 12 часов)' :
                                     'Медленный (около 24 часов)'}</Text>
                     </>
                 )}
@@ -145,23 +147,55 @@ const FinalReceipt = () => {
                 )}
 
             </ContainerPadding>
-            {receipt.selectedFilters && receipt.selectedFilters.length > 0 && (
+            {(receipt.allowPremium || receipt.allowGifts || receipt.isAdult || receipt.allowCIS) && (
                 <>
-                    <FinalReceiptTitle>Выбранные фильтры<span>{receipt.selectedFilters?.length || 0}</span></FinalReceiptTitle>
+                    <FinalReceiptTitle>Выбранные фильтры
+                        <span>
+                            {[
+                                receipt.allowPremium,
+                                receipt.allowGifts,
+                                receipt.isAdult,
+                                receipt.allowCIS
+                            ].filter(Boolean).length}
+                        </span>
+                    </FinalReceiptTitle>
                     <RadioContainer
                         spaceBetween={10}
                         slidesPerView="auto"
                         slidesOffsetBefore={24}
                         slidesOffsetAfter={24}
                     >
-                        {receipt.selectedFilters?.map((item, index) => (
-                            <SwiperSlideRadio key={index}>
-                                <Radio text={`+ ${item.price} ₽`} view="noCircleIcon">
-                                    {item.icon}
-                                    {item.name}
+                        {receipt.allowPremium && (
+                            <SwiperSlideRadio>
+                                <Radio view="noCircleIcon">
+                                    <StarIcon width={16} height={16} colorFirst="#579AFF" colorSecond="#236EDE" uniqueId="first" />
+                                    Premium
                                 </Radio>
                             </SwiperSlideRadio>
-                        ))}
+                        )}
+                        {receipt.allowGifts && (
+                            <SwiperSlideRadio>
+                                <Radio view="noCircleIcon">
+                                    <img src={gift} alt="gift" />
+                                    Gifts
+                                </Radio>
+                            </SwiperSlideRadio>
+                        )}
+                        {receipt.isAdult && (
+                            <SwiperSlideRadio>
+                                <Radio view="noCircleIcon">
+                                    <img src={like} alt="like" />
+                                    18+
+                                </Radio>
+                            </SwiperSlideRadio>
+                        )}
+                        {receipt.allowCIS && (
+                            <SwiperSlideRadio>
+                                <Radio text="+ 0.25 ₽" view="noCircleIcon">
+                                    CIS
+                                </Radio>
+                            </SwiperSlideRadio>
+                        )}
                     </RadioContainer>
                 </>
             )}

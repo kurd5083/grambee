@@ -16,7 +16,40 @@ const createApiClient = (baseURL) => {
 
   client.interceptors.response.use(
     response => response,
-    error => Promise.reject(new Error(error.response?.data?.message || 'Произошла ошибка'))
+    async error => {
+      const originalRequest = error.config;
+
+      if (error.response?.status === 401 && !originalRequest._retry) {
+        originalRequest._retry = true;
+
+        try {
+          const initData = window.Telegram?.WebApp?.initData;
+
+          if (!initData) {
+            throw new Error('InitData отсутствует');
+          }
+
+          const response = await axios.post(
+            'https://api.grambee.net/api/v1/auth/refresh',
+            { initData },
+            { headers: { Accept: 'application/json' } }
+          );
+
+          const newToken = response.data?.accessToken;
+
+          if (newToken) {
+            localStorage.setItem('accessToken', newToken);
+            originalRequest.headers.Authorization = `Bearer ${newToken}`;
+            return client(originalRequest);
+          }
+        } catch (refreshError) {
+          localStorage.removeItem('accessToken');
+        }
+      }
+
+      const errorMessage = error.response?.data?.message || 'Произошла ошибка';
+      return Promise.reject(new Error(errorMessage));
+    }
   );
 
   return client;

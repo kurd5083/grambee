@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 
 import TabsNav from "@/components/TabsNav";
@@ -6,6 +6,8 @@ import GeneralTab from "@/components/Popup/Bot/GeneralTab";
 import ContentTab from "@/components/Popup/Bot/ContentTab";
 import ResourcesTab from "@/components/Popup/Bot/ResourcesTab";
 import FilterTab from "@/components/Popup/Bot/FilterTab";
+
+import { useBotStore } from "@/store/botStore";
 
 const tabs = [
   { label: "Общая", value: "general" },
@@ -17,6 +19,12 @@ const tabs = [
 const Bot = () => {
   const [activeTab, setActiveTav] = useState('general')
   
+  const { resetBot } = useBotStore()
+
+  useEffect(() => {
+    return () => resetBot()
+  }, [])
+
   return (
     <>
       <TabsNav

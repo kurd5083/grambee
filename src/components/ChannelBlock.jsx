@@ -25,6 +25,7 @@ const ChannelBlock = ({ type, name, username, disabled, onClick }) => {
 const ChannelContainer = styled.div`
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 14px;
   padding: 12px 16px;
   border-radius: 14px;

@@ -8,23 +8,36 @@ import TgSplashIcon from "@/icons/TgSplashIcon";
 import InputField from "@/shared/InputField";
 import Button from "@/shared/Button";
 
+import useInviteLinkResolve from "@/hooks/api/Resource/useInviteLinkResolve";
+
 import { usePopupStore } from "@/store/popupStore";
 import { useReceiptStore } from "@/store/receiptStore";
 import { useToastStore } from "@/store/toastStore";
 
 const SelectChannel = () => {
     const { openPopup, goBack } = usePopupStore()
-    const { receipt, setChannel } = useReceiptStore();
+    const { receipt, setInviteLink, setName, setUsername, setChannelId } = useReceiptStore();
     const { showToast } = useToastStore();
+    const { inviteLink } = useInviteLinkResolve()
 
     const handleNext = () => {
-        if (!receipt.channel?.name) {
+        if (!receipt.inviteLink) {
             return showToast("Введите ссылку на канал", "error");
         }
-        if (!receipt.channel.name.includes('t.me/')) {
+        if (!receipt.inviteLink.includes('t.me/')) {
             return showToast("Ссылка должна содержать t.me/", "error");
-        }    
-        openPopup('choosing-type-traffic', 'Выберите тип трафика', { step: 4, text: 'Определитесь с нужным типом трафика для вас' })
+        }   
+        inviteLink({ inviteLink: receipt.inviteLink }, {
+            onSuccess: (response) => {
+                setName(response.title)
+                setUsername(response.username)
+                setChannelId(response.channelId)
+                openPopup('choosing-type-traffic', 'Выберите тип трафика', { step: 4, text: 'Определитесь с нужным типом трафика для вас' })
+            },
+            onError: (error) => {
+                showToast(error?.message || "Не удалось резолвить публичную ссылку", "error");
+            }
+        })
     }
 
     return (
@@ -33,8 +46,8 @@ const SelectChannel = () => {
                 <InputField
                     id="link"
                     placeholder="Ссылка на канал"
-                    value={receipt.channel?.name}
-                    onChange={(e) => setChannel((e.target.value, e.target.value))}
+                    value={receipt?.inviteLink}
+                    onChange={(e) => setInviteLink(e.target.value)}
                     icon={<SpeakerIcon width={18} height={16} color="#FFB000" />}
                     inputAction="Сохранить"
                 />

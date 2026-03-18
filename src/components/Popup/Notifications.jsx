@@ -19,7 +19,6 @@ import { usePopupStore } from "@/store/popupStore";
 import { useNotificationStore } from "@/store/notificationStore";
 import { useToastStore } from "@/store/toastStore";
 
-
 const Notifications = () => {
   const { openPopup } = usePopupStore()
   const { userLocal } = useUserStore()
@@ -29,7 +28,6 @@ const Notifications = () => {
   const { readNotificationsAllMutate, isReadingAll } = useReadNotificationsAll();
   const { setNotification } = useNotificationStore();
   const { showToast } = useToastStore();
-  
 
   const handleNotification = (item) => {
     setNotification(item)
@@ -153,7 +151,7 @@ const NotificationsHeader = styled.div`
     gap: 16px;
   }
 
-  @media(max-width: 400px) {
+  @media (width <= 400px) {
     button {
       font-size: 12px;
       height: 40px;
@@ -202,7 +200,7 @@ const ItemContent = styled.div`
   h4 {
     cursor: pointer;
     
-    @media(max-width: 400px) {
+    @media (width <= 400px) {
       font-size: 14px;
     }
   }

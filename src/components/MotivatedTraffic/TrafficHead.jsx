@@ -38,6 +38,7 @@ const TrafficHead = ({ type, status, onClickArchive, onClickReset }) => {
     </TrafficHeadContainer>
   )
 }
+
 const rotateAnimation = keyframes`
   from {
     transform: rotate(0deg);

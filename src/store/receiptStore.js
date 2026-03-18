@@ -1,26 +1,43 @@
 import { create } from "zustand";
 
 const initialReceipt = {
-  channel: null,
-  typeResource: null,
-  metrics: null,
-  typeTraffic: null,
-  typeCoverage: null,
-  numberSubscribers: null,
-  numberCampaignDays: null,
-  countries: [],
-  selectedFilters: null,
-  premiumCoverage: null,
-  price: null,
-  dailyTraffic: null,
-  compDuration: null,
-  speedMode: null,
-  erFrom: null,
-  erTo: null,
-  coveragePeriod: null,
-  coveragePeriodHours: null,
-  rangeReactionsFrom: null,
-  rangeReactionsTo: null,
+    id: null,
+    typeFitst: null,
+    type: null,
+    name: null,
+    username: null,
+    channel: null,
+    inviteLink: null,
+    verificationEnabled: null,
+    typeCoverage: null,
+    dayLimit: null,
+    activeDays: null,
+    regions: [],
+    premiumCoverage: null,
+    erFrom: null,
+    erTo: null,
+    coveragePeriod: null,
+    coveragePeriodHours: null,
+    rangeReactionsFrom: null,
+    rangeReactionsTo: null,
+    pastPostsDays: null,
+    checkerBotToken: '',
+    isBotMembersKey: false,
+    workBotApiKey: null,
+    speedMode: null,
+    maintainBoosts: false,
+    autoLinkRefresh: false,
+    allowPremium: false,
+    allowGifts: false,
+    isAdult: false,
+    channelId: null,
+    allowCIS: false,
+    // allowRussian: false,
+    // allowForeign: false,
+    // allowMixed: false,
+    trafficSpeed: 1,
+    price: null,
+    pastPostsPeriod: 7
 };
 
 export const useReceiptStore = create((set) => ({
@@ -28,35 +45,93 @@ export const useReceiptStore = create((set) => ({
 
     resetReceipt: () => set({ receipt: initialReceipt }),
 
-    setChannel: ((name, username, data) => {
+    setResource: (({ id, name, pastPostsDays, username, inviteLink, checkerBotToken, price, dayLimit, activeDays, verificationEnabled, autoLinkRefresh }) => {
         set((state) => ({
             receipt: {
                 ...state.receipt,
-                channel: { name, username, data }
+                id,
+                name,
+                username,
+                pastPostsDays,
+                inviteLink,
+                checkerBotToken,
+                price,
+                dayLimit,
+                activeDays,
+                verificationEnabled,
+                autoLinkRefresh
             }
         }))
     }),
-    setTypeResource: ((type) => {
+    setInviteLink: ((value) => {
         set((state) => ({
             receipt: {
                 ...state.receipt,
-                typeResource: type
+                inviteLink: value
             }
         }))
     }),
-    setMetrics: ((type) => {
+    setCheckerBotToken: ((value) => {
         set((state) => ({
             receipt: {
                 ...state.receipt,
-                metrics: type
+                checkerBotToken: value
             }
         }))
     }),
-    setTypeTraffic: ((type) => {
+    setTypeFirst: ((type) => {
         set((state) => ({
             receipt: {
                 ...state.receipt,
-                typeTraffic: type
+                typeFirst: type
+            }
+        }))
+    }),
+    setType: ((type) => {
+        set((state) => ({
+            receipt: {
+                ...state.receipt,
+                type: type
+            }
+        }))
+    }),
+    setName: ((value) => {
+        set((state) => ({
+            receipt: {
+                ...state.receipt,
+                name: value
+            }
+        }))
+    }),
+    setUsername: ((value) => {
+        set((state) => ({
+            receipt: {
+                ...state.receipt,
+                username: value
+            }
+        }))
+    }),
+    setChannelId: ((value) => {
+        set((state) => ({
+            receipt: {
+                ...state.receipt,
+                channelId: value
+            }
+        }))
+    }),
+    setMaintainBoosts: ((value) => {
+        set((state) => ({
+            receipt: {
+                ...state.receipt,
+                maintainBoosts: value
+            }
+        }))
+    }),
+    setVerificationEnabled: ((type) => {
+        set((state) => ({
+            receipt: {
+                ...state.receipt,
+                verificationEnabled: type
             }
         }))
     }),
@@ -68,27 +143,27 @@ export const useReceiptStore = create((set) => ({
             }
         }))
     }),
-    setNumberSubscribers: ((value) => {
+    setDayLimit: ((value) => {
         set((state) => ({
             receipt: {
                 ...state.receipt,
-                numberSubscribers: value
+                dayLimit: value
             }
         }))
     }),
-    setNumberCampaignDays: ((value) => {
+    setActiveDays: ((value) => {
         set((state) => ({
             receipt: {
                 ...state.receipt,
-                numberCampaignDays: value
+                activeDays: value
             }
         }))
     }),
-    setCountries: ((countries) => {
+    setRegions: ((regions) => {
         set((state) => ({
             receipt: {
                 ...state.receipt,
-                countries: countries
+                regions: regions
             }
         }))
     }),
@@ -96,13 +171,11 @@ export const useReceiptStore = create((set) => ({
         set((state) => ({
             receipt: {
                 ...state.receipt,
-                selectedFilters: {
-                    allowPremium: filters.allowPremium ?? false,
-                    allowGifts: filters.allowGifts ?? false,
-                    allowCIS: filters.allowCIS ?? false,
-                    allowRussian: filters.allowRussian,
-                    allowForeign: filters.allowForeign,
-                }
+                allowPremium: filters.allowPremium ?? false,
+                allowGifts: filters.allowGifts ?? false,
+                allowCIS: filters.allowCIS ?? false,
+                allowRussian: filters.allowRussian,
+                allowForeign: filters.allowForeign,
             }
         }))
     }),
@@ -110,7 +183,7 @@ export const useReceiptStore = create((set) => ({
         set((state) => ({
             receipt: {
                 ...state.receipt,
-               premiumCoverage: bool
+                premiumCoverage: bool
             }
         }))
     }),
@@ -118,23 +191,7 @@ export const useReceiptStore = create((set) => ({
         set((state) => ({
             receipt: {
                 ...state.receipt,
-               price: value
-            }
-        }))
-    }),
-    setDailyTraffic: ((value) => {
-        set((state) => ({
-            receipt: {
-                ...state.receipt,
-               dailyTraffic: value
-            }
-        }))
-    }),
-    setCompDuration: ((value) => {
-        set((state) => ({
-            receipt: {
-                ...state.receipt,
-               compDuration: value
+                price: value
             }
         }))
     }),
@@ -142,7 +199,7 @@ export const useReceiptStore = create((set) => ({
         set((state) => ({
             receipt: {
                 ...state.receipt,
-               speedMode: type
+                speedMode: type
             }
         }))
     }),
@@ -150,7 +207,7 @@ export const useReceiptStore = create((set) => ({
         set((state) => ({
             receipt: {
                 ...state.receipt,
-               erFrom: value
+                erFrom: value
             }
         }))
     }),
@@ -158,7 +215,7 @@ export const useReceiptStore = create((set) => ({
         set((state) => ({
             receipt: {
                 ...state.receipt,
-               erTo: value
+                erTo: value
             }
         }))
     }),
@@ -166,7 +223,7 @@ export const useReceiptStore = create((set) => ({
         set((state) => ({
             receipt: {
                 ...state.receipt,
-               coveragePeriod: value
+                coveragePeriod: value
             }
         }))
     }),
@@ -174,7 +231,7 @@ export const useReceiptStore = create((set) => ({
         set((state) => ({
             receipt: {
                 ...state.receipt,
-               coveragePeriodHours: value
+                coveragePeriodHours: value
             }
         }))
     }),
@@ -182,7 +239,7 @@ export const useReceiptStore = create((set) => ({
         set((state) => ({
             receipt: {
                 ...state.receipt,
-               rangeReactionsFrom: value
+                rangeReactionsFrom: value
             }
         }))
     }),
@@ -190,7 +247,55 @@ export const useReceiptStore = create((set) => ({
         set((state) => ({
             receipt: {
                 ...state.receipt,
-               rangeReactionsTo: value
+                rangeReactionsTo: value
+            }
+        }))
+    }),
+    setAllowCIS: ((value) => {
+        set((state) => ({
+            receipt: {
+                ...state.receipt,
+                allowCIS: value,
+            }
+        }))
+    }),
+    setAllowPremium: ((value) => {
+        set((state) => ({
+            receipt: {
+                ...state.receipt,
+                allowPremium: value,
+            }
+        }))
+    }),
+    setAllowGifts: ((value) => {
+        set((state) => ({
+            receipt: {
+                ...state.receipt,
+                allowGifts: value,
+            }
+        }))
+    }),
+    setIsAdult: ((value) => {
+        set((state) => ({
+            receipt: {
+                ...state.receipt,
+                isAdult: value,
+            }
+        }))
+    }),
+    setTrafficSpeed: ((value) => {
+        set((state) => ({
+            receipt: {
+                ...state.receipt,
+                trafficSpeed: value
+            }
+        }))
+    }),
+    setAutoLinkRefresh: ((value) => {
+        set((state) => ({
+            receipt: {
+                ...state.receipt,
+                autoLinkRefresh: value
             }
         }))
     }),

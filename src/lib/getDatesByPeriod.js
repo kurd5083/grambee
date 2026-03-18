@@ -4,7 +4,7 @@ export const getDatesByPeriod = (selectedPeriod) => {
 
     switch (selectedPeriod) {
         case "24h":
-            fromDate.setDate(today.getDate() - 1);
+            fromDate.setDate(today.getDate());
             break;
         case "week":
             fromDate.setDate(today.getDate() - 7);

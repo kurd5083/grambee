@@ -16,7 +16,7 @@ const UploadStatistics = () => {
 						<ArrowIcon width={6} height={10} color="#D6DCEC" />
 					</ArrowContainer>
 				</CardHead>
-				<CardText $colorMark="#EF5350">Выгрузить<br /> форматом <mark>PDF</mark></CardText>
+				<CardText $colorMark="#EF5350">Выгрузить<br /> форматом <span>PDF</span></CardText>
 			</Card>
 			<Card>
 				<CardHead>
@@ -27,7 +27,7 @@ const UploadStatistics = () => {
 						<ArrowIcon width={6} height={10} color="#D6DCEC"/>
 					</ArrowContainer>
 				</CardHead>
-				<CardText $colorMark="#33C481">Выгрузить<br /> форматом <mark>EXCEL</mark></CardText>
+				<CardText $colorMark="#33C481">Выгрузить<br /> форматом <span>EXCEL</span></CardText>
 			</Card>
 		</StatisticsContainer>
 	)
@@ -70,7 +70,7 @@ const CardText = styled.h3`
 	line-height: 20px;
 	font-weight: 700;
 
-	mark {
+	span {
 		color: ${({ $colorMark }) => $colorMark}
 	}
 `;

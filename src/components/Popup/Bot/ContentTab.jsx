@@ -1,9 +1,18 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import styled from "styled-components";
 
 import grambeeLogo from "@/assets/icons/grambee-logo.svg";
 import robot from "@/assets/icons/robot.svg";
 import chat from "@/assets/icons/chat.svg";
+
+import FatIcon from "@/icons/FatIcon";
+import ItalicIcon from "@/icons/ItalicIcon";
+import UnderlinedIcon from "@/icons/UnderlinedIcon";
+import CrossedIcon from "@/icons/CrossedIcon";
+import MonoIcon from "@/icons/MonoIcon";
+import QuoteIcon from "@/icons/QuoteIcon";
+import HiddenIcon from "@/icons/HiddenIcon";
+
 import PaperIcon from "@/icons/PaperIcon";
 import ImgIcon from "@/icons/ImgIcon";
 import MessageIcon from "@/icons/MessageIcon";
@@ -24,9 +33,9 @@ import { useToastStore } from "@/store/toastStore";
 import { usePopupStore } from "@/store/popupStore";
 import { useBotStore } from "@/store/botStore";
 
-
 const ContentTab = () => {
     const [isFocused, setIsFocused] = useState(false);
+    const editorRef = useRef(null);
 
     const { bot, setBoostButtonText, setBotButtonText, setChannelButtonText, setChatButtonText, setSubscriptionMessage } = useBotStore();
 
@@ -38,28 +47,97 @@ const ContentTab = () => {
     const { userLocal } = useUserStore()
     const { showToast } = useToastStore();
 
+    useEffect(() => {
+    // Синхронизируем editorRef с bot.subscriptionMessage при изменении
+    if (editorRef.current && bot.subscriptionMessage !== undefined) {
+        const currentContent = editorRef.current.innerHTML;
+        if (currentContent !== bot.subscriptionMessage) {
+            editorRef.current.innerHTML = bot.subscriptionMessage;
+        }
+    }
+}, [bot.subscriptionMessage]);
+
+
+    const handleFormat = (formatType) => {
+        if (!editorRef.current) return;
+
+        editorRef.current.focus();
+
+        const selection = window.getSelection();
+        if (!selection.rangeCount) return;
+
+        const range = selection.getRangeAt(0);
+
+        let tagName = '';
+
+        switch (formatType) {
+            case 'bold':
+                tagName = 'b';
+                break;
+            case 'italic':
+                tagName = 'i';
+                break;
+            case 'underline':
+                tagName = 'u';
+                break;
+            case 'strikethrough':
+                tagName = 's';
+                break;
+            case 'mono':
+                tagName = 'code';
+                break;
+            case 'quote':
+                tagName = 'blockquote';
+                break;
+            case 'spoiler':
+                tagName = 'tg-spoiler';
+                break;
+            default:
+                return;
+        }
+
+        const element = document.createElement(tagName);
+
+        try {
+            range.surroundContents(element);
+        } catch (e) {
+            document.execCommand('formatBlock', false, tagName);
+        }
+
+        setSubscriptionMessage(editorRef.current.innerHTML);
+    };
+
     const handlePreview = () => {
+        const markdownText = bot.subscriptionMessage
+            .replace(/<b>(.*?)<\/b>/g, '*$1*')
+            .replace(/<i>(.*?)<\/i>/g, '_$1_')
+            .replace(/<u>(.*?)<\/u>/g, '__$1__')
+            .replace(/<s>(.*?)<\/s>/g, '~$1~')
+            .replace(/<code>(.*?)<\/code>/g, '`$1`')
+            .replace(/<blockquote>(.*?)<\/blockquote>/g, '> $1')
+            .replace(/<tg-spoiler>(.*?)<\/tg-spoiler>/g, '||$1||');
+
         postPreview({
             userId: userLocal?.telegramId,
-            text: bot.subscriptionMessage,
+            text: markdownText,
             buttons: JSON.stringify([
-                { "text": "Вступить12", "url": "https://t.me/grambee" },
-                { "text": "Вступить", "url": "https://t.me/grambee" },
-                { "text": "Забустить", "url": "https://t.me/grambee" },
-                { "text": "Вступить12", "url": "https://t.me/grambee" }
+                { "text": bot.channelButtonText, "url": "https://t.me/grambee" },
+                { "text": bot.chatButtonText, "url": "https://t.me/grambee" },
+                { "text": bot.botButtonText, "url": "https://t.me/grambee" },
+                { "text": bot.boostButtonText, "url": "https://t.me/grambee" }
             ])
         },
-        {
-            onSuccess: () => {
-                showToast("Сообщение успешно отправленно!", "success");
-            },
-            onError: (error) => {
-                showToast(
-                    error?.message || "Ошибка отправки сообщения",
-                    "error"
-                );
-            }
-        })
+            {
+                onSuccess: () => {
+                    showToast("Сообщение успешно отправленно!", "success");
+                },
+                onError: (error) => {
+                    showToast(
+                        error?.message || "Ошибка отправки сообщения",
+                        "error"
+                    );
+                }
+            })
     }
 
     const handleSave = () => {
@@ -80,6 +158,7 @@ const ContentTab = () => {
             }
         })
     }
+
 
     return (
         <>
@@ -118,12 +197,19 @@ const ContentTab = () => {
             </InfoContainer>
             <ContentTitle>Сообщение при подписке</ContentTitle>
             <ContentActions>
-                <ActionsIcon><PaperIcon width={16} height={18} color="currentColor" /></ActionsIcon>
+                <ActionsIcon onClick={() => handleFormat('bold')}><FatIcon width={18} height={18} color="currentColor" /></ActionsIcon>
+                <ActionsIcon onClick={() => handleFormat('italic')}><ItalicIcon width={18} height={18} color="currentColor" /></ActionsIcon>
+                <ActionsIcon onClick={() => handleFormat('underline')}><UnderlinedIcon width={18} height={18} color="currentColor" /></ActionsIcon>
+                <ActionsIcon onClick={() => handleFormat('strikethrough')}><CrossedIcon width={18} height={18} color="currentColor" /></ActionsIcon>
+                <ActionsIcon onClick={() => handleFormat('mono')}><MonoIcon width={18} height={18} color="currentColor" /></ActionsIcon>
+                <ActionsIcon onClick={() => handleFormat('quote')}><QuoteIcon width={18} height={18} color="currentColor" /></ActionsIcon>
+                <ActionsIcon onClick={() => handleFormat('spoiler')}><HiddenIcon width={18} height={18} color="currentColor" /></ActionsIcon>
+                {/* <ActionsIcon><PaperIcon width={16} height={18} color="currentColor" /></ActionsIcon>
                 <ActionsIcon><ImgIcon width={18} height={18} color="currentColor" /></ActionsIcon>
                 <ActionsIcon><MessageIcon width={18} height={18} color="currentColor" /></ActionsIcon>
                 <ActionsIcon><MapIcon width={16} height={18} color="currentColor" /></ActionsIcon>
                 <ActionsIcon><TextIcon width={18} height={20} color="currentColor" /></ActionsIcon>
-                <ActionsIcon><SettingIcon width={21} height={22} color="currentColor" /></ActionsIcon>
+                <ActionsIcon><SettingIcon width={21} height={22} color="currentColor" /></ActionsIcon> */}
             </ContentActions>
             <ChatBotContainer>
                 <ChatBot>
@@ -131,13 +217,24 @@ const ContentTab = () => {
                         <MessageLogo src={grambeeLogo} alt="logo" />
                         <MessageBlock>
                             <MessageFrom>GRAMBEE.BOT</MessageFrom>
-                            <MessageText
+                            <EditableMessage
+                                ref={editorRef}
                                 $isFocused={isFocused}
+                                contentEditable
+                                suppressContentEditableWarning
                                 placeholder="Введите текст"
-                                value={bot.subscriptionMessage}
-                                onChange={(e) => setSubscriptionMessage(e.target.value)}
                                 onFocus={() => setIsFocused(true)}
-                                onBlur={() => setIsFocused(false)}
+                                // onBlur={() => {
+                                //     setIsFocused(false);
+                                //     if (editorRef.current) {
+                                //         setSubscriptionMessage(editorRef.current.innerHTML);
+                                //     }
+                                // }}
+                                onInput={() => {
+                                    if (editorRef.current) {
+                                        setSubscriptionMessage(editorRef.current.innerHTML);
+                                    }
+                                }}
                             />
                             <Commands>
                                 {bot.channelButtonText &&
@@ -247,7 +344,7 @@ const Message = styled.div`
     position: ${({ $isFocused }) => $isFocused ? 'static' : 'absolute'};
     top: 24px;
     left: 24px;
-    height: 100%;
+    height: auto;
     z-index: 2;
 `
 const MessageLogo = styled.img`
@@ -264,7 +361,7 @@ const MessageFrom = styled.p`
     font-size: 14px;
     font-weight: 700;
 `
-const MessageText = styled.textarea`
+const EditableMessage = styled.div`
     box-sizing: border-box;
     margin-top: 8px;
     padding: 10px 14px;
@@ -274,10 +371,12 @@ const MessageText = styled.textarea`
     width: 264px;
     font-size: 12px;
     color: #FFFFFF;
-    resize: none;
     min-height: 84px;
-    scrollbar-width: none;
+    overflow-y: auto;
     z-index: 4;
+    outline: none;
+    word-wrap: break-word;
+    font-weight: 400;
     
     ${({ $isFocused }) => $isFocused && `
         position: absolute;
@@ -287,16 +386,41 @@ const MessageText = styled.textarea`
         margin: 0;
     `}
 
-    &::placeholder {
+    &:empty:before {
+        content: attr(placeholder);
         color: #6A7080CC;
-        transition: color 0.2s ease-in-out;
+        pointer-events: none;
     }
 
-    &:focus {
-        outline: none;
+    &:focus:empty:before {
+        color: #6A7080;
+    }
 
-        &::placeholder {
-            color: #6A7080;
+    b { font-weight: bold; }
+    i { font-style: italic; }
+    u { text-decoration: underline; }
+    s { text-decoration: line-through; }
+    code { 
+        font-family: monospace;
+        background-color: #2A2E3A;
+        padding: 2px 4px;
+        border-radius: 4px;
+    }
+    blockquote {
+        border-left: 3px solid #FFB000;
+        padding-left: 8px;
+        margin: 4px 0;
+        color: #D6DCEC;
+    }
+    tg-spoiler {
+        background-color: #2A2E3A;
+        color: transparent;
+        border-radius: 4px;
+        padding: 0 2px;
+        transition: color 0.2s;
+        
+        &:hover {
+            color: #FFFFFF;
         }
     }
 `

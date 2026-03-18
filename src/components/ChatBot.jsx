@@ -1,12 +1,15 @@
 import { useEffect, useRef, useState } from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 
 import grambeeLogo from "@/assets/icons/grambee-logo.svg";
 import bgGrambee from "@/assets/bg-grambee.png";
 
+import ResetIcon from "@/icons/ResetIcon";
 import HeadphonesIcon from "@/icons/HeadphonesIcon";
 import FrameIcon from "@/icons/FrameIcon";
 import SendIcon from "@/icons/SendIcon";
+
+import { SkeletonAvaChat } from '@/shared/Skeleton';
 
 import useGetFaq from "@/hooks/api/Faq/useGetFaq";
 import useFaqAsk from '@/hooks/api/Faq/useFaqAsk';
@@ -14,14 +17,19 @@ import useFaqAsk from '@/hooks/api/Faq/useFaqAsk';
 import { useChatStore } from "@/store/chatStore";
 import { useUserStore } from '@/store/userStore';
 
-
 const ChatBot = () => {
     const [isActive, setIsActive] = useState(false);
     const [value, setValue] = useState('');
-    const { chat, addMessageChat } = useChatStore()
-    const { faq, faqLoading } = useGetFaq()
-    const { userLocal } = useUserStore()
+    const [isRotating, setIsRotating] = useState(false);
+
     const messageContainerRef = useRef();
+
+    const { chat, addMessageChat, clearChat } = useChatStore()
+    const { faq, faqLoading } = useGetFaq()
+
+    const { userLocal } = useUserStore()
+
+    const isLoading = !userLocal
 
     useEffect(() => {
         if (chat.length === 0) {
@@ -29,10 +37,14 @@ const ChatBot = () => {
                 from: "grambee",
                 name: 'GRAMBEE.BOT',
                 text: `Привет! Я могу ответить на любой твой вопрос связанный с @GRAMBEEBOT\n\n <mark>Просто напиши мне!</mark>`,
-                date: new Date().toLocaleString('ru-RU'),
+                date: new Date().toLocaleString('ru-RU', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }),
             })
         }
-    }, [])
+    }, [chat])
+    
     useEffect(() => {
         if (messageContainerRef.current) {
             messageContainerRef.current.scrollTo({
@@ -44,6 +56,17 @@ const ChatBot = () => {
 
     const { askQuestion } = useFaqAsk()
 
+    const handleResetClick = async () => {
+        setIsRotating(true);
+        
+        setTimeout(async () => {
+            if (clearChat) {
+                await clearChat();
+            }
+            setIsRotating(false);
+        }, 500);
+    };
+
     const handleSend = async () => {
         if (!value.trim()) return
 
@@ -51,7 +74,10 @@ const ChatBot = () => {
             from: "user",
             name: `${userLocal?.firstName} ${userLocal?.lastName}`,
             text: value,
-            date: new Date().toLocaleString('ru-RU'),
+            date: new Date().toLocaleString('ru-RU', {
+                hour: '2-digit',
+                minute: '2-digit'
+            }),
         })
 
         await askQuestion({
@@ -63,7 +89,10 @@ const ChatBot = () => {
                     from: "grambee",
                     name: 'GRAMBEE.BOT',
                     text: response.answer,
-                    date: new Date().toLocaleString('ru-RU'),
+                    date: new Date().toLocaleString('ru-RU', {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    }),
                 })
                 setValue('')
             }
@@ -79,6 +108,11 @@ const ChatBot = () => {
                     <h3>GRAMBEE.BOT <HeadphonesIcon width={14} height={14} colorFirst="#6A7080" colorSecond="#6A7080" uniqueId="chat" /></h3>
                     <p>Online</p>
                 </HeadContent>
+                <ButtonFull onClick={handleResetClick}>
+                    <RotatingIcon $isRotating={isRotating}>
+                    <ResetIcon width={20} height={20} color="currentColor"/>
+                   </RotatingIcon>
+                </ButtonFull>
                 <ButtonFull $isActive={isActive} onClick={() => setIsActive(!isActive)}>
                     <FrameIcon width={16} height={16} colorFirst="currentColor" colorSecond="currentColor" />
                 </ButtonFull>
@@ -89,17 +123,19 @@ const ChatBot = () => {
                         $position={item.from == "grambee" ? 'left' : 'right'}
                         key={item.id}
                     >
-                        <MessageLogo src={item.from == "grambee" ? grambeeLogo : userLocal?.avatarUrl} alt="logo" />
+                        {isLoading ? (
+                            <SkeletonAvaChat />
+                        ) : (
+                            <MessageLogo src={item.from == "grambee" ? grambeeLogo : userLocal?.avatarUrl} alt="logo" />
+                        )}
                         <MessageBlock>
                             <MessageFrom
                                 $position={item.from == "grambee" ? 'left' : 'right'}
                             >{item.name}</MessageFrom>
-                            <MessageText
-                                $position={item.from == "grambee" ? 'left' : 'right'}
-                                dangerouslySetInnerHTML={{
-                                    __html: item.text.replace(/\n/g, '<br />')
-                                }}
-                            />
+                            <TextContainer $position={item.from == "grambee" ? 'left' : 'right'}>
+                                <Text dangerouslySetInnerHTML={{ __html: item.text.replace(/\n/g, '<br />') }} />
+                                <DateText>{item.date}</DateText>
+                            </TextContainer>
                             {/* <Commands>
                             <Сommand onClick={() => handleSend()}>Как дела?</Сommand>
                             <Сommand>Помоги с трафиком</Сommand>
@@ -132,6 +168,14 @@ const ChatBot = () => {
     )
 }
 
+const rotateAnimation = keyframes`
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+`;
 const ChatBotContainer = styled.div`
     position: relative;
     display: flex;
@@ -182,7 +226,6 @@ const HeadContent = styled.div`
         line-height: 12px;
     }
 `
-
 const ButtonFull = styled.button`
     display: flex;
     align-items: center;
@@ -202,6 +245,27 @@ const ButtonFull = styled.button`
         color: #FFB81A !important;
     `)}
 `
+const RotatingIcon = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 20px;
+  height: 20px;
+  animation: ${({$isRotating}) => $isRotating ? rotateAnimation : 'none'} 0.5s ease-in-out;
+  transform-origin: center center;
+  
+  svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    
+    * {
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+  }
+`;
+
 const MessageContainer = styled.div`
     box-sizing: border-box;
     position: relative;
@@ -249,7 +313,7 @@ const MessageFrom = styled.p`
         text-align: right;
     `}
 `
-const MessageText = styled.p`
+const TextContainer = styled.div`
     box-sizing: border-box;
     margin-top: 8px;
     padding: 10px 14px;
@@ -258,9 +322,19 @@ const MessageText = styled.p`
     max-width: 264px;
     width: 100%;
     font-size: 12px;
+
     ${({ $position }) => $position == 'right' && `
         border-radius: 24px 4px 24px 24px;
     `}
+`
+const Text = styled.p`
+    font-size: 12px;
+    margin-bottom: 8px;
+`
+const DateText = styled.p`
+    color: #6A7080CC;
+    text-align: right;
+    width: 100%;
 `
 const Commands = styled.div`
     margin-top: 4px;

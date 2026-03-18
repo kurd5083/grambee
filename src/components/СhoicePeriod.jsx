@@ -33,8 +33,8 @@ const СhoicePeriod = ({ name, period, onChange }) => {
 const PeriodContainer = styled.div`
     display: flex;
     flex-wrap: wrap;
+    justify-content: flex-end;
     gap: 14px;
-
 `
 const PeriodChannel = styled.div`
     display: flex;

@@ -20,7 +20,7 @@ const Footer = () => {
 		setLocationState(location.pathname);
 	}, [location.pathname]);
 
-	const isActiveWallet = ['/wallet', '/replenish', '/bring', '/payment', '/final-receipt'].includes(locationState);
+	const isActiveWallet = ['/wallet', '/replenish', '/bring', '/payment', '/final-receipt', '/transaction-details'].includes(locationState);
 
 	return (
 		<FooterContainer $width={widthScreen}>

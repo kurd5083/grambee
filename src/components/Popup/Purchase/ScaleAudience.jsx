@@ -9,16 +9,21 @@ import UserIcon from "@/icons/UserIcon";
 import EditIcon from "@/icons/EditIcon";
 
 import Button from "@/shared/Button";
+import { GapContainer } from "@/shared/GapContainer";
 import { ContainerPadding } from "@/shared/ContainerPadding";
 import InputField from "@/shared/InputField";
 
 import Flags from "@/components/Flags";
+import SpeedMode from "@/components/SpeedMode";
 
 import useCalculatePrice from "@/hooks/api/Resource/useCalculatePrice";
+import useCreateResource from "@/hooks/api/Resource/useCreateResource";
 
 import { usePopupStore } from "@/store/popupStore";
 import { useReceiptStore } from "@/store/receiptStore";
 import { useToastStore } from "@/store/toastStore";
+
+import { useUserStore } from '@/store/userStore';
 
 import { flagsList } from "@/data/flagsList";
 
@@ -26,48 +31,100 @@ const ScaleAudience = () => {
     const { openPopup, goBack } = usePopupStore()
     const navigate = useNavigate();
 
-    const { receipt, setNumberSubscribers, setNumberCampaignDays, setCountries, setPrice } = useReceiptStore();
+    const { receipt, setDayLimit, setActiveDays, setRegions, setPrice } = useReceiptStore();
+
     const { showToast } = useToastStore();
+    const { userLocal } = useUserStore()
+
     const { computePrice } = useCalculatePrice()
 
-    const selectCountries = (code) => {
+    const { addResource } = useCreateResource({ userTelegramId: userLocal?.telegramId })
+
+    const selectRegions = (code) => {
         let newData = [];
-        if (code === "all" && receipt.countries.length === flagsList.length) {
+        if (code === "all" && receipt.regions.length === flagsList.length) {
             newData = [];
         } else {
-            if (receipt.countries.find((item) => item.code == code)) {
-                newData = receipt.countries.filter((item) => item.code !== code);
+            if (receipt.regions.includes(code)) {
+                newData = receipt.regions.filter((item) => item !== code);
             } else {
                 if (code === "all") {
-                    newData = [...flagsList];
+                    newData = flagsList.map(flag => flag.code);
                 } else {
-                    newData = [...receipt.countries, { code, price: 1, name: flagsList.find((flag) => flag.code == code).name }];
+                    newData = [...receipt.regions, code];
                 }
             }
         }
-        setCountries(newData)
+        setRegions(newData)
     }
 
     const handleNext = () => {
-        if (!receipt.numberSubscribers) return showToast("Введите количество подписчиков", "error");
-        if (!receipt.numberCampaignDays) return showToast("Введите количество дней", "error");
-        if (receipt.countries.length == 0) return showToast("Выбирете страну", "error"); 
+        if (!receipt.dayLimit) return showToast("Введите количество подписчиков", "error");
+        if (!receipt.activeDays) return showToast("Введите количество дней", "error");
+        if (receipt.regions.length == 0) return showToast("Выбирете страну", "error");
 
         computePrice({
-            type: receipt.typeResource.toUpperCase(),
-            quantity: Number(receipt.numberSubscribers),
-            linkChangeDays: Number(receipt.numberCampaignDays),
-            allowPremium: receipt.selectedFilters?.allowPremium ?? false,
-            allowRussian: receipt.selectedFilters?.allowRussian ?? false,
-            allowForeign: receipt.selectedFilters?.allowForeign ?? false,
-            allowCIS: receipt.selectedFilters?.allowCIS ?? false,
-            allowMixed: false,
-            allowGifts: receipt.selectedFilters?.allowGifts ?? false,
+            type: receipt.type,
+            quantity: receipt.dayLimit,
+            linkChangeDays: receipt.activeDays,
+            allowPremium: receipt.allowPremium,
+            // allowRussian: receipt.allowRussian,
+            // allowForeign: receipt.allowForeign,
+            allowCIS: receipt.allowCIS,
+            // allowMixed: receipt.allowMixed,
+            allowGifts: receipt.allowGifts,
             userLevel: "BRONZE"
         }, {
             onSuccess: (response) => {
+                addResource({
+                    userTelegramId: userLocal?.telegramId,
+                    type: receipt.type,
+
+                    inviteLink: receipt.inviteLink,
+                    name: receipt.name,
+                    username: receipt.username,
+                    channelId: receipt.channelId,
+
+                    verificationEnabled: receipt.verificationEnabled,
+                    checkerBotToken: receipt.checkerBotToken,
+
+                    trafficSpeed: receipt.trafficSpeed,
+                    dayLimit: receipt.dayLimit,
+                    activeDays: receipt.activeDays,
+                    speedMode: receipt.speedMode,
+
+                    regions: receipt.regions,
+
+                    allowCIS: receipt.allowCIS,
+                    allowGifts: receipt.allowGifts,
+                    allowPremium: receipt.allowPremium,
+
+                    isAdult: receipt.isAdult,
+                    workBotApiKey: receipt.workBotApiKey,
+                    // price: response.price,
+
+                    // непонятно зачем в каналах это передается
+                    isBotMembersKey: false,
+                    linkRefreshDays: 1,
+                    allowRussian: false,
+                    allowForeign: false,
+                    allowMixed: false,
+                    maintainBoosts: false,
+                    autoPostType: "FUTURE",
+                    pastPostsPeriod: 7,
+
+                    posts: [],
+                }, {
+                    onSuccess: () => {
+                        showToast("Ресурс успешно создан", "success");
+                        navigate('/final-receipt')
+                    }, onError: (error) => {
+                        showToast(error?.message || "Ошибка при создании ресурса", "error");
+                    }
+                })
                 setPrice(response.totalPrice)
-                navigate('/final-receipt')
+            }, onError: (error) => {
+                showToast(error?.message || "Ошибка при создании ресурса", "error");
             },
         })
     }
@@ -77,20 +134,20 @@ const ScaleAudience = () => {
             <ContainerPadding>
                 <InputContainer>
                     <InputField
-                        id="numberSubscribers"
+                        id="dayLimit"
                         label="Кол-во подписчиков"
                         placeholder="КДП"
-                        value={receipt.numberSubscribers}
-                        onChange={(e) => setNumberSubscribers(e.target.value)}
+                        value={receipt.dayLimit}
+                        onChange={(e) => setDayLimit(Number(e.target.value))}
                         icon={<UserIcon width={16} height={16} colorFirst='#FFD26D' colorSecond='#FFB81A' />}
                         iconRight={<EditIcon width={16} height={16} color='currentColor' />}
                     />
                     <InputField
-                        id="numberCampaign"
+                        id="activeDays"
                         label="Кол-во дней кампании"
                         placeholder="дни"
-                        value={receipt.numberCampaignDays}
-                        onChange={(e) => setNumberCampaignDays(e.target.value)}
+                        value={receipt.activeDays}
+                        onChange={(e) => setActiveDays(Number(e.target.value))}
                         icon={<img src={calendar} alt="calendar" />}
                         iconRight={<ArrowContainer>
                             <ArrowIcon width={6} height={10} color="currentColor" />
@@ -98,12 +155,18 @@ const ScaleAudience = () => {
                         </ArrowContainer>}
                     />
                 </InputContainer>
-                <Flags countries={receipt.countries} select={selectCountries} />
-                <Button
-                    variant="black"
-                    iconRight={<ArrowIcon width={6} height={10} color="#D6DCEC" />}
-                    onClick={() => openPopup('additional-parameters', 'Указать доп. параметры', { text: 'Укажите нужные вам параметры аудитории' })}
-                >Указать дополнительные параметры</Button>
+
+                <Flags regions={receipt.regions} select={selectRegions} />
+                <GapContainer gap="24px">
+                    <SpeedMode />
+                    <Button
+                        variant="black"
+                        iconRight={<ArrowIcon width={6} height={10} color="#D6DCEC" />}
+                        onClick={() => openPopup('additional-parameters', 'Указать доп. параметры', { text: 'Укажите нужные вам параметры аудитории' })}
+                    >
+                        Указать дополнительные параметры
+                    </Button>
+                </GapContainer>
             </ContainerPadding>
             <Buttons>
                 <Button variant="default" onClick={() => goBack()}>Назад</Button>

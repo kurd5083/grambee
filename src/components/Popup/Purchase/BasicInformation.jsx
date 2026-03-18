@@ -15,23 +15,25 @@ import Button from "@/shared/Button";
 import { ContainerPadding } from "@/shared/ContainerPadding";
 import { GapContainer } from "@/shared/GapContainer";
 
+import SpeedMode from "@/components/SpeedMode";
+
 import { useReceiptStore } from "@/store/receiptStore";
 import { usePopupStore } from "@/store/popupStore";
 import { useToastStore } from "@/store/toastStore";
 
+
 const BasicInformation = () => {
-    const [nameCompany, setNameCompany] = useState('')
     const [botStatAPI, setBotStatAPI] = useState(false)
     const { openPopup, goBack } = usePopupStore()
     const { showToast } = useToastStore();
 
     const navigate = useNavigate();
 
-    const { receipt, setDailyTraffic, setCompDuration, setSpeedMode } = useReceiptStore();
+    const { receipt, setName, setTrafficSpeed, setActiveDays } = useReceiptStore();
 
      const handleNext = () => {
-        if(!receipt.dailyTraffic) return showToast("Выбирете суточный трафик", "error");
-        if(!receipt.compDuration) return showToast("Выбирете длительность комп.", "error");
+        if(!receipt.trafficSpeed) return showToast("Выбирете суточный трафик", "error");
+        // if(!receipt.activeDays) return showToast("Выбирете длительность комп.", "error");
         if(!receipt.speedMode) return showToast("Выбирите режим скорости", "error");
         
         navigate('/final-receipt')
@@ -45,26 +47,27 @@ const BasicInformation = () => {
                         id="nameCompany"
                         label="Название рекламной компании"
                         placeholder="Private125"
-                        value={nameCompany}
-                        onChange={(e) => setNameCompany(e.target.value)}
+                        value={receipt.name}
+                        onChange={(e) => setName(e.target.value)}
+                        
                         labelIcon={question}
                     />
                     <InputContainer>
                         <InputField
-                            id="dailyTraffic"
+                            id="trafficSpeed"
                             label="Суточный трафик"
                             placeholder="Суточный трафик"
-                            value={receipt.dailyTraffic}
-                            onChange={(e) => setDailyTraffic(e.target.value)}
+                            value={receipt.trafficSpeed}
+                            onChange={(e) => setTrafficSpeed(e.target.value)}
                             icon={<UserIcon width={16} height={16} colorFirst='#FFD26D' colorSecond='#FFB81A' />}
                             iconRight={<EditIcon width={16} height={16} color='currentColor' />}
                         />
                         <InputField
-                            id="compDuration"
+                            id="activeDays"
                             label="Длительность комп."
                             placeholder="Длительность комп."
-                            value={receipt.compDuration}
-                            onChange={(e) => setCompDuration(e.target.value)}
+                            value={receipt.activeDays}
+                            onChange={(e) => setActiveDays(e.target.value)}
                             icon={<img src={calendar} alt="calendar" />}
                             iconRight={<ArrowContainer>
                                 <ArrowIcon width={6} height={10} color="currentColor" />
@@ -73,29 +76,7 @@ const BasicInformation = () => {
                         />
                     </InputContainer>
                     <Title>Режим скорости <img src={question} alt="question"/></Title>
-                    <RadioContainer>
-                        <Radio
-                            checked={receipt.speedMode === 'two-hours'}
-                            onChange={() => setSpeedMode('two-hours')}
-                            text="1-2 часа"
-                            view="circleNoBG">
-                            Быстрый
-                        </Radio>
-                        <Radio
-                            checked={receipt.speedMode === 'twelve-hours'}
-                            onChange={() => setSpeedMode('twelve-hours')}
-                            text="Около 12 часов"
-                            view="circleNoBG">
-                            Средний
-                        </Radio>
-                        <Radio
-                            checked={receipt.speedMode === 'twenty-four-hours'}
-                            onChange={() => setSpeedMode('twenty-four-hours')}
-                            text="Около 24 часов"
-                            view="circleNoBG">
-                            Медленный
-                        </Radio>
-                    </RadioContainer>
+                    <SpeedMode/>
                     <Radio
                         checked={botStatAPI === true}
                         onChange={() => setBotStatAPI(!botStatAPI)}
@@ -152,7 +133,7 @@ const RadioContainer = styled.div`
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 8px;
-    @media(max-width: 400px) {
+    @media (width <= 400px) {
         grid-template-columns: 1fr;
     }
 `

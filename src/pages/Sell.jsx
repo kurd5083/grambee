@@ -41,6 +41,8 @@ const Sell = () => {
   const { userLocal } = useUserStore()
   const { bots, botsLoading, refetch } = useGetBots({ telegramId: userLocal?.telegramId })
 
+  const isLoading = !userLocal || botsLoading
+
   return (
     <div>
       <BannerSlider />
@@ -69,11 +71,11 @@ const Sell = () => {
       {/* <TabMenu tabs={tabs} /> */}
       <ContainerPadding>
         <TrafficHead type="sell" status={stateStatus} onClickArchive={() => setStateStatus(!stateStatus)} onClickReset={() => refetch()}/>
-        <TrafficFilter type="sell"  filter={filter} onChange={setFilter}/>
+        <TrafficFilter type="sell" filter={filter} onChange={setFilter}/>
         <Traffic
           type="sell"
           traffic={bots}
-          loading={botsLoading}
+          loading={isLoading}
           title='Упс! Кажется, у вас еще нет ботов:('
           text='Подключайте любые ресурсы Telegram, а также внешние источники — и продавайте трафик на выгодных условиях!'
           status={stateStatus}
@@ -90,7 +92,7 @@ const SellContainer = styled.div`
   padding-bottom: 24px;
   border-bottom: 1px dashed #6A7080;
   margin: 16px 24px 0;
-  @media(max-width: 400px) {
+  @media (width <= 400px) {
     flex-direction: column;
   }
 `
