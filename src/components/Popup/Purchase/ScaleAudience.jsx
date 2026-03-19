@@ -114,7 +114,7 @@ const ScaleAudience = () => {
                     <InputField
                         id="dayLimit"
                         label="Кол-во подписчиков"
-                        placeholder="КДП"
+                        placeholder="ПДП"
                         value={receipt.dayLimit}
                         onChange={(e) => setDayLimit(Number(e.target.value))}
                         icon={<UserIcon width={16} height={16} colorFirst='#FFD26D' colorSecond='#FFB81A' />}

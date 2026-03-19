@@ -17,8 +17,10 @@ import { useReceiptStore } from "@/store/receiptStore";
 import { useToastStore } from "@/store/toastStore";
 
 import { checkBotAdmin } from "@/api/Resource/checkBotAdmin";
+import { getBotInfo } from '@/api/Bots/getBotInfo';
 
 const SelectChannelBot = () => {
+    const [checkingBot, setCheckingBot] = useState(false);
     const { openPopup, goBack } = usePopupStore()
 
     const { receipt, setInviteLink, setName, setUsername, setChannelId, setCheckerBotToken, setVerificationEnabled } = useReceiptStore();
@@ -39,14 +41,9 @@ const SelectChannelBot = () => {
                 if (receipt.verificationEnabled) {
                     if (!receipt.checkerBotToken) return showToast("Введите токен бота", "error");
 
-                    checkBotAdmin({ botToken: receipt.checkerBotToken, channelId: receipt.channelId })
-                        .then((adminResponse) => {
-                            if (!adminResponse?.isAdmin) return showToast(adminResponse?.message || "Бот не является администратором канала", "error");
-                            openPopup('scale-audience', 'Масштабы закупки аудитории', { step: 5, text: 'Укажите нужные вам параметры аудитории' })
-                        })
-                        .catch((error) => {
-                            return showToast(error?.message || "Ошибка при проверке бота", "error");
-                        })
+                    handleCheckBot(() => {
+                        openPopup('scale-audience', 'Масштабы закупки аудитории', { step: 5, text: 'Укажите нужные вам параметры аудитории' })
+                    });
                 } else {
                     openPopup('scale-audience', 'Масштабы закупки аудитории', { step: 5, text: 'Укажите нужные вам параметры аудитории' })
                 }
@@ -55,6 +52,45 @@ const SelectChannelBot = () => {
                 showToast(error?.message || "Не удалось резолвить публичную ссылку", "error");
             }
         })
+    }
+
+    const addBot = () => {
+        if (!receipt.checkerBotToken) return showToast("Введите токен бота", "error");
+
+        getBotInfo({ BOT_TOKEN: receipt.checkerBotToken })
+            .then((result) => {
+                if (result?.ok && result?.result) {
+                    const botUsername = result.result.username;
+                    const channelLink = `https://t.me/${botUsername}?startchannel=true`;
+            
+                    window.Telegram.WebApp.openTelegramLink(channelLink);
+                }
+            })
+            .catch((error) => {
+                return showToast(error?.message || "Неверный токен бота", "error");
+            })
+    }
+
+    const handleCheckBot = (onSuccess) => {
+        if (!receipt.checkerBotToken) return showToast("Введите токен бота", "error");
+        if (!receipt.channelId) return showToast("Сначала введите ссылку на канал", "error");
+
+        setCheckingBot(true);
+        checkBotAdmin({ botToken: receipt.checkerBotToken, channelId: receipt.channelId })
+            .then((adminResponse) => {
+                if (!adminResponse?.isAdmin) {
+                    showToast(adminResponse?.message || "Бот не является администратором канала", "error");
+                } else {
+                    showToast("Бот успешно проверен и является администратором", "success");
+                    onSuccess?.();
+                }
+            })
+            .catch((error) => {
+                showToast(error?.message || "Ошибка при проверке бота", "error");
+            })
+            .finally(() => {
+                setCheckingBot(false);
+            });
     }
 
     return (
@@ -93,20 +129,34 @@ const SelectChannelBot = () => {
                             placeholder="1245231521:AAHwPlf1t3mzjwx8uhlFXojD2lmpr021..."
                             value={receipt.checkerBotToken}
                             onChange={(e) => setCheckerBotToken(e.target.value)}
-                            status={<mark>Инструкция</mark>}
+                            // status={<mark>Инструкция</mark>}
                         />
-                        <Button variant="blueDark">Добавить бота в администраторы</Button>
+                        <Button
+                            variant="blueDark"
+                            onClick={() => addBot()}
+                        >
+                            Добавить бота в администраторы
+                        </Button>
                     </SelectChannelContainer>
                     <ButtonsActions>
-                        <Button variant="default">
+                        <Button
+                            variant="default"
+                            onClick={() => window.Telegram?.WebApp?.openTelegramLink?.('https://t.me/botfather')}
+                        >
                             <img src={createBot} alt="createBot" />
                             Создать бота-чекер
                         </Button>
-                        <Button variant="default">Проверить бота</Button>
+                        <Button
+                            variant="default"
+                            onClick={() => handleCheckBot()}
+                            disabled={checkingBot}
+                        >
+                            {checkingBot ? "Проверка..." : "Проверить бота"}
+                        </Button>
                     </ButtonsActions>
                 </>
             ) : receipt.verificationEnabled === false && (
-                <WarningBox text="Lorem ipsum dolor sit, amet consectetur adipisicing elit. Porro, dicta." />
+                <WarningBox text="При покупке трафика без проверки мы не гарантируем выполнения заказа в полном объеме" />
             )}
             <Buttons>
                 <Button variant="default" onClick={() => goBack()}>Назад</Button>

@@ -17,7 +17,8 @@ const Chart = ({ params, points, xAxisLabels }) => {
 
     const paddingX = 20;
     const chartHeight = 200;
-    const chartTopPadding = 5;
+    const chartTopPadding = 10;
+    
     const width = 1400;
     const height = 250;
 

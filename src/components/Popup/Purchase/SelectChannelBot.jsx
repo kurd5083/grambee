@@ -52,7 +52,7 @@ const SelectChannelBot = () => {
                 .then((result) => {
                     if (result?.ok && result?.result) {
                         const actualUsername = result.result.username;
-                        const botId = result.result.id;
+
                         if (actualUsername.toLowerCase() === expectedUsername.toLowerCase()) {
                             showToast(`Бот @${actualUsername} успешно проверен`, "success");
                             openPopup('scale-audience', 'Масштабы закупки аудитории', { step: 5, text: 'Укажите нужные вам параметры аудитории' })
@@ -139,7 +139,7 @@ const SelectChannelBot = () => {
                             placeholder="1245231521:AAHwPlf1t3mzjwx8uhlFXojD2lmpr021..."
                             value={receipt.checkerBotToken}
                             onChange={(e) => setCheckerBotToken(e.target.value)}
-                            status={<mark>Инструкция</mark>}
+                            // status={<mark>Инструкция</mark>}
                         />
                        <Button 
                             variant="blueDark" 
@@ -151,7 +151,7 @@ const SelectChannelBot = () => {
                     </SelectChannelContainer>
                 </>
             ) : receipt.verificationEnabled === false && (
-                <WarningBox text="Lorem ipsum dolor sit, amet consectetur adipisicing elit. Porro, dicta." />
+                <WarningBox text="При покупке трафика без проверки мы не гарантируем выполнения заказа в полном объеме" />
             )}
             <Buttons>
                 <Button variant="default" onClick={() => goBack()}>Назад</Button>

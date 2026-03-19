@@ -77,7 +77,7 @@ const FillFieldsBelow = () => {
 						placeholder="1245231521:AAHwPlf1t3mzjwx8uhlFXojD2lmpr021..."
 						value={receipt.checkerBotToken}
 						onChange={(e) => setCheckerBotToken(e.target.value)}
-						status={<mark>Инструкция</mark>}
+						// status={<mark>Инструкция</mark>}
 					/>
 					<Radio
 						checked={receipt.maintainBoosts === true}
